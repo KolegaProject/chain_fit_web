@@ -2,16 +2,28 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
-        <div class="col-12 col-md-6 left-side q-pa-xl gt-sm flex flex-vertical justify-between">
-          <div class="logo-placeholder"></div>
+        <div class="col-12 col-md-6 gt-sm">
+          <q-img src="../assets/RegisterPage-asset1.jpg" class="full-height-img" :ratio="1">
+            <div class="absolute-full column justify-between q-pa-xl bg-transparent-overlay">
+              <div class="logo-wrapper q-pl-lg">
+                <q-img
+                  src="../assets/ChainFitLogo.png"
+                  spinner-color="white"
+                  style="height: 140px; max-width: 150px"
+                />
+              </div>
 
-          <div class="text-box q-mt-auto">
-            <p class="text-body2 text-dark">
-              Lorem Ipsum adalah contoh teks atau dummy dalam industri percetakan dan penataan huruf
-              atau typesetting.
-            </p>
-            <p class="text-caption text-weight-bold">bye Lorem</p>
-          </div>
+              <div
+                class="text-box q-pa-md q-ma-xl"
+                style="border-radius: 12px; background-color: rgba(217, 217, 217, 0.09)"
+              >
+                <p class="text-h6 text-white text-weight-light">
+                  Platform gym untuk kamu yang anti ribet dan suka kontrol penuh, Bangun badan,
+                  bangun mindset, dan jadi bagian dari komunitas gym masa depan.
+                </p>
+              </div>
+            </div>
+          </q-img>
         </div>
 
         <div class="col-12 col-md-6 flex flex-center bg-white">
@@ -22,8 +34,16 @@
             </div>
 
             <q-form @submit="handleRegister" class="q-gutter-y-sm">
-              <q-input outlined dense v-model="form.name" placeholder="Nama" required />
               <q-input
+                color="black"
+                outlined
+                dense
+                v-model="form.name"
+                placeholder="Nama"
+                required
+              />
+              <q-input
+                color="black"
                 outlined
                 dense
                 v-model="form.email"
@@ -32,6 +52,7 @@
                 required
               />
               <q-input
+                color="black"
                 outlined
                 dense
                 v-model="form.phone"
@@ -41,6 +62,7 @@
               />
 
               <q-input
+                color="black"
                 outlined
                 dense
                 v-model="form.password"
@@ -50,6 +72,7 @@
               />
 
               <q-input
+                color="black"
                 outlined
                 dense
                 v-model="form.confirmPassword"
@@ -62,7 +85,7 @@
 
               <q-btn
                 type="submit"
-                label="Continue"
+                label="Register"
                 class="full-width btn-continue q-mt-md"
                 unelevated
               />
@@ -131,6 +154,11 @@ const goToLogin = () => {
 </script>
 
 <style lang="scss" scoped>
+.full-height-img {
+  height: 100vh;
+  width: 100%;
+}
+
 .left-side {
   background-color: #d6d6d6;
   min-height: 100vh;
