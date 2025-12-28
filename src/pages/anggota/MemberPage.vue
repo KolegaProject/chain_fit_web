@@ -118,6 +118,42 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="showConfirmDelete" persistent>
+      <q-card class="dialog-card q-pa-lg text-center">
+        <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
+
+        <q-card-section class="q-pt-md">
+          <q-img
+            src="path/to/your/illustration.png"
+            style="width: 150px; height: auto"
+            class="q-mb-md"
+          />
+
+          <div class="text-h6 text-weight-bolder q-mb-sm">Apakah Anda yakin ingin melanjutkan?</div>
+          <div class="text-body2 text-grey-8">
+            Data staff yang dihapus tidak dapat dipulihkan.
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="center" class="q-pb-md q-gutter-x-md">
+          <q-btn
+            flat
+            label="Batal"
+            v-close-popup
+            class="btn-action-dialog btn-batal-dialog"
+            no-caps
+          />
+          <q-btn
+            unelevated
+            label="Ya, Hapus Data"
+            class="btn-action-dialog btn-konfirmasi-dialog"
+            no-caps
+            @click="executeDelete"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 
 </template>
@@ -136,6 +172,10 @@ const rowsAnggota = ref([])
 // State untuk mengontrol pop-up dan input nama
 const showAddAbsensi = ref(false)
 const namaAbsen = ref('')
+
+// State untuk pop-up konfirmasi hapus
+const showConfirmDelete = ref(false)
+const selectedMemberToDelete = ref(null)
 
 const columnsAnggota = [
   { name: 'nama', align: 'left', label: 'Nama', field: 'nama', sortable: true },
@@ -227,18 +267,23 @@ const editAnggota = (row) => {
 
 const deleteAnggota = (row) => {
   if (!row) return
-  $q.dialog({
-    title: 'Konfirmasi',
-    message: `Hapus anggota "${row.nama}"?`,
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    rowsAnggota.value = rowsAnggota.value.filter(r => r.id !== row.id)
-    persistMembers() // now defined
-    $q.notify({ type: 'positive', message: 'Anggota dihapus' })
-  }).onCancel(() => {
-    // cancelled
-  })
+  // Simpan data anggota yang dipilih dan buka dialog
+  selectedMemberToDelete.value = row
+  showConfirmDelete.value = true
+}
+
+// Fungsi eksekusi hapus yang dipanggil dari tombol "Ya, Hapus Data" di pop-up
+const executeDelete = () => {
+  if (selectedMemberToDelete.value) {
+    rowsAnggota.value = rowsAnggota.value.filter(r => r.id !== selectedMemberToDelete.value.id)
+    persistMembers()
+
+    $q.notify({ type: 'positive', message: 'Anggota berhasil dihapus' })
+
+    // Reset state
+    showConfirmDelete.value = false
+    selectedMemberToDelete.value = null
+  }
 }
 
 const getMasaAktifClass = (days) => {
