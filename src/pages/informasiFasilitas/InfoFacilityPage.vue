@@ -127,7 +127,13 @@
         >
           <template v-slot:header="props">
             <q-tr :props="props" class="bg-white">
-              <q-th v-for="col in props.cols" :key="col.name" :props="props" class="text-weight-bolder text-subtitle2">
+              <q-th
+                v-for="col in props.cols"
+                :key="col.name"
+                :props="props"
+                :col="col"
+                class="text-weight-bolder text-subtitle2"
+              >
                 {{ col.label }}
               </q-th>
             </q-tr>
@@ -208,7 +214,8 @@ onMounted(() => {
       equipments.value = defaultEquipments
       localStorage.setItem('equipments', JSON.stringify(defaultEquipments))
     }
-  } catch (e) {
+  } catch (err) {
+    console.warn('Failed to load equipments from localStorage:', err)
     equipments.value = defaultEquipments
   }
 })

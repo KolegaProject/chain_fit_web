@@ -47,7 +47,7 @@
         <div class="row q-col-gutter-md">
           <div class="col-12 col-md-6">
             <q-img
-              :src="equipment.images[0]"
+              :src="equipment.images[0] || 'https://via.placeholder.com/600x400?text=Bench+Press'"
               class="rounded-borders full-height"
               style="border: 1px solid #ccc; min-height: 300px;"
               fit="contain"
@@ -98,7 +98,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 
@@ -150,7 +150,9 @@ onMounted(() => {
 
   // ensure arrays exist and prepare images preview
   if (!Array.isArray(equipment.images)) equipment.images = []
-  equipment.imagesPreview = equipment.images.length ? equipment.images : [equipment.images[0] || 'https://via.placeholder.com/400x225']
+  equipment.imagesPreview = equipment.images.length
+    ? equipment.images
+    : ['https://via.placeholder.com/400x225']
 })
 
 const goBack = () => router.back()
@@ -199,8 +201,8 @@ const deleteEquipment = () => {
   }
 }
 
-// Menghilangkan shadow default dropdown agar bersih
-:deep(.q-field--outlined .q-field__control:before) {
+// Changed deep selector to target pseudo-element reliably in scoped styles
+:deep(.q-field--outlined) .q-field__control::before {
   border: 1.5px solid #000;
 }
 
