@@ -28,15 +28,12 @@ const routes = [
         path: 'staff/edit/:id',
         component: () => import('pages/staff/EditStaffPage.vue'),
       },
-
-      // changed: use 'anggota' route (list) instead of 'members'
       {
         path: 'anggota',
         component: () => import('pages/anggota/MemberPage.vue'),
         meta: { title: 'Anggota Gym' },
       },
 
-      // kept/added: tambah anggota
       {
         path: 'anggota/tambah',
         component: () => import('pages/anggota/TambahMemberPage.vue')

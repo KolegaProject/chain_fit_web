@@ -1,7 +1,6 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-
-    <q-card flat class="rounded-borders shadow-1 custom-card">
+    <q-card flat class="rounded-borders shadow-1 q-mb-xl custom-card">
       <q-card-section class="q-pa-xl">
         <div class="text-h5 text-center text-weight-bolder q-mb-xl">Staff Gym</div>
 
@@ -40,7 +39,7 @@
           hide-bottom
         >
           <template v-slot:body-cell-avatar="props">
-            <q-td :props="props" width="50px">
+            <q-td :props="props" width="60px">
               <q-avatar size="40px" rounded>
                 <img :src="props.row.avatarUrl" alt="Staff Profile" />
               </q-avatar>
@@ -91,7 +90,7 @@ const columns = [
   { name: 'nama', align: 'left', label: 'Nama Staff', field: 'nama', sortable: true },
   { name: 'username', align: 'left', label: 'Username', field: 'username', sortable: true },
   { name: 'email', align: 'left', label: 'Email', field: 'email', sortable: true },
-  { name: 'password', align: 'left', label: 'Pasword', field: 'password' }, // Mengikuti typo "Pasword" di desain
+  { name: 'password', align: 'left', label: 'Password', field: 'password' },
   { name: 'actions', align: 'right', label: '', field: 'actions' },
 ]
 
@@ -102,8 +101,8 @@ const rows = ref([
     username: 'karinagym',
     email: 'karinaaa@gmail.com',
     password: 'karina123',
-    // ASSET FOTO: Ganti URL di bawah ini dengan path lokal/asset Anda
-    avatarUrl: new URL('../../assets/staff/karina.jpeg', import.meta.url).href  },
+    avatarUrl: new URL('../../assets/staff/karina.jpeg', import.meta.url).href
+  },
   {
     id: 2,
     nama: 'Rora',
@@ -152,23 +151,14 @@ const rows = ref([
     password: 'yoonjung123',
     avatarUrl: new URL('../../assets/staff/yoonjung.jpeg', import.meta.url).href
   },
-
-
-
-
-  // ... ulangi data lainnya
 ])
 
-// Functions (simple, working implementations)
 const addMember = () => {
-  // navigate to add-staff page
   router.push('/staff/tambah')
 }
 
-// changed: navigate to edit route with id param and also send data via query so Edit page can prefill
 const editMember = (member) => {
   if (!member) return
-  // navigate to edit page with the staff id
   router.push({
     path: `/staff/edit/${member.id}`,
     query: {
@@ -243,7 +233,7 @@ const deleteMember = (member) => {
 
   :deep(thead tr th) {
     font-size: 15px;
-    font-weight: 800; /* Extra Bold sesuai desain */
+    font-weight: 800;
     color: #000000;
     border-bottom: none;
     padding-bottom: 20px;
@@ -256,9 +246,6 @@ const deleteMember = (member) => {
     padding-top: 12px;
     padding-bottom: 12px;
   }
-
-  /* Membuat baris belang (zebra) jika diperlukan,
-     tapi desain Anda terlihat bersih putih */
   :deep(tbody tr:nth-child(even)) {
     background-color: #f8fafc;
   }

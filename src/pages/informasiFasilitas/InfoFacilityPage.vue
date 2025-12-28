@@ -1,95 +1,118 @@
 <template>
-  <q-page class="q-pa-lg bg-grey-1">
-    <div class="q-mb-md text-h5 text-weight-bold">Informasi & Fasilitas</div>
+  <q-page class="q-pa-xl bg-grey-2">
+    <q-card flat class="rounded-borders q-mb-xl q-pa-md">
+      <q-card-section>
+        <div  class="row items-center justify-between q-mb-lg">
+          <div class="text-h5 text-weight-bold">Nama Gym</div>
+          <q-btn unelevated label="Edit" no-caps class="btn-edit q-px-lg" />
+        </div>
 
-    <q-card flat class="rounded-borders shadow-1 q-mb-lg">
-      <q-card-section class="q-pa-lg">
-        <div class="text-h6 text-weight-bold q-mb-md">Uget Uget Gym</div>
+        <div class="q-gutter-y-md">
+          <div class="info-block">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Nama Gym</div>
+            <div class="text-body1">Nama gym a</div>
+          </div>
 
-        <div class="q-gutter-y-sm text-body2">
-          <p>
-            <strong>Lokasi:</strong> Jl. Telekomunikasi Terusan Buahbatu No.1, Sukapura, Kec.
-            Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257
-          </p>
-          <p>
-            <strong>Jam Operasional:</strong> Senin - Jumat: 06:00 - 22:00, Sabtu - Minggu: 08:00 -
-            18:00
-          </p>
-          <p class="text-grey-8 line-height-relaxed">
-            <strong>Deskripsi:</strong> Uget Uget Gym menawarkan peralatan canggih, berbagai kelas
-            kebugaran, dan pelatih ahli untuk membantu Anda mencapai tujuan kebugaran Anda. Dengan
-            pilihan keanggotaan fleksibel dan suasana yang memotivasi, ini adalah tempat sempurna
-            untuk memulai perjalanan kebugaran Anda.
-          </p>
+          <div class="info-block">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Lokasi</div>
+            <div class="text-body1 text-grey-9">
+              Jl. Telekomunikasi Terusan Buahbatu No.1, Sukapura, Kec. Dayeuhkolot,
+              Kabupaten Bandung, Jawa Barat 40257
+            </div>
+          </div>
+
+          <div class="info-block">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Jam Operasional</div>
+            <div class="text-body1 text-grey-9">
+              Senin - Jumat: 06:00 - 22:00, Sabtu - Minggu: 08:00 - 18:00
+            </div>
+          </div>
+
+          <div class="info-block">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Deskripsi</div>
+            <div class="text-body1 text-grey-8 leading-relaxed">
+              Uget Uget Gym menawarkan peralatan canggih, berbagai kelas kebugaran, dan pelatih ahli untuk membantu Anda mencapai tujuan kebugaran Anda. Dengan pilihan keanggotaan yang fleksibel dan suasana yang memotivasi, ini adalah tempat yang sempurna untuk memulai atau melanjutkan perjalanan kebugaran Anda. Rasakan pengalaman latihan yang inovatif dan komunitas yang mendukung.
+            </div>
+          </div>
         </div>
 
         <div class="row q-gutter-sm q-mt-md">
           <q-chip
             v-for="tag in tags"
             :key="tag"
-            label
-            :content-class="'bg-indigo-1 text-indigo-9'"
-            size="sm"
-            class="text-weight-medium"
+            removable
+            square
+            color="grey-8"
+            text-color="white"
+            class="q-px-md"
           >
             {{ tag }}
           </q-chip>
         </div>
 
-        <div class="text-subtitle1 text-weight-bold q-mt-xl q-mb-md">Paket Berlangganan</div>
-        <div class="row q-col-gutter-md">
-          <div v-for="plan in subscriptionPlans" :key="plan.title" class="col-12 col-sm-4 col-md-3">
-            <q-card flat bordered class="bg-grey-1 full-height">
-              <q-card-section>
-                <div class="text-weight-bold">{{ plan.title }}</div>
-                <div class="text-h6 text-weight-bolder q-mt-sm">
-                  {{ plan.price }} <span class="text-caption text-weight-regular">/bulan</span>
+        <div class="text-h6 text-weight-bold q-mt-xl q-mb-md">
+          Paket Berlangganan
+        </div>
+
+        <div class="row q-col-gutter-lg">
+          <div
+            v-for="plan in subscriptionPlans"
+            :key="plan.id"
+            class="col-12 col-sm-4 col-md-3"
+          >
+            <q-card flat class="package-card bg-grey-1">
+              <q-card-section class="q-pa-md">
+                <div class="row items-center justify-between q-mb-sm">
+                  <div class="text-h6 text-weight-bold">{{ plan.title }}</div>
+                  <div class="row q-gutter-xs">
+                    <q-btn round dense icon="edit" size="sm" class="btn-icon-edit" />
+                    <q-btn round dense icon="delete" size="sm" class="btn-icon-delete" />
+                  </div>
                 </div>
-                <q-list dense class="q-mt-sm">
-                  <q-item
-                    v-for="feature in plan.features"
-                    :key="feature"
-                    class="q-px-none min-height-auto"
-                  >
-                    <q-item-section side class="q-pr-xs">
-                      <q-icon name="check" size="14px" color="positive" />
-                    </q-item-section>
-                    <q-item-section class="text-caption">{{ feature }}</q-item-section>
-                  </q-item>
-                </q-list>
+
+                <div class="text-h5 text-weight-bolder q-mb-md">
+                  {{ plan.price }}<span class="text-caption text-weight-regular">/bulan</span>
+                </div>
+
+                <div class="feature-container">
+                  <div v-for="f in plan.features" :key="f" class="feature-item row no-wrap q-mb-sm">
+                    <div class="dot q-mt-xs q-mr-sm"></div>
+                    <div class="text-body2">{{ f }}</div>
+                  </div>
+                </div>
               </q-card-section>
             </q-card>
           </div>
 
           <div class="col-12 col-sm-4 col-md-3">
             <div class="plan-add-box flex flex-center" @click="addPlan">
-              <q-icon name="add" size="lg" color="grey-5" />
+              <q-icon name="add" size="48px" color="grey-6" />
             </div>
           </div>
         </div>
       </q-card-section>
     </q-card>
 
-    <q-card flat class="rounded-borders shadow-1">
-      <q-card-section class="q-pa-lg">
-        <div class="text-h6 text-weight-bold q-mb-md">Fasilitas</div>
+    <q-card flat class="rounded-borders q-pa-md">
+      <q-card-section>
+        <div class="text-h5 text-weight-bold text-center q-mb-xl">Fasilitas Gym</div>
 
         <div class="row q-col-gutter-md q-mb-lg items-center">
-          <div class="col-12 col-sm-9">
-            <q-input outlined dense v-model="search" placeholder="Cari alat..." class="bg-white">
-              <template v-slot:append>
+          <div class="col">
+            <q-input
+              outlined
+              dense
+              v-model="search"
+              placeholder="Search..."
+              class="bg-white"
+            >
+              <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
             </q-input>
           </div>
-          <div class="col-12 col-sm-3 text-right">
-            <q-btn
-              unelevated
-              color="slate-dark"
-              class="full-width btn-dark-custom"
-              label="Tambah"
-              @click="addEquipment"
-            />
+          <div class="col-auto">
+            <q-btn unelevated label="Tambah" no-caps class="btn-tambah q-px-xl text-weight-bold" />
           </div>
         </div>
 
@@ -99,26 +122,20 @@
           :columns="columns"
           row-key="id"
           :filter="search"
-          class="equipment-table"
+          hide-bottom
+          class="facilities-table"
         >
+          <template v-slot:header="props">
+            <q-tr :props="props" class="bg-white">
+              <q-th v-for="col in props.cols" :key="col.name" :props="props" class="text-weight-bolder text-subtitle2">
+                {{ col.label }}
+              </q-th>
+            </q-tr>
+          </template>
+
           <template v-slot:body-cell-actions="props">
-            <q-td :props="props" class="text-right">
-              <q-btn
-                unelevated
-                dense
-                color="primary"
-                label="Edit"
-                class="q-px-md q-mr-sm"
-                @click="editEquipment(props.row)"
-              />
-              <q-btn
-                unelevated
-                dense
-                color="negative"
-                label="Hapus"
-                class="q-px-md"
-                @click="deleteEquipment(props.row)"
-              />
+            <q-td :props="props">
+              <q-btn unelevated label="Detail" no-caps class="btn-detail q-px-lg" />
             </q-td>
           </template>
         </q-table>
@@ -129,97 +146,182 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useQuasar } from 'quasar'
 
-const $q = useQuasar()
 const search = ref('')
-
-const tags = ['Pilates', 'Kardio', 'Sauna']
+const tags = ['Pilates', 'Sauna', 'GymBro']
 
 const subscriptionPlans = ref([
   {
-    title: 'Paket Basic',
+    id: 1,
+    title: 'Paket A',
     price: 'Rp 250.000',
-    features: ['Akses Gym Dasar', '2x Kelas Grup per Minggu', 'Locker Pribadi'],
+    features: [
+      'Akses Gym Sepuasnya',
+      'Gratis 1x Sesi Personal Trainer',
+      'Bebas Akses Semua Kelas',
+      'Free WiFi & Locker',
+      'Parkir Luas'
+    ],
+  },
+  {
+    id: 2,
+    title: 'Paket B',
+    price: 'Rp 250.000',
+    features: [
+      'Akses Gym Sepuasnya',
+      'Gratis 1x Sesi Personal Trainer',
+      'Bebas Akses Semua Kelas',
+      'Free WiFi & Locker',
+      'Parkir Luas'
+    ],
   },
 ])
 
 const columns = [
-  { name: 'name', align: 'left', label: 'Nama Alat', field: 'name', sortable: true },
-  { name: 'actions', align: 'right', label: 'Aksi', field: 'actions' },
+  { name: 'name', label: 'Nama Alat', field: 'name', align: 'left' },
+  { name: 'qty', label: 'Jumlah', field: 'qty', align: 'center' },
+  { name: 'actions', label: '', field: 'actions', align: 'right' },
 ]
 
 const equipments = ref([
-  { id: 1, name: 'Treadmill' },
-  { id: 2, name: 'Dumbbell Set' },
+  { id: 1, name: 'Alat 1', qty: 25 },
+  { id: 2, name: 'Alat 2', qty: 25 },
 ])
 
-// Logic Functions
-const addEquipment = () => {
-  $q.dialog({
-    title: 'Tambah Alat',
-    message: 'Masukkan nama alat baru:',
-    prompt: { model: '', type: 'text' },
-    cancel: true,
-  }).onOk((val) => {
-    if (val) equipments.value.push({ id: Date.now(), name: val })
-  })
-}
-
-const editEquipment = (item) => {
-  $q.dialog({
-    title: 'Edit Alat',
-    message: 'Ubah nama alat:',
-    prompt: { model: item.name, type: 'text' },
-    cancel: true,
-  }).onOk((val) => {
-    const target = equipments.value.find((e) => e.id === item.id)
-    if (target) target.name = val
-  })
-}
-
-const deleteEquipment = (item) => {
-  equipments.value = equipments.value.filter((e) => e.id !== item.id)
-}
-
 const addPlan = () => {
-  $q.notify({ message: 'Fitur tambah paket segera hadir', color: 'info' })
+  console.log('Tambah Paket Clicked')
 }
 </script>
 
-<style lang="scss" scoped>
-.btn-dark-custom {
-  background-color: #0f172a !important;
-  color: white;
-  border-radius: 6px;
-  text-transform: none;
+<style scoped lang="scss">
+.info-block {
+  .text-subtitle2 {
+    color: #000;
+  }
+  .leading-relaxed {
+    line-height: 1.5;
+  }
+}
+
+.package-card {
+  border-radius: 12px;
+  border: 1px solid #edf2f7;
+  transition: transform 0.2s;
+
+  &:hover {
+    transform: translateY(-4px);
+  }
+}
+
+.feature-item {
+  .dot {
+    width: 4px;
+    height: 4px;
+    background-color: black;
+    border-radius: 50%;
+  }
 }
 
 .plan-add-box {
   height: 100%;
-  min-height: 140px;
+  min-height: 200px;
   border: 2px dashed #cbd5e1;
-  border-radius: 8px;
+  border-radius: 12px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: all 0.3s;
 
   &:hover {
-    background-color: #f1f5f9;
+    background: #f8fafc;
+    border-color: #94a3b8;
   }
 }
 
-.equipment-table {
-  :deep(thead tr th) {
-    font-weight: bold;
-    color: #1e293b;
+/* Standardized button styles to match other pages */
+.btn-tambah {
+  background-color: #0c0c0c;
+  color: white;
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: bold;
+  height: 40px;
+  min-width: 100px;
+}
+
+.btn-edit {
+  background-color: #2563eb;
+  color: white;
+  border-radius: 6px;
+  text-transform: none;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 12px;
+}
+
+.btn-delete {
+  background-color: #ef4444;
+  color: white;
+  border-radius: 6px;
+  text-transform: none;
+  font-weight: 500;
+  height: 36px;
+  padding: 0 12px;
+}
+
+/* small round icon buttons inside package card */
+.btn-icon-edit,
+.btn-icon-delete {
+  min-width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+}
+
+.btn-icon-edit { background-color: #2563eb; }
+.btn-icon-delete { background-color: #ef4444; }
+
+/* detail button in table (matching radius/height style) */
+.btn-detail {
+  background-color: #0c0c0c;
+  color: white;
+  border-radius: 8px;
+  height: 36px;
+  padding: 0 12px;
+  font-weight: bold;
+  text-transform: none;
+}
+
+.facilities-table {
+  background: transparent;
+
+  :deep(.q-table th) {
+    font-size: 1.1rem;
+    border-bottom: none;
+  }
+
+  :deep(.q-table td) {
+    font-size: 1rem;
+    border-bottom: none;
+    padding: 16px;
+  }
+
+  :deep(.q-table tbody tr) {
+    background: white;
   }
 }
 
-.min-height-auto {
-  min-height: unset;
+// Custom Scrollbar for better UI
+::-webkit-scrollbar {
+  width: 8px;
 }
-
-.line-height-relaxed {
-  line-height: 1.6;
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #ccc;
+  border-radius: 4px;
 }
 </style>
