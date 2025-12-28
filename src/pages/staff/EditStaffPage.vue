@@ -1,7 +1,5 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <div class="q-mb-md text-h5 text-weight-bold">Staff</div>
-
     <q-card flat class="rounded-borders shadow-1 custom-card">
       <q-card-section class="q-pa-xl">
         <div class="text-h5 text-center text-weight-bolder q-mb-xl">Edit Data Staff</div>
