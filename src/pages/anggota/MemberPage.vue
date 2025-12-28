@@ -148,7 +148,7 @@
             label="Ya, Hapus Data"
             class="btn-action-dialog btn-konfirmasi-dialog"
             no-caps
-            @click="executeDelete"
+            v-close-popup  @click="executeDelete"
           />
         </q-card-actions>
       </q-card>
@@ -275,13 +275,19 @@ const deleteAnggota = (row) => {
 // Fungsi eksekusi hapus yang dipanggil dari tombol "Ya, Hapus Data" di pop-up
 const executeDelete = () => {
   if (selectedMemberToDelete.value) {
+    // 1. Hapus data dari array
     rowsAnggota.value = rowsAnggota.value.filter(r => r.id !== selectedMemberToDelete.value.id)
+
+    // 2. Simpan perubahan ke LocalStorage
     persistMembers()
 
+    // 3. Beri notifikasi ke pengguna
     $q.notify({ type: 'positive', message: 'Anggota berhasil dihapus' })
 
-    // Reset state
+    // 4. INI KUNCINYA: Tutup dialog secara otomatis
     showConfirmDelete.value = false
+
+    // 5. Bersihkan data referensi
     selectedMemberToDelete.value = null
   }
 }
