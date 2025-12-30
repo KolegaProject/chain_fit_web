@@ -73,6 +73,44 @@
         </q-table>
       </q-card-section>
     </q-card>
+
+    <!-- tempat: tambahkan dialog konfirmasi hapus di bagian bawah template -->
+    <q-dialog v-model="showConfirmDelete" persistent>
+      <q-card class="dialog-card q-pa-lg text-center">
+        <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
+
+        <q-card-section class="q-pt-md">
+          <q-img
+            src="../../assets/popup/hapus.png"
+            style="width: 150px; height: auto"
+            class="q-mb-md"
+          />
+
+          <div class="text-h6 text-weight-bolder q-mb-sm">Apakah Anda yakin ingin melanjutkan?</div>
+          <div class="text-body2 text-grey-8">
+            Data staff yang dihapus tidak dapat dipulihkan.
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="center" class="q-pb-md q-gutter-x-md">
+          <q-btn
+            flat
+            label="Batal"
+            v-close-popup
+            class="btn-action-dialog btn-batal-dialog"
+            no-caps
+          />
+          <q-btn
+            unelevated
+            label="Ya, Hapus Data"
+            class="btn-action-dialog btn-konfirmasi-dialog"
+            no-caps
+            v-close-popup
+            @click="executeDelete"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -84,6 +122,10 @@ import { useRouter } from 'vue-router'
 const $q = useQuasar()
 const router = useRouter()
 const filter = ref('')
+
+// State untuk pop-up konfirmasi hapus
+const showConfirmDelete = ref(false)
+const selectedMemberToDelete = ref(null)
 
 const columns = [
   { name: 'avatar', align: 'left', label: '', field: 'avatar' },
@@ -170,19 +212,24 @@ const editMember = (member) => {
   })
 }
 
+// Ubah deleteMember: buka dialog kustom daripada $q.dialog
 const deleteMember = (member) => {
   if (!member) return
-  $q.dialog({
-    title: 'Konfirmasi',
-    message: `Hapus anggota "${member.nama}"?`,
-    cancel: true,
-    persistent: true
-  }).onOk(() => {
-    rows.value = rows.value.filter(r => r.id !== member.id)
-    $q.notify({ type: 'positive', message: 'Anggota dihapus' })
-  }).onCancel(() => {
-    // cancelled
-  })
+  selectedMemberToDelete.value = member
+  showConfirmDelete.value = true
+}
+
+// Perbaiki executeDelete: hapus dari rows dan tutup dialog
+const executeDelete = () => {
+  if (!selectedMemberToDelete.value) return
+
+  rows.value = rows.value.filter(r => r.id !== selectedMemberToDelete.value.id)
+
+  $q.notify({ type: 'positive', message: 'Anggota berhasil dihapus' })
+
+  // Reset state
+  showConfirmDelete.value = false
+  selectedMemberToDelete.value = null
 }
 </script>
 
@@ -252,5 +299,37 @@ const deleteMember = (member) => {
   :deep(tbody tr:nth-child(odd)) {
     background-color: #ffffff;
   }
+}
+
+/* Dialog styling (copied / aligned with MemberPage) */
+.dialog-card {
+  width: 100%;
+  max-width: 450px;
+  border-radius: 20px;
+  position: relative;
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #f0f0f0;
+}
+
+.btn-action-dialog {
+  width: 140px;
+  height: 44px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.btn-batal-dialog {
+  background: #f0f0f0;
+  color: black;
+}
+
+.btn-konfirmasi-dialog {
+  background: linear-gradient(to bottom, #a0a0a0, #666666);
+  color: white;
 }
 </style>
