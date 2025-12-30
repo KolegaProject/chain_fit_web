@@ -175,16 +175,12 @@ const router = useRouter()
 const filterAnggota = ref('')
 const rowsAnggota = ref([])
 
-// State untuk mengontrol pop-up dan input nama
 const showAddAbsensi = ref(false)
 const namaAbsen = ref('')
-
-// State untuk pop-up konfirmasi hapus
 const showConfirmDelete = ref(false)
 const selectedMemberToDelete = ref(null)
 
-// State untuk filter tanggal riwayat
-const filterTanggal = ref('') // Format default: YYYY/MM/DD
+const filterTanggal = ref('') // Format default: YYYY-MM-DD
 
 const columnsAnggota = [
   { name: 'nama', align: 'left', label: 'Nama', field: 'nama', sortable: true },
@@ -194,26 +190,29 @@ const columnsAnggota = [
   { name: 'actions', align: 'right', label: '', field: 'actions' },
 ]
 
-const defaultRows = [
-  { id: 1, nama: 'Budi', email: 'budi@gmail.com', status: 'Aktif', masaAktif: 27 },
-  { id: 2, nama: 'Dodit', email: 'dodit@gmail.com', status: 'Aktif', masaAktif: 27 },
-  { id: 3, nama: 'Siti', email: 'sity@gmail.com', status: 'Aktif', masaAktif: 6 },
-  { id: 4, nama: 'Akmal', email: 'akmal@gmail.com', status: 'Tidak Aktif', masaAktif: 0 },
-  { id: 5, nama: 'Joko', email: 'joko@gmail.com', status: 'Aktif', masaAktif: 27 },
+const filterAbsensi = ref('')
+const rowsAbsensi = ref([])
+
+const columnsAbsensi = [
+  { name: 'nama', align: 'left', label: 'Nama', field: 'nama' },
+  { name: 'email', align: 'left', label: 'Email', field: 'email' },
+  { name: 'tanggal', align: 'center', label: 'Tanggal', field: 'tanggal' },
+  { name: 'waktu', align: 'center', label: 'Waktu', field: 'waktu' },
 ]
+
+const handleMembersUpdated = () => {
+  loadMembers()
+}
 
 onMounted(() => {
   loadMembers()
   loadAbsensi()
 
-  // Listen for updates triggered from EditMemberPage / TambahMemberPage
-  // so the members table will refresh immediately when user returns.
-  window.addEventListener('members:updated', loadMembers)
+  window.addEventListener('members:updated', handleMembersUpdated)
 })
 
-// cleanup listener when component unmounts
 onBeforeUnmount(() => {
-  window.removeEventListener('members:updated', loadMembers)
+  window.removeEventListener('members:updated', handleMembersUpdated)
 })
 
 const loadMembers = () => {
@@ -226,64 +225,51 @@ const loadMembers = () => {
         masaAktif: Number(m.masaAktif) || 0
       }))
     } else {
-      rowsAnggota.value = defaultRows
-      localStorage.setItem('members', JSON.stringify(defaultRows))
+      rowsAnggota.value = []
     }
   } catch (err) {
     console.warn('Failed to load members:', err)
-    rowsAnggota.value = defaultRows
+    rowsAnggota.value = []
   }
 }
-
-const rowsAbsensi = ref([])
-
-const columnsAbsensi = [
-  { name: 'nama', align: 'left', label: 'Nama', field: 'nama' },
-  { name: 'email', align: 'left', label: 'Email', field: 'email' },
-  { name: 'tanggal', align: 'center', label: 'Tanggal', field: 'tanggal' },
-  { name: 'waktu', align: 'center', label: 'Waktu', field: 'waktu' },
-]
 
 const loadAbsensi = () => {
   try {
     const raw = localStorage.getItem('absensi')
     if (raw) {
       rowsAbsensi.value = JSON.parse(raw)
+    } else {
+      rowsAbsensi.value = []
     }
   } catch (err) {
     console.warn('Failed to load absensi:', err)
+    rowsAbsensi.value = []
   }
 }
 
 const filteredAbsensi = computed(() => {
-  let data = rowsAbsensi.value
+  let data = rowsAbsensi.value || []
 
-  // Filter berdasarkan Tanggal jika ada yang dipilih
   if (filterTanggal.value) {
-    // Sesuaikan format jika perlu (LocalStorage menyimpan YYYY-MM-DD)
-    const targetDate = filterTanggal.value.replace(/\//g, '-')
+    const targetDate = String(filterTanggal.value).replace(/\//g, '-')
     data = data.filter(row => row.tanggal === targetDate)
   }
 
-  // Filter berdasarkan Nama/Email
-  const query = filterAbsensi.value.toLowerCase()
+  const query = (filterAbsensi.value || '').toLowerCase().trim()
   if (query) {
     data = data.filter(row =>
-      row.nama.toLowerCase().includes(query) ||
-      row.email.toLowerCase().includes(query)
+      String(row.nama || '').toLowerCase().includes(query) ||
+      String(row.email || '').toLowerCase().includes(query)
     )
   }
 
   return data
 })
 
-const filterAbsensi = ref('')
-
 const goToTambahAnggota = () => {
   router.push('/anggota/tambah')
 }
 
-// persist members helper (added) — saves current members to localStorage
 const persistMembers = () => {
   try {
     localStorage.setItem('members', JSON.stringify(rowsAnggota.value))
@@ -299,27 +285,16 @@ const editAnggota = (row) => {
 
 const deleteAnggota = (row) => {
   if (!row) return
-  // Simpan data anggota yang dipilih dan buka dialog
   selectedMemberToDelete.value = row
   showConfirmDelete.value = true
 }
 
-// Fungsi eksekusi hapus yang dipanggil dari tombol "Ya, Hapus Data" di pop-up
 const executeDelete = () => {
   if (selectedMemberToDelete.value) {
-    // 1. Hapus data dari array
     rowsAnggota.value = rowsAnggota.value.filter(r => r.id !== selectedMemberToDelete.value.id)
-
-    // 2. Simpan perubahan ke LocalStorage
     persistMembers()
-
-    // 3. Beri notifikasi ke pengguna
     $q.notify({ type: 'positive', message: 'Anggota berhasil dihapus' })
-
-    // 4. INI KUNCINYA: Tutup dialog secara otomatis
     showConfirmDelete.value = false
-
-    // 5. Bersihkan data referensi
     selectedMemberToDelete.value = null
   }
 }
@@ -338,27 +313,21 @@ const confirmAbsensi = () => {
   }
 
   const now = new Date()
-  // Format Tanggal: YYYY-MM-DD
   const tanggal = now.toISOString().split('T')[0]
-  // Format Waktu: HH:MM
   const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':')
 
   const newEntry = {
     id: Date.now(),
     nama: namaAbsen.value,
-    // Generate email otomatis berdasarkan nama
     email: `${namaAbsen.value.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
     tanggal,
     waktu
   }
 
-  // Masukkan ke urutan paling atas tabel riwayat
   rowsAbsensi.value.unshift(newEntry)
 
-  // Simpan permanen ke LocalStorage
   localStorage.setItem('absensi', JSON.stringify(rowsAbsensi.value))
 
-  // Reset input dan tutup dialog
   namaAbsen.value = ''
   showAddAbsensi.value = false
 
@@ -380,7 +349,6 @@ const confirmAbsensi = () => {
   :deep(.q-field__control) {
     border-radius: 8px;
   }
-  /* keep consistent with .search-input if you want exact parity */
 }
 .btn-tambah {
   background-color: #0c0c0c;
@@ -391,14 +359,12 @@ const confirmAbsensi = () => {
   height: 36px;
 }
 .btn-dark-custom {
-  /* Styling for "Tambah" on anggota page to match the other add button */
   background-color: #0c0c0c;
   color: white;
   border-radius: 8px;
   text-transform: none;
   font-weight: bold;
   height: 36px;
-  /* minor padding tweak consistent with other buttons */
 }
 
 .status-chip {

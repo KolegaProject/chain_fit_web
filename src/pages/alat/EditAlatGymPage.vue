@@ -103,7 +103,6 @@ const $q = useQuasar()
 const route = useRoute()
 const router = useRouter()
 
-// Data awal (will be overwritten if item found)
 const equipment = reactive({
   id: null,
   name: 'Alat 1',
@@ -155,7 +154,6 @@ const saveData = () => {
           images: [equipment.imageUrl]
         }
       } else {
-        // fallback: push as new
         list.push({
           id: equipment.id,
           name: equipment.name,
@@ -165,7 +163,6 @@ const saveData = () => {
         })
       }
     } else {
-      // new id
       const maxId = list.length ? Math.max(...list.map(e => Number(e.id) || 0)) : 0
       const newId = maxId + 1
       list.push({
@@ -180,7 +177,6 @@ const saveData = () => {
     localStorage.setItem('equipments', JSON.stringify(list))
 
     $q.notify({ message: 'Data alat berhasil diperbarui!', color: 'positive', icon: 'check' })
-    // navigate back to detail page for this equipment
     router.push(`/info/alat/${equipment.id}`)
   } catch (err) {
     console.error('Failed to save equipment', err)
@@ -188,7 +184,6 @@ const saveData = () => {
   }
 }
 
-// New: go back/cancel action
 const goBack = () => {
   router.back()
 }

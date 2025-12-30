@@ -197,7 +197,6 @@ const columns = [
   { name: 'actions', label: '', field: 'actions', align: 'right' },
 ]
 
-// changed: make equipments reactive and load from localStorage
 const equipments = ref([])
 
 const defaultEquipments = [
@@ -228,7 +227,6 @@ const editInfo = () => {
   router.push('/info/edit')
 }
 
-// new: navigate to add-equipment page
 const goToTambahAlat = () => {
   router.push('/info/alat/tambah')
 }
@@ -282,7 +280,6 @@ const goToDetail = (id) => {
   }
 }
 
-/* Standardized button styles to match other pages */
 .btn-tambah {
   background-color: #0c0c0c;
   color: white;
@@ -313,7 +310,6 @@ const goToDetail = (id) => {
   padding: 0 12px;
 }
 
-/* small round icon buttons inside package card */
 .btn-icon-edit,
 .btn-icon-delete {
   min-width: 32px;
@@ -329,7 +325,6 @@ const goToDetail = (id) => {
 .btn-icon-edit { background-color: #2563eb; }
 .btn-icon-delete { background-color: #ef4444; }
 
-/* detail button in table (matching radius/height style) */
 .btn-detail {
   background-color: #0c0c0c;
   color: white;
@@ -355,15 +350,14 @@ const goToDetail = (id) => {
   }
 
   :deep(.q-table tbody tr:nth-child(even)) {
-    background-color: #f8f9fa; /* Zebra stripe effect */
+    background-color: #f8f9fa;
   }
 
   :deep(.q-table tbody tr:nth-child(odd)) {
-    background-color: #ffffff; /* Alternate row color */
+    background-color: #ffffff;
   }
 }
 
-// Custom Scrollbar for better UI
 ::-webkit-scrollbar {
   width: 8px;
 }

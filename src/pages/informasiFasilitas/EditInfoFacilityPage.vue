@@ -100,7 +100,6 @@ import { useQuasar } from 'quasar'
 const $q = useQuasar()
 const newTag = ref('')
 
-// State untuk menampung data input
 const gymData = reactive({
   name: 'Urban Gym',
   location: 'Jl. Telekomunikasi Terusan Buahbatu No.1, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',

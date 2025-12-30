@@ -74,7 +74,6 @@
       </q-card-section>
     </q-card>
 
-    <!-- tempat: tambahkan dialog konfirmasi hapus di bagian bawah template -->
     <q-dialog v-model="showConfirmDelete" persistent>
       <q-card class="dialog-card q-pa-lg text-center">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
@@ -123,7 +122,6 @@ const $q = useQuasar()
 const router = useRouter()
 const filter = ref('')
 
-// State untuk pop-up konfirmasi hapus
 const showConfirmDelete = ref(false)
 const selectedMemberToDelete = ref(null)
 
@@ -212,14 +210,12 @@ const editMember = (member) => {
   })
 }
 
-// Ubah deleteMember: buka dialog kustom daripada $q.dialog
 const deleteMember = (member) => {
   if (!member) return
   selectedMemberToDelete.value = member
   showConfirmDelete.value = true
 }
 
-// Perbaiki executeDelete: hapus dari rows dan tutup dialog
 const executeDelete = () => {
   if (!selectedMemberToDelete.value) return
 
@@ -301,7 +297,6 @@ const executeDelete = () => {
   }
 }
 
-/* Dialog styling (copied / aligned with MemberPage) */
 .dialog-card {
   width: 100%;
   max-width: 450px;

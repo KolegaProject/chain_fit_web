@@ -144,11 +144,9 @@ onMounted(() => {
       }
     }
   } catch (err) {
-    // keep defaults if parse fails
     console.warn('Cannot load equipments from localStorage', err)
   }
 
-  // ensure arrays exist and prepare images preview
   if (!Array.isArray(equipment.images)) equipment.images = []
   equipment.imagesPreview = equipment.images.length
     ? equipment.images
@@ -162,7 +160,6 @@ const editEquipment = () => {
     $q.notify({ message: 'ID alat tidak tersedia', color: 'negative' })
     return
   }
-  // navigate to the edit route for this equipment id
   router.push({ path: `/info/alat/edit/${equipment.id}` })
 }
 
@@ -187,7 +184,6 @@ const deleteEquipment = () => {
     $q.notify({ message: 'Alat dihapus', color: 'positive' })
     router.back()
   }).onCancel(() => {
-    // cancelled
   })
 }
 </script>
@@ -196,12 +192,10 @@ const deleteEquipment = () => {
 .rounded-input {
   :deep(.q-field__control) {
     border-radius: 8px;
-    // Menyesuaikan ketebalan border agar mirip desain
     border: 1.5px solid #000;
   }
 }
 
-// Changed deep selector to target pseudo-element reliably in scoped styles
 :deep(.q-field--outlined) .q-field__control::before {
   border: 1.5px solid #000;
 }

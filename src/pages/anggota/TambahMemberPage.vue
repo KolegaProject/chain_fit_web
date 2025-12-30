@@ -80,7 +80,6 @@ import { useRouter } from 'vue-router'
 const router = useRouter()
 const form = ref({ nama: '', email: '', selectedPaket: null })
 
-// validation errors
 const errors = reactive({
   nama: '',
   email: '',

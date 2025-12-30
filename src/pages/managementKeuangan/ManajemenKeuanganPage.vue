@@ -1,6 +1,5 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <div class="text-h5 text-weight-bolder q-mb-lg">Manajemen Keuangan</div>
     <div class="row q-col-gutter-md q-mb-xl">
       <div class="col-12 col-md-6">
         <q-card flat class="rounded-borders q-pa-md shadow-1">
@@ -116,15 +115,12 @@ const rowsPemasukan = [
     font-size: 14px;
   }
 
-  /* Ensure consistent sizing model */
   :deep(table),
   :deep(thead th),
   :deep(tbody td) {
     box-sizing: border-box;
   }
 
-  /* Force same column widths for all tables using .custom-table
-     Adjust widths as needed (responsive considerations). */
   :deep(thead tr th:nth-child(1)),
   :deep(tbody tr td:nth-child(1)) {
     width: 80px;

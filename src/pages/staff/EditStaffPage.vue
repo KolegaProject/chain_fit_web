@@ -222,17 +222,15 @@ const saveChanges = () => {
   color: white;
 }
 
-/* buttons centered below the photo border */
 .photo-overlay {
   position: absolute;
-  bottom: -22px; /* sits outside the border */
+  bottom: -22px;
   left: 50%;
   transform: translateX(-50%);
   gap: 10px;
   z-index: 10;
 }
 
-/* smaller circular overlay buttons */
 .overlay-btn {
   background: rgba(255,255,255,0.98);
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
@@ -252,19 +250,17 @@ const saveChanges = () => {
   pointer-events: none;
 }
 
-/* hide legacy photo-actions if present */
 .photo-actions { display: none; }
 
-/* Warna Tombol Sesuai Design Edit */
 .btn-batal {
-  background-color: #e53935; /* Merah sesuai design */
+  background-color: #e53935;
   color: white;
   border-radius: 10px;
   font-weight: bold;
 }
 
 .btn-simpan {
-  background-color: #1a1a1a; /* Hitam sesuai design */
+  background-color: #1a1a1a;
   color: white;
   border-radius: 10px;
   font-weight: bold;

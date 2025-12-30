@@ -129,8 +129,31 @@ const removePhoto = () => {
 }
 
 const goBack = () => router.push('/staff')
+
 const submitForm = () => {
-  console.log('Submit:', form.value)
+  const avatarToSave = form.value.avatarUrl && form.value.avatarUrl.trim()
+    ? form.value.avatarUrl
+    : defaultPhoto
+
+  const newStaff = {
+    id: Date.now(),
+    nama: form.value.nama,
+    username: form.value.username,
+    email: form.value.email,
+    password: form.value.password,
+    avatarUrl: avatarToSave
+  }
+
+  try {
+    const raw = localStorage.getItem('staff')
+    const staffList = raw ? JSON.parse(raw) : []
+    staffList.push(newStaff)
+    localStorage.setItem('staff', JSON.stringify(staffList))
+    console.log('Staff saved:', newStaff)
+  } catch (e) {
+    console.error('Failed to save staff to localStorage', e)
+  }
+
   goBack()
 }
 </script>
@@ -145,11 +168,9 @@ const submitForm = () => {
   box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.03) !important;
 }
 
-// Custom Input agar Border Tipis & Rounded
 .custom-input {
   :deep(.q-field__control) {
     border-radius: 12px;
-    // Mengatur warna & ketebalan border input
     &:before {
       border: 1.5px solid #2d2d2d !important;
     }
@@ -159,7 +180,6 @@ const submitForm = () => {
   }
 }
 
-// Container Foto (modified to support buttons outside the border)
 .photo-wrapper {
   width: 180px;
   background: transparent;
@@ -192,7 +212,7 @@ const submitForm = () => {
   box-shadow: 0 1px 3px rgba(0,0,0,0.1);
 
   :deep(.q-icon) {
-    font-size: 18px; // Ukuran icon lebih kecil
+    font-size: 18px;
   }
 }
 
@@ -205,10 +225,10 @@ const submitForm = () => {
   opacity: 0.4;
 }
 
-/* buttons centered horizontally, outside the photo box (below the border) */
+
 .photo-overlay {
   position: absolute;
-  bottom: -22px; /* adjust to move buttons below the border */
+  bottom: -22px;
   left: 50%;
   transform: translateX(-50%);
   gap: 8px;
@@ -216,7 +236,6 @@ const submitForm = () => {
   background: transparent;
 }
 
-/* smaller horizontal circular buttons */
 .overlay-btn {
   background: rgba(255,255,255,0.98);
   box-shadow: 0 2px 6px rgba(0,0,0,0.12);
@@ -236,7 +255,6 @@ const submitForm = () => {
   pointer-events: none;
 }
 
-/* hide legacy photo-actions if present */
 .photo-actions { display: none; }
 
 // Tombol
@@ -244,7 +262,7 @@ const submitForm = () => {
   border-radius: 8px;
   padding: 8px 30px;
   font-weight: bold;
-  text-transform: none; // Menghilangkan Uppercase otomatis
+  text-transform: none;
 }
 
 .btn-cancel {

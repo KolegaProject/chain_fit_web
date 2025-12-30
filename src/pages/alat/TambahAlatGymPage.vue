@@ -102,7 +102,6 @@ import { useRouter } from 'vue-router'
 const $q = useQuasar()
 const router = useRouter()
 
-// State Data Alat Baru
 const newEquipment = reactive({
   name: '',
   qty: 0,
@@ -110,10 +109,8 @@ const newEquipment = reactive({
   images: []
 })
 
-// Opsi Dropdown Status
 const statusOptions = ['Baik', 'Butuh Perawatan', 'Rusak']
 
-// Fungsi Trigger Upload (Placeholder)
 const triggerUpload = (type) => {
   $q.notify({
     message: `Membuka galeri untuk ${type}...`,
@@ -122,7 +119,6 @@ const triggerUpload = (type) => {
   })
 }
 
-// Fungsi Simpan/Tambah
 const submitEquipment = () => {
   if (!newEquipment.name) {
     $q.notify({
@@ -156,7 +152,6 @@ const submitEquipment = () => {
       position: 'top'
     })
 
-    // navigate back to info page so the table shows the new item
     router.push('/info')
   } catch (err) {
     console.error('Failed to save equipment', err)
@@ -168,7 +163,6 @@ const submitEquipment = () => {
   }
 }
 
-// New: go back/cancel action
 const goBack = () => {
   router.back()
 }
@@ -215,7 +209,6 @@ const goBack = () => {
   height: 40px;
 }
 
-/* New cancel button style */
 .btn-batal {
   background-color: #e53935;
   color: white;
