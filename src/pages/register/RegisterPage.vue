@@ -46,18 +46,17 @@
                 color="black"
                 outlined
                 dense
-                v-model="form.email"
-                type="email"
-                placeholder="Email"
+                v-model="form.username"
+                placeholder="Username"
                 required
               />
               <q-input
                 color="black"
                 outlined
                 dense
-                v-model="form.phone"
-                type="tel"
-                placeholder="No Telepon"
+                v-model="form.email"
+                type="email"
+                placeholder="Email"
                 required
               />
 
@@ -133,19 +132,47 @@ const $q = useQuasar()
 
 const form = reactive({
   name: '',
+  username: '',
   email: '',
-  phone: '',
   password: '',
   confirmPassword: '',
 })
 
-const handleRegister = () => {
-  $q.notify({
-    message: 'Akun berhasil dibuat!',
-    color: 'positive',
-    icon: 'person_add',
-  })
-  router.push('/login')
+const handleRegister = async () => {
+  try {
+    const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        name: form.name,
+        username: form.username,
+        password: form.password,
+        email: form.email,
+      }),
+    })
+
+    const data = await response.json()
+
+    if (response.ok && data.code === 200) {
+      $q.notify({
+        message: data.data?.message || 'Registrasi berhasil!',
+        color: 'positive',
+        icon: 'check_circle',
+      })
+      router.push('/login')
+    } else {
+      throw new Error(data.data?.message || 'Terjadi kesalahan saat registrasi')
+    }
+  } catch (error) {
+    console.error('Registration error:', error)
+    $q.notify({
+      message: error.message || 'Gagal menghubungkan ke server',
+      color: 'negative',
+      icon: 'error',
+    })
+  }
 }
 
 const goToLogin = () => {
