@@ -66,6 +66,7 @@
             <q-btn
               flat
               label="Kembali"
+              no-caps
               class="btn-kembali q-ml-sm"
               @click="goBack"
             />
@@ -131,7 +132,6 @@
 </template>
 
 <script setup>
-// Membuat daftar aset lokal agar bisa dibaca oleh Vite/Quasar
 const localImages = [
   new URL('../../assets/alatgym/alat1.jpeg', import.meta.url).href,
   new URL('../../assets/alatgym/alat2.jpeg', import.meta.url).href,
@@ -139,7 +139,7 @@ const localImages = [
   new URL('../../assets/alatgym/alat4.jpeg', import.meta.url).href
 ]
 
-import { reactive, ref, onMounted } from 'vue'
+import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 
@@ -158,12 +158,23 @@ const equipment = reactive({
   imagesPreview: []
 })
 
+// add this handler so detail page can reload when edit page dispatches an update
+const handleUpdate = () => {
+  const id = route.params.id ? String(route.params.id) : null
+  if (id) loadData(id)
+}
+
 onMounted(() => {
   const id = route.params.id ? String(route.params.id) : null
   if (id) {
     equipment.id = id
     loadData(id)
   }
+  window.addEventListener('equipments:updated', handleUpdate)
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('equipments:updated', handleUpdate)
 })
 
 const loadData = (id) => {
@@ -217,10 +228,8 @@ const deleteEquipment = () => {
   }
 }
 
-// add this wrapper so dialog closes visually before navigation
 const confirmDelete = () => {
   showConfirmDelete.value = false
-  // small delay to let dialog close animation finish
   setTimeout(() => {
     deleteEquipment()
   }, 150)
