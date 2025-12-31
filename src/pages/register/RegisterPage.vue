@@ -281,11 +281,8 @@ const handleGoogleLogin = async () => {
 }
 
 const handleFacebookLogin = () => {
-  // eslint-disable-next-line no-undef
   FB.login((response) => {
     if (response.authResponse) {
-      // Fetch User Info
-      // eslint-disable-next-line no-undef
       FB.api('/me', { fields: 'name, email' }, async (userInfo) => {
         // console.log('Facebook User Info', userInfo)
          try {
