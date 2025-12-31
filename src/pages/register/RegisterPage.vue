@@ -40,6 +40,8 @@
                 dense
                 v-model="form.name"
                 placeholder="Nama"
+                :error="!!errors.name"
+                :error-message="errors.name"
                 required
               />
               <q-input
@@ -48,6 +50,8 @@
                 dense
                 v-model="form.username"
                 placeholder="Username"
+                :error="!!errors.username"
+                :error-message="errors.username"
                 required
               />
               <q-input
@@ -57,6 +61,8 @@
                 v-model="form.email"
                 type="email"
                 placeholder="Email"
+                :error="!!errors.email"
+                :error-message="errors.email"
                 required
               />
 
@@ -65,22 +71,40 @@
                 outlined
                 dense
                 v-model="form.password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 placeholder="Password"
+                :error="!!errors.password"
+                :error-message="errors.password"
                 required
-              />
+              >
+                <template v-slot:append>
+                  <q-icon
+                    :name="showPassword ? 'visibility' : 'visibility_off'"
+                    class="cursor-pointer"
+                    @click="showPassword = !showPassword"
+                  />
+                </template>
+              </q-input>
 
               <q-input
                 color="black"
                 outlined
                 dense
                 v-model="form.confirmPassword"
-                type="password"
+                :type="showConfirmPassword ? 'text' : 'password'"
                 placeholder="Konfirmasi Password"
                 :rules="[(val) => val === form.password || 'Password tidak cocok']"
                 lazy-rules
                 required
-              />
+              >
+                <template v-slot:append>
+                  <q-icon
+                    :name="showConfirmPassword ? 'visibility' : 'visibility_off'"
+                    class="cursor-pointer"
+                    @click="showConfirmPassword = !showConfirmPassword"
+                  />
+                </template>
+              </q-input>
 
               <q-btn
                 type="submit"
@@ -123,7 +147,7 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 
@@ -138,7 +162,20 @@ const form = reactive({
   confirmPassword: '',
 })
 
+const errors = reactive({
+  name: '',
+  username: '',
+  email: '',
+  password: '',
+})
+
+const showPassword = ref(false)
+const showConfirmPassword = ref(false)
+
 const handleRegister = async () => {
+  // Reset errors
+  Object.keys(errors).forEach((key) => (errors[key] = ''))
+
   try {
     const response = await fetch(`${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`, {
       method: 'POST',
@@ -163,7 +200,18 @@ const handleRegister = async () => {
       })
       router.push('/login')
     } else {
-      throw new Error(data.data?.message || 'Terjadi kesalahan saat registrasi')
+      // Handle Validation Errors
+      if (data.status === 'Bad Request' && data.errors?.validation) {
+        const validationErrors = data.errors.validation
+        Object.keys(validationErrors).forEach((field) => {
+          if (errors.hasOwnProperty(field)) {
+            errors[field] = validationErrors[field][0]
+          }
+        })
+        throw new Error(data.errors.message || 'Cek kembali inputan anda')
+      }
+
+      throw new Error(data.data?.message || data.message || 'Terjadi kesalahan saat registrasi')
     }
   } catch (error) {
     console.error('Registration error:', error)
