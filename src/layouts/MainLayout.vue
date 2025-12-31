@@ -131,7 +131,7 @@
 import { ref } from 'vue'
 
 const leftDrawerOpen = ref(true)
-const miniState = ref(false) // Start in full mode
+const miniState = ref(false)
 const selectedGym = ref('Tidak Ada Gym')
 const gymOptions = ['Urban Gym', 'Elite Fitness', 'Tidak Ada Gym']
 
