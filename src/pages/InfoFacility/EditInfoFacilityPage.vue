@@ -102,10 +102,12 @@ const newTag = ref('')
 
 const gymData = reactive({
   name: 'Urban Gym',
-  location: 'Jl. Telekomunikasi Terusan Buahbatu No.1, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
+  location:
+    'Jl. Telekomunikasi Terusan Buahbatu No.1, Sukapura, Kec. Dayeuhkolot, Kabupaten Bandung, Jawa Barat 40257',
   operationalHours: 'Senin - Jumat: 06:00 - 22:00, Sabtu - Minggu: 08:00 - 18:00',
-  description: 'Uget Uget Gym menawarkan peralatan canggih, berbagai kelas kebugaran, dan pelatih ahli untuk membantu Anda mencapai tujuan kebugaran Anda. Dengan pilihan keanggotaan yang fleksibel dan suasana yang memotivasi, ini adalah tempat yang sempurna untuk memulai atau melanjutkan perjalanan kebugaran Anda. Rasakan pengalaman latihan yang inovatif dan komunitas yang mendukung.',
-  tags: ['Pilates', 'Sauna', 'GymBro']
+  description:
+    'Uget Uget Gym menawarkan peralatan canggih, berbagai kelas kebugaran, dan pelatih ahli untuk membantu Anda mencapai tujuan kebugaran Anda. Dengan pilihan keanggotaan yang fleksibel dan suasana yang memotivasi, ini adalah tempat yang sempurna untuk memulai atau melanjutkan perjalanan kebugaran Anda. Rasakan pengalaman latihan yang inovatif dan komunitas yang mendukung.',
+  tags: ['Pilates', 'Sauna', 'GymBro'],
 })
 
 const addTag = () => {
@@ -124,7 +126,7 @@ const saveChanges = () => {
     message: 'Data berhasil disimpan!',
     color: 'positive',
     icon: 'check',
-    position: 'top'
+    position: 'top',
   })
   console.log('Saved Data:', gymData)
 }
