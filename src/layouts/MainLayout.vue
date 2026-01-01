@@ -1,7 +1,7 @@
 <template>
   <q-layout view="lHh Lpr lFf" class="bg-grey-1">
     <q-header flat class="bg-white text-black border-bottom">
-      <q-toolbar class="q-py-sm q-px-lg">
+      <q-toolbar class="q-py-md q-px-lg">
         <q-toolbar-title class="text-h5 text-weight-bold">
           {{ $route.meta.title || 'Dashboard' }}
         </q-toolbar-title>
@@ -10,10 +10,10 @@
 
         <div class="row items-center q-gutter-sm">
           <q-btn flat dense icon="notifications" class="bg-grey-2 q-pa-sm" size="sm" />
-          <q-avatar size="35px">
+          <q-avatar class="q-ml-md" size="35px">
             <img src="https://i.scdn.co/image/ab67616d00001e02d45ec66aa3cf3864205fd068" />
           </q-avatar>
-          <span class="text-weight-medium q-ml-xs">
+          <span class="text-weight-medium q-ml-md">
             {{ authStore.user?.name || 'Tamu' }}
           </span>
         </div>
@@ -133,41 +133,52 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue' // Tambahkan onMounted & computed
+import { ref, onMounted, computed } from 'vue' // Tambahkan onMounted & computed
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from '../stores/Auth'
+import { useGymStore } from '../stores/Gym'
 
 const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
+const gymStore = useGymStore()
 
 const leftDrawerOpen = ref(true)
 const miniState = ref(false)
-
-// State untuk Gym
-const selectedGym = ref(null)
 const gymOptions = ref([])
 
 onMounted(async () => {
   try {
-    // Ambil data dari API melalui store
     await authStore.fetchUser()
+    console.log('Data user berhasil dimuat:', authStore.user)
 
-    // Map data gym dari store ke q-select options
+    // Map data gym dari authStore ke options
     gymOptions.value = authStore.gyms.map((gym) => ({
       label: gym.name,
       value: gym.id,
     }))
 
-    // Set default gym yang tampil (misal ambil yang pertama)
-    if (gymOptions.value.length > 0) {
-      selectedGym.value = gymOptions.value[0]
+    console.log('Opsi gym(id):', gymStore.selectedGymId)
+    // Jika store kosong (pertama kali login), set ke gym pertama
+    if (gymOptions.value.length > 0 && !gymStore.selectedGymId) {
+      gymStore.setSelectedGymId(gymOptions.value[0].value)
     }
   } catch (error) {
-    // Jika gagal ambil user (token invalid), biasanya lari ke login
     console.error('Gagal memuat data user', error)
   }
+})
+
+const selectedGym = computed({
+  get: () => {
+    // Cari object option yang sesuai dengan ID yang tersimpan di store
+    return gymOptions.value.find((opt) => opt.value === gymStore.selectedGymId) || null
+  },
+  set: (newVal) => {
+    if (newVal) {
+      gymStore.setSelectedGymId(newVal.value)
+    }
+  },
 })
 
 const handleLogout = () => {
