@@ -1,17 +1,28 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
     <q-card flat class="rounded-borders shadow-1 q-mb-xl custom-card">
-      <q-card-section class="q-pa-xl">
+      <q-card-section class="q-pa-md">
         <div class="text-h5 text-center text-weight-bolder q-mb-xl">Anggota Gym</div>
 
         <div class="row q-col-gutter-md q-mb-lg items-center">
           <div class="col">
-            <q-input outlined dense v-model="filterAnggota" placeholder="Search..." class="search-input">
+            <q-input
+              outlined
+              dense
+              v-model="filterAnggota"
+              placeholder="Search..."
+              class="search-input"
+            >
               <template v-slot:prepend><q-icon name="search" size="xs" /></template>
             </q-input>
           </div>
           <div class="col-auto">
-            <q-btn unelevated class="btn-dark-custom q-px-lg" label="Tambah" @click="goToTambahAnggota" />
+            <q-btn
+              unelevated
+              class="btn-dark-custom q-px-lg"
+              label="Tambah"
+              @click="goToTambahAnggota"
+            />
           </div>
         </div>
 
@@ -27,7 +38,12 @@
         >
           <template v-slot:body-cell-status="props">
             <q-td :props="props">
-              <q-chip dense text-color="white" :class="props.value === 'Aktif' ? 'bg-positive' : 'bg-negative'" class="status-chip">
+              <q-chip
+                dense
+                text-color="white"
+                :class="props.value === 'Aktif' ? 'bg-positive' : 'bg-negative'"
+                class="status-chip"
+              >
                 {{ props.value }}
               </q-chip>
             </q-td>
@@ -43,8 +59,20 @@
 
           <template v-slot:body-cell-actions="props">
             <q-td :props="props" class="text-right no-wrap">
-              <q-btn unelevated dense label="Edit" class="btn-edit q-px-md q-mr-sm" @click="editAnggota(props.row)" />
-              <q-btn unelevated dense label="Hapus" class="btn-delete q-px-md" @click="deleteAnggota(props.row)" />
+              <q-btn
+                unelevated
+                dense
+                label="Edit"
+                class="btn-edit q-px-md q-mr-sm"
+                @click="editAnggota(props.row)"
+              />
+              <q-btn
+                unelevated
+                dense
+                label="Hapus"
+                class="btn-delete q-px-md"
+                @click="deleteAnggota(props.row)"
+              />
             </q-td>
           </template>
         </q-table>
@@ -52,26 +80,45 @@
     </q-card>
 
     <q-card flat class="rounded-borders shadow-1 custom-card">
-      <q-card-section class="q-pa-xl">
+      <q-card-section class="q-pa-md">
         <div class="text-h5 text-center text-weight-bolder q-mb-xl">Riwayat Absensi</div>
 
         <!-- replaced: search row for Riwayat Absensi -->
         <div class="row q-col-gutter-md q-mb-lg items-center">
           <div class="col">
-            <q-input outlined dense v-model="filterAbsensi" placeholder="Search..." class="search-input">
+            <q-input
+              outlined
+              dense
+              v-model="filterAbsensi"
+              placeholder="Search..."
+              class="search-input"
+            >
               <template v-slot:prepend><q-icon name="search" size="xs" /></template>
             </q-input>
           </div>
 
           <div class="col-auto" style="min-width: 200px">
-            <q-input outlined dense v-model="filterTanggal" placeholder="Filter Tanggal" class="search-input" mask="####-##-##">
+            <q-input
+              outlined
+              dense
+              v-model="filterTanggal"
+              placeholder="Filter Tanggal"
+              class="search-input"
+              mask="####-##-##"
+            >
               <template v-slot:append>
                 <q-icon name="event" class="cursor-pointer">
                   <q-popup-proxy cover transition-show="scale" transition-hide="scale">
                     <q-date v-model="filterTanggal" mask="YYYY-MM-DD">
                       <div class="row items-center justify-end">
                         <q-btn v-close-popup label="Close" color="primary" flat />
-                        <q-btn v-close-popup label="Reset" color="negative" flat @click="filterTanggal = ''" />
+                        <q-btn
+                          v-close-popup
+                          label="Reset"
+                          color="negative"
+                          flat
+                          @click="filterTanggal = ''"
+                        />
                       </div>
                     </q-date>
                   </q-popup-proxy>
@@ -81,7 +128,12 @@
           </div>
 
           <div class="col-auto">
-            <q-btn unelevated label="Tambah Absen" class="btn-tambah q-px-lg" @click="showAddAbsensi = true" />
+            <q-btn
+              unelevated
+              label="Tambah Absen"
+              class="btn-tambah q-px-lg"
+              @click="showAddAbsensi = true"
+            />
           </div>
         </div>
 
@@ -118,8 +170,20 @@
         </q-card-section>
 
         <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
-          <q-btn flat label="Batal" v-close-popup class="btn-action-dialog btn-batal-dialog" no-caps />
-          <q-btn unelevated label="Konfirmasi" class="btn-action-dialog btn-konfirmasi-dialog" no-caps @click="confirmAbsensi" />
+          <q-btn
+            flat
+            label="Batal"
+            v-close-popup
+            class="btn-action-dialog btn-batal-dialog"
+            no-caps
+          />
+          <q-btn
+            unelevated
+            label="Konfirmasi"
+            class="btn-action-dialog btn-konfirmasi-dialog"
+            no-caps
+            @click="confirmAbsensi"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -136,9 +200,7 @@
           />
 
           <div class="text-h6 text-weight-bolder q-mb-sm">Apakah Anda yakin ingin melanjutkan?</div>
-          <div class="text-body2 text-grey-8">
-            Data staff yang dihapus tidak dapat dipulihkan.
-          </div>
+          <div class="text-body2 text-grey-8">Data staff yang dihapus tidak dapat dipulihkan.</div>
         </q-card-section>
 
         <q-card-actions align="center" class="q-pb-md q-gutter-x-md">
@@ -154,14 +216,13 @@
             label="Ya, Hapus Data"
             class="btn-action-dialog btn-konfirmasi-dialog"
             no-caps
-            v-close-popup  @click="executeDelete"
+            v-close-popup
+            @click="executeDelete"
           />
         </q-card-actions>
       </q-card>
     </q-dialog>
-
   </q-page>
-
 </template>
 
 <script setup>
@@ -220,9 +281,9 @@ const loadMembers = () => {
     const raw = localStorage.getItem('members')
     if (raw) {
       const parsed = JSON.parse(raw)
-      rowsAnggota.value = parsed.map(m => ({
+      rowsAnggota.value = parsed.map((m) => ({
         ...m,
-        masaAktif: Number(m.masaAktif) || 0
+        masaAktif: Number(m.masaAktif) || 0,
       }))
     } else {
       rowsAnggota.value = []
@@ -252,14 +313,19 @@ const filteredAbsensi = computed(() => {
 
   if (filterTanggal.value) {
     const targetDate = String(filterTanggal.value).replace(/\//g, '-')
-    data = data.filter(row => row.tanggal === targetDate)
+    data = data.filter((row) => row.tanggal === targetDate)
   }
 
   const query = (filterAbsensi.value || '').toLowerCase().trim()
   if (query) {
-    data = data.filter(row =>
-      String(row.nama || '').toLowerCase().includes(query) ||
-      String(row.email || '').toLowerCase().includes(query)
+    data = data.filter(
+      (row) =>
+        String(row.nama || '')
+          .toLowerCase()
+          .includes(query) ||
+        String(row.email || '')
+          .toLowerCase()
+          .includes(query),
     )
   }
 
@@ -291,7 +357,7 @@ const deleteAnggota = (row) => {
 
 const executeDelete = () => {
   if (selectedMemberToDelete.value) {
-    rowsAnggota.value = rowsAnggota.value.filter(r => r.id !== selectedMemberToDelete.value.id)
+    rowsAnggota.value = rowsAnggota.value.filter((r) => r.id !== selectedMemberToDelete.value.id)
     persistMembers()
     $q.notify({ type: 'positive', message: 'Anggota berhasil dihapus' })
     showConfirmDelete.value = false
@@ -314,14 +380,16 @@ const confirmAbsensi = () => {
 
   const now = new Date()
   const tanggal = now.toISOString().split('T')[0]
-  const waktu = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }).replace('.', ':')
+  const waktu = now
+    .toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
+    .replace('.', ':')
 
   const newEntry = {
     id: Date.now(),
     nama: namaAbsen.value,
     email: `${namaAbsen.value.toLowerCase().replace(/\s+/g, '')}@gmail.com`,
     tanggal,
-    waktu
+    waktu,
   }
 
   rowsAbsensi.value.unshift(newEntry)
@@ -336,12 +404,27 @@ const confirmAbsensi = () => {
 </script>
 
 <style lang="scss" scoped>
-.custom-card { border-radius: 15px; }
+.custom-card {
+  border-radius: 15px;
+}
 .custom-table {
-  :deep(thead tr th) { font-weight: 800; color: black; border-bottom: none; font-size: 16px; }
-  :deep(tbody tr td) { border-bottom: none; vertical-align: middle; font-size: 14px; }
-  :deep(tbody tr:nth-child(even)) { background-color: #f8f9fa; }
-  :deep(tbody tr:nth-child(odd)) { background-color: #ffffff; }
+  :deep(thead tr th) {
+    font-weight: 800;
+    color: black;
+    border-bottom: none;
+    font-size: 16px;
+  }
+  :deep(tbody tr td) {
+    border-bottom: none;
+    vertical-align: middle;
+    font-size: 14px;
+  }
+  :deep(tbody tr:nth-child(even)) {
+    background-color: #f8f9fa;
+  }
+  :deep(tbody tr:nth-child(odd)) {
+    background-color: #ffffff;
+  }
 }
 .search-absensi {
   width: 220px;
@@ -428,7 +511,10 @@ const confirmAbsensi = () => {
   :deep(.q-field__control) {
     border-radius: 12px;
     border: 1.5px solid #555;
-    &:before, &:after { display: none; }
+    &:before,
+    &:after {
+      display: none;
+    }
   }
 }
 
