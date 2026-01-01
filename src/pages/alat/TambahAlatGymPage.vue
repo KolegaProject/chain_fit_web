@@ -1,90 +1,81 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders q-pa-xl shadow-1">
+    <q-card flat class="rounded-borders shadow-1 q-pa-md">
       <q-card-section>
-        <div class="text-h5 text-weight-bold text-center q-mb-xl">
-          Tambah Alat Gym
+        <div class="row items-center q-mb-xl">
+          <q-btn icon="arrow_back" flat round dense @click="goBack" class="q-mr-sm" />
+          <div class="text-h5 text-weight-bold">Tambah Alat Gym Baru</div>
         </div>
 
-        <div class="row q-col-gutter-lg q-mb-lg">
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle1 text-weight-bold q-mb-sm">Nama Alat</div>
+        <div class="row q-col-gutter-x-md q-col-gutter-y-lg">
+          <div class="col-12 col-md-6">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Nama Alat</div>
             <q-input
               outlined
               dense
               v-model="newEquipment.name"
-              placeholder="Masukkan nama"
+              placeholder="Contoh: Smith Machine"
               class="bg-white custom-field"
             />
           </div>
 
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle1 text-weight-bold q-mb-sm">Jumlah</div>
-            <q-input
-              outlined
-              dense
-              type="number"
-              v-model="newEquipment.qty"
-              placeholder="0"
-              class="bg-white custom-field"
-            />
-          </div>
-
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle1 text-weight-bold q-mb-sm">Status</div>
+          <div class="col-12 col-md-6">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Kondisi/Status</div>
             <q-select
               outlined
               dense
               v-model="newEquipment.status"
               :options="statusOptions"
               class="bg-white custom-field"
+            />
+          </div>
+
+          <div class="col-12 col-md-4">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Jumlah Unit</div>
+            <q-input
+              outlined
+              dense
+              type="number"
+              v-model="newEquipment.qty"
+              class="bg-white custom-field"
+            />
+          </div>
+
+          <div class="col-12 col-md-8">
+            <div class="text-subtitle2 text-weight-bold q-mb-xs">Link Video Tutorial (YouTube)</div>
+            <q-input
+              outlined
+              dense
+              v-model="newEquipment.videoUrl"
+              placeholder="https://youtube.com/watch?v=..."
+              class="bg-white custom-field"
             >
-              <template v-slot:append>
-                <q-icon name="expand_more" />
+              <template v-slot:prepend>
+                <q-icon name="play_circle" color="red" />
               </template>
-            </q-select>
+            </q-input>
           </div>
         </div>
 
-        <div class="row q-col-gutter-md q-mb-xl">
-          <div class="col-12 col-md-5">
-            <div
-              class="upload-box video-upload flex flex-center cursor-pointer"
-              @click="triggerUpload('video')"
-            >
-              <div class="text-center">
-                <q-icon name="add" size="32px" color="grey-7" />
-                <div class="text-grey-8 text-weight-medium">Tambah Video</div>
-              </div>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-3">
-            <div
-              class="upload-box photo-upload flex flex-center cursor-pointer"
-              @click="triggerUpload('photo')"
-            >
-              <div class="text-center">
-                <q-icon name="add" size="24px" color="grey-7" />
-                <div class="text-grey-8 text-weight-medium">Tambah Foto</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row justify-end">
-          <q-btn
-            unelevated
-            label="Batal"
-            no-caps
-            class="btn-batal q-px-lg q-mr-sm"
-            @click="goBack"
+        <div v-if="youtubeId" class="q-mt-lg">
+          <div class="text-caption text-grey-7 q-mb-sm">Preview Video:</div>
+          <q-video
+            :ratio="16 / 9"
+            :src="`https://www.youtube.com/embed/${youtubeId}`"
+            class="rounded-borders shadow-2"
+            style="max-width: 400px"
           />
+        </div>
+
+        <q-separator class="q-my-xl" />
+
+        <div class="row justify-end q-gutter-sm">
+          <q-btn unelevated label="Batal" no-caps class="btn-batal" @click="goBack" />
           <q-btn
             unelevated
-            label="Tambah"
+            label="Simpan Alat"
             color="black"
-            class="q-px-xl text-weight-bold btn-submit"
+            class="btn-submit q-px-xl"
             no-caps
             @click="submitEquipment"
           />
@@ -95,131 +86,95 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, computed } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
+import { useGymStore } from 'src/stores/Gym'
+import { useEquipmentStore } from 'src/stores/Equipment' // Import store baru
 
 const $q = useQuasar()
 const router = useRouter()
+const gymStore = useGymStore()
+const equipmentStore = useEquipmentStore() // Inisialisasi
 
 const newEquipment = reactive({
   name: '',
-  qty: 0,
-  status: 'Baik',
-  images: []
+  qty: 1,
+  healthStatus: '', // Field ini tetap ada di UI, tapi tidak dikirim ke API sesuai spec Anda
+  videoUrl: '',
 })
 
 const statusOptions = ['Baik', 'Butuh Perawatan', 'Rusak']
 
-const triggerUpload = (type) => {
-  $q.notify({
-    message: `Membuka galeri untuk ${type}...`,
-    color: 'info',
-    position: 'top'
-  })
-}
+// Logika untuk mendapatkan ID Youtube (untuk preview)
+const youtubeId = computed(() => {
+  if (!newEquipment.videoUrl) return null
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+  const match = newEquipment.videoUrl.match(regExp)
+  return match && match[2].length === 11 ? match[2] : null
+})
 
-const submitEquipment = () => {
+const submitEquipment = async () => {
+  // Validasi sederhana
   if (!newEquipment.name) {
-    $q.notify({
-      message: 'Nama alat harus diisi',
-      color: 'negative',
-      position: 'top'
-    })
+    $q.notify({ message: 'Nama alat wajib diisi', color: 'negative' })
+    return
+  }
+
+  const gymId = gymStore.selectedGymId
+  if (!gymId) {
+    $q.notify({ message: 'ID Gym tidak ditemukan', color: 'negative' })
     return
   }
 
   try {
-    const raw = localStorage.getItem('equipments')
-    const list = raw ? JSON.parse(raw) : []
-    const maxId = list.length ? Math.max(...list.map(e => Number(e.id) || 0)) : 0
-    const newId = maxId + 1
-
-    const payload = {
-      id: newId,
-      name: newEquipment.name,
-      qty: Number(newEquipment.qty) || 0,
-      status: newEquipment.status,
-      images: Array.isArray(newEquipment.images) ? newEquipment.images : []
-    }
-
-    list.push(payload)
-    localStorage.setItem('equipments', JSON.stringify(list))
+    // Memanggil action dari store
+    await equipmentStore.createEquipment(gymId, newEquipment)
 
     $q.notify({
-      message: 'Alat gym berhasil ditambahkan!',
-      color: 'positive',
-      position: 'top'
+      type: 'positive',
+      message: 'Alat gym berhasil ditambahkan ke server',
     })
 
     router.push('/info')
   } catch (err) {
-    console.error('Failed to save equipment', err)
     $q.notify({
-      message: 'Gagal menyimpan data alat',
-      color: 'negative',
-      position: 'top'
+      type: 'negative',
+      message: err.response?.data?.message || 'Gagal menyimpan ke server',
     })
+  } finally {
   }
 }
 
-const goBack = () => {
-  router.back()
-}
+const goBack = () => router.back()
 </script>
 
 <style scoped lang="scss">
 .custom-field {
   :deep(.q-field__control) {
     border-radius: 8px;
-    border: 1px solid #000; // Border hitam tegas sesuai desain
-    &:before {
-      border: none;
-    }
-    &:after {
-      border: none;
+    transition: all 0.3s;
+    &:hover {
+      border-color: #000;
     }
   }
-}
-
-.upload-box {
-  border: 2px solid #9ca3af;
-  border-radius: 12px;
-  background-color: #e5e7eb;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: #d1d5db;
-    border-color: #6b7280;
-  }
-}
-
-.video-upload {
-  aspect-ratio: 16 / 10;
-  max-width: 400px;
-}
-
-.photo-upload {
-  aspect-ratio: 1 / 1;
-  max-width: 200px;
 }
 
 .btn-submit {
   border-radius: 8px;
-  height: 40px;
+  height: 44px;
+  font-weight: 700;
 }
 
 .btn-batal {
-  background-color: #e53935;
-  color: white;
+  color: #666;
   border-radius: 8px;
-  height: 40px;
-  min-width: 100px;
-  font-weight: bold;
-  text-transform: none;
+  height: 44px;
+  padding: 0 25px;
+  font-weight: 600;
 }
 
-.text-subtitle1 {
-  color: #000;
+.rounded-borders {
+  border-radius: 16px;
 }
 </style>

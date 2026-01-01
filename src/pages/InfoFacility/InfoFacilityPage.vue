@@ -189,7 +189,13 @@
               @click="goToTambahAlat"
             />
           </div>
-          <q-table flat :rows="equipments" :columns="columns" row-key="id" :filter="search">
+          <q-table
+            flat
+            :rows="equipments"
+            :columns="equipmentColumns"
+            row-key="id"
+            :filter="search"
+          >
             <template v-slot:body-cell-actions="props">
               <q-td :props="props">
                 <q-btn
@@ -275,90 +281,72 @@ import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useGymStore } from 'src/stores/Gym'
-import { api } from 'src/boot/axios' // Pastikan axios terkonfigurasi
 import { usePackageStore } from 'src/stores/Package'
+import { useEquipmentStore } from 'src/stores/Equipment'
 
-const slide = ref(0)
-const search = ref('')
 const router = useRouter()
 const $q = useQuasar()
-const gymStore = useGymStore()
+const slide = ref(0)
+const search = ref('')
 
-// --- DATA DINAMIS ---
+// Stores
+const gymStore = useGymStore()
+const packageStore = usePackageStore()
+const equipmentStore = useEquipmentStore()
+
+// Computed Data
 const gymData = computed(() => gymStore.currentGym || {})
+const subscriptionPlans = computed(() => packageStore.subscriptionPlans)
+const equipments = computed(() => equipmentStore.equipments)
 const formattedTags = computed(() => {
   const t = gymData.value.tag
   return t ? t.split(',').map((s) => s.trim()) : []
 })
 
-// --- STATE PAKET & ALAT ---
-const equipments = ref([])
+// Tabel Kolom
+const equipmentColumns = [
+  { name: 'name', label: 'Nama Alat', field: 'name', align: 'left', sortable: true },
+  { name: 'healthStatus', label: 'Status Kondisi', field: 'healthStatus', align: 'center' },
+  { name: 'jumlah', label: 'Jumlah Unit', field: 'jumlah', align: 'center', sortable: true },
+  { name: 'actions', label: 'Opsi', field: 'actions', align: 'right' },
+]
+
+// Modal & Form State
 const showAddDialog = ref(false)
 const editingPlanId = ref(null)
 const newPlan = reactive({ name: '', price: '', durationDays: 30, benefit: [''] })
-const packageStore = usePackageStore()
 
-const subscriptionPlans = computed(() => packageStore.subscriptionPlans)
-
-const loadAllGymData = async (id) => {
-  if (!id) return
-
+// Lifecycle
+const loadAllData = async (gymId) => {
+  if (!gymId) return
   try {
-    // Memanggil API secara paralel agar lebih cepat
-    await Promise.all([gymStore.fetchGymDetail(id), packageStore.fetchPlans(id)])
-    loadEquipments() // Load data dari localStorage
-  } catch (error) {
-    $q.notify({ type: 'negative', message: 'Gagal memuat data gym' })
+    await Promise.all([
+      gymStore.fetchGymDetail(gymId),
+      packageStore.fetchPlans(gymId),
+      equipmentStore.fetchEquipments(gymId),
+    ])
+  } catch (err) {
+    console.error(err)
   }
 }
 
-// --- WATCHER ---
-// Setiap kali ID di store berubah (dari select di layout), jalankan fungsi load data
 watch(
   () => gymStore.selectedGymId,
-  async (newId) => {
-    if (newId) {
-      await loadAllGymData(newId)
-    }
+  (newId) => {
+    if (newId) loadAllData(newId)
   },
 )
 
-onMounted(async () => {
-  if (gymStore.selectedGymId) {
-    await loadAllGymData(gymStore.selectedGymId)
-  }
+onMounted(() => {
+  if (gymStore.selectedGymId) loadAllData(gymStore.selectedGymId)
 })
 
-const confirmDeletePlan = (plan) => {
-  $q.dialog({
-    title: 'Konfirmasi Hapus',
-    message: `Apakah Anda yakin ingin menghapus paket ${plan.name}?`,
-    cancel: true,
-    persistent: true,
-    ok: { label: 'Hapus', color: 'red', unelevated: true },
-  }).onOk(async () => {
-    try {
-      await packageStore.deletePlan(gymStore.selectedGymId, plan.id)
-      $q.notify({ type: 'positive', message: 'Paket berhasil dihapus' })
-    } catch (err) {
-      $q.notify({ type: 'negative', message: 'Gagal menghapus paket' })
-    } finally {
-    }
-  })
-}
-
-// --- LOGIC PAKET ---
+// Methods: Paket
 const addPlan = () => {
   editingPlanId.value = null
   Object.assign(newPlan, { name: '', price: '', durationDays: 30, benefit: [''] })
   showAddDialog.value = true
 }
-
-const columns = [
-  { name: 'name', label: 'Nama Alat', field: 'name', align: 'left', sortable: true },
-  { name: 'qty', label: 'Jumlah', field: 'qty', align: 'center' },
-  { name: 'actions', label: 'Aksi', field: 'actions', align: 'right' },
-]
 
 const editPlan = (plan) => {
   editingPlanId.value = plan.id
@@ -368,48 +356,38 @@ const editPlan = (plan) => {
 
 const submitNewPlan = async () => {
   const gymId = gymStore.selectedGymId
-  if (!gymId) return
-
   try {
-    // Bersihkan benefit dari string kosong
     const cleanedBenefits = newPlan.benefit.filter((b) => b.trim() !== '')
-
     if (editingPlanId.value) {
-      // LOGIKA EDIT (Hanya Benefit)
       await packageStore.updatePlanBenefit(gymId, editingPlanId.value, cleanedBenefits)
-      $q.notify({ type: 'positive', message: 'Benefit paket berhasil diperbarui' })
     } else {
-      // LOGIKA TAMBAH BARU (Semua Field)
-      const payloadBaru = {
-        ...newPlan,
-        benefit: cleanedBenefits,
-      }
-      await packageStore.createPlan(gymId, payloadBaru)
-      $q.notify({ type: 'positive', message: 'Paket berhasil ditambahkan' })
+      await packageStore.createPlan(gymId, { ...newPlan, benefit: cleanedBenefits })
     }
-
-    // Refresh data & tutup dialog
-    await packageStore.fetchPlans(gymId)
     showAddDialog.value = false
+    $q.notify({ type: 'positive', message: 'Data paket diperbarui' })
   } catch (error) {
-    $q.notify({
-      type: 'negative',
-      message: error.response?.data?.message || 'Gagal menyimpan data',
-    })
-  } finally {
+    $q.notify({ type: 'negative', message: 'Gagal memproses paket' })
   }
 }
 
-// --- LOGIC LAINNYA ---
-const loadEquipments = () => {
-  const raw = localStorage.getItem(`equipments_${gymStore.selectedGymId}`)
-  equipments.value = raw ? JSON.parse(raw) : []
+const confirmDeletePlan = (plan) => {
+  $q.dialog({
+    title: 'Hapus Paket?',
+    message: `Anda akan menghapus paket ${plan.name}.`,
+    cancel: true,
+    ok: { color: 'red-9', label: 'Hapus', unelevated: true },
+  }).onOk(async () => {
+    await packageStore.deletePlan(gymStore.selectedGymId, plan.id)
+    $q.notify({ type: 'positive', message: 'Paket dihapus' })
+  })
 }
+
+// Navigasi
 const goToTambahAlat = () => router.push('/info/alat/tambah')
 const goToDetail = (id) => router.push(`/info/alat/${id}`)
 const editInfo = () => router.push('/info/edit')
+const goBack = () => router.back()
 </script>
-
 <style scoped lang="scss">
 .info-block {
   .uppercase {

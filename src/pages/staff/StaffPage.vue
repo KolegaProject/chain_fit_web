@@ -1,19 +1,38 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders shadow-1 q-mb-xl custom-card">
-      <q-card-section class="q-pa-md">
-        <div class="text-h5 text-center text-weight-bolder q-mb-xl">Staff Gym</div>
+    <q-card flat class="rounded-borders shadow-1 q-mb-lg bg-white">
+      <q-card-section class="q-pa-md row items-center justify-between">
+        <div class="row items-center">
+          <q-icon name="badge" color="black" size="32px" class="q-mr-md" />
+          <div class="text-h5 text-weight-bold">Manajemen Staff Gym</div>
+        </div>
+        <q-btn
+          unelevated
+          label="Tambah Staff"
+          icon="add"
+          color="black"
+          no-caps
+          class="rounded-borders q-px-md"
+          @click="addMember"
+        />
+      </q-card-section>
+    </q-card>
 
-        <div class="row q-col-gutter-md q-mb-lg items-center">
-          <div class="col">
-            <q-input outlined dense v-model="filter" placeholder="Search..." class="search-input">
+    <q-card flat class="rounded-borders shadow-1 overflow-hidden bg-white">
+      <q-card-section class="q-pa-none">
+        <div class="row q-pa-md border-bottom">
+          <div class="col-12 col-md-4">
+            <q-input
+              outlined
+              dense
+              v-model="filter"
+              placeholder="Cari nama, username, atau email..."
+              class="search-input"
+            >
               <template v-slot:prepend>
                 <q-icon name="search" size="xs" />
               </template>
             </q-input>
-          </div>
-          <div class="col-auto">
-            <q-btn unelevated class="btn-tambah q-px-lg" label="Tambah" @click="addMember" />
           </div>
         </div>
 
@@ -25,38 +44,41 @@
           :filter="filter"
           class="staff-table"
           :pagination="{ rowsPerPage: 10 }"
-          hide-bottom
         >
           <template v-slot:body-cell-avatar="props">
             <q-td :props="props" width="60px">
-              <q-avatar size="40px" rounded>
-                <img :src="props.row.avatarUrl" alt="Staff Profile" />
+              <q-avatar size="42px" class="shadow-1">
+                <img :src="props.row.avatarUrl" />
               </q-avatar>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-nama="props">
+            <q-td :props="props">
+              <div class="text-weight-bold text-small">{{ props.value }}</div>
+              <div class="text-caption text-grey-6">{{ props.row.username }}</div>
             </q-td>
           </template>
 
           <template v-slot:body-cell-email="props">
             <q-td :props="props">
-              <span class="text-underline">{{ props.value }}</span>
+              <div
+                class="text-blue-8 text-weight-medium text-medium"
+                style="text-decoration: underline"
+              >
+                {{ props.value }}
+              </div>
             </q-td>
           </template>
 
           <template v-slot:body-cell-actions="props">
-            <q-td :props="props" class="text-right no-wrap">
-              <q-btn
-                unelevated
-                dense
-                label="Edit"
-                class="btn-edit q-px-md q-mr-sm"
-                @click="editMember(props.row)"
-              />
-              <q-btn
-                unelevated
-                dense
-                label="Hapus"
-                class="btn-delete q-px-md"
-                @click="deleteMember(props.row)"
-              />
+            <q-td :props="props" class="text-center">
+              <q-btn flat round color="blue-7" icon="edit" @click="editMember(props.row)">
+                <q-tooltip>Edit Data</q-tooltip>
+              </q-btn>
+              <q-btn flat round color="negative" icon="delete" @click="deleteMember(props.row)">
+                <q-tooltip>Hapus Staff</q-tooltip>
+              </q-btn>
             </q-td>
           </template>
         </q-table>
@@ -64,34 +86,30 @@
     </q-card>
 
     <q-dialog v-model="showConfirmDelete" persistent>
-      <q-card class="dialog-card q-pa-lg text-center">
+      <q-card class="dialog-card q-pa-md">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
 
-        <q-card-section class="q-pt-md">
+        <q-card-section class="text-center q-pt-lg">
           <q-img
             src="../../assets/popup/hapus.png"
-            style="width: 150px; height: auto"
+            style="width: 140px; height: auto"
             class="q-mb-md"
           />
-
-          <div class="text-h6 text-weight-bolder q-mb-sm">Apakah Anda yakin ingin melanjutkan?</div>
-          <div class="text-body2 text-grey-8">Data staff yang dihapus tidak dapat dipulihkan.</div>
+          <div class="text-h6 text-weight-bolder">Hapus Data Staff?</div>
+          <div class="text-body2 text-grey-7 q-mt-sm">
+            Tindakan ini akan menghapus akses staff
+            <strong>{{ selectedMemberToDelete?.nama }}</strong
+            >. Data yang dihapus tidak dapat dipulihkan.
+          </div>
         </q-card-section>
 
-        <q-card-actions align="center" class="q-pb-md q-gutter-x-md">
-          <q-btn
-            flat
-            label="Batal"
-            v-close-popup
-            class="btn-action-dialog btn-batal-dialog"
-            no-caps
-          />
+        <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
+          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
           <q-btn
             unelevated
-            label="Ya, Hapus Data"
-            class="btn-action-dialog btn-konfirmasi-dialog"
+            label="Ya, Hapus"
+            class="btn-dialog-gradient"
             no-caps
-            v-close-popup
             @click="executeDelete"
           />
         </q-card-actions>
@@ -108,17 +126,15 @@ import { useRouter } from 'vue-router'
 const $q = useQuasar()
 const router = useRouter()
 const filter = ref('')
-
 const showConfirmDelete = ref(false)
 const selectedMemberToDelete = ref(null)
 
 const columns = [
   { name: 'avatar', align: 'left', label: '', field: 'avatar' },
-  { name: 'nama', align: 'left', label: 'Nama Staff', field: 'nama', sortable: true },
-  { name: 'username', align: 'left', label: 'Username', field: 'username', sortable: true },
+  { name: 'nama', align: 'left', label: 'Informasi Staff', field: 'nama', sortable: true },
   { name: 'email', align: 'left', label: 'Email', field: 'email', sortable: true },
   { name: 'password', align: 'left', label: 'Password', field: 'password' },
-  { name: 'actions', align: 'right', label: '', field: 'actions' },
+  { name: 'actions', align: 'center', label: 'Opsi', field: 'actions' },
 ]
 
 const rows = ref([
@@ -180,138 +196,85 @@ const rows = ref([
   },
 ])
 
-const addMember = () => {
-  router.push('/staff/tambah')
-}
+const addMember = () => router.push('/staff/tambah')
 
 const editMember = (member) => {
-  if (!member) return
   router.push({
     path: `/staff/edit/${member.id}`,
-    query: {
-      nama: member.nama,
-      username: member.username,
-      email: member.email,
-      avatarUrl: member.avatarUrl,
-    },
+    query: { ...member },
   })
 }
 
 const deleteMember = (member) => {
-  if (!member) return
   selectedMemberToDelete.value = member
   showConfirmDelete.value = true
 }
 
 const executeDelete = () => {
-  if (!selectedMemberToDelete.value) return
-
   rows.value = rows.value.filter((r) => r.id !== selectedMemberToDelete.value.id)
-
-  $q.notify({ type: 'positive', message: 'Anggota berhasil dihapus' })
-
-  // Reset state
+  $q.notify({ type: 'positive', message: 'Staff berhasil dihapus' })
   showConfirmDelete.value = false
-  selectedMemberToDelete.value = null
 }
 </script>
 
 <style lang="scss" scoped>
-.custom-card {
+.rounded-borders {
   border-radius: 12px;
 }
 
-.search-input {
-  max-width: 100%;
-  :deep(.q-field__control) {
-    border-radius: 8px;
-  }
-}
-
-.btn-tambah {
-  background-color: #0c0c0c;
-  color: white;
-  border-radius: 8px;
-  text-transform: none;
-  font-weight: bold;
-  height: 40px;
-}
-
-.btn-edit {
-  background-color: #2563eb;
-  color: white;
-  text-transform: none;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-.btn-delete {
-  background-color: #ef4444;
-  color: white;
-  text-transform: none;
-  border-radius: 6px;
-  font-weight: 500;
-}
-
-.text-underline {
-  text-decoration: underline;
-  cursor: pointer;
+.border-bottom {
+  border-bottom: 1px solid #f0f0f0;
 }
 
 .staff-table {
   background: transparent;
-
   :deep(thead tr th) {
-    font-size: 16px;
+    font-size: small;
     font-weight: 800;
-    color: #000000;
-    border-bottom: none;
-    padding-bottom: 20px;
+    background-color: #f8f9fa;
+    color: #333;
+    border-bottom: 1px solid #eee;
+    padding: 16px;
   }
-
   :deep(tbody tr td) {
-    font-size: 14px;
-    color: #000000;
-    border-bottom: none;
-    padding-top: 12px;
-    padding-bottom: 12px;
+    border-bottom: 1px solid #f5f5f5;
+    padding: 12px 16px;
   }
-  :deep(tbody tr:nth-child(even)) {
-    background-color: #f8fafc;
+  :deep(tbody tr:hover) {
+    background-color: #fafafa;
   }
-  :deep(tbody tr:nth-child(odd)) {
-    background-color: #ffffff;
+}
+
+.search-input {
+  :deep(.q-field__control) {
+    border-radius: 10px;
+    background-color: #f8f9fa;
   }
 }
 
 .dialog-card {
   width: 100%;
-  max-width: 450px;
-  border-radius: 20px;
-  position: relative;
+  max-width: 440px;
+  border-radius: 24px;
 }
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #f0f0f0;
-}
-
-.btn-action-dialog {
-  width: 140px;
-  height: 44px;
+.btn-dialog-flat {
+  width: 130px;
+  background-color: #f0f2f5;
   border-radius: 12px;
   font-weight: bold;
 }
-
-.btn-batal-dialog {
-  background: #f0f0f0;
-  color: black;
-}
-
-.btn-konfirmasi-dialog {
+.btn-dialog-gradient {
+  width: 130px;
   background: linear-gradient(to bottom, #a0a0a0, #666666);
   color: white;
+  border-radius: 12px;
+  font-weight: bold;
+}
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #f0f0f0;
+  z-index: 10;
 }
 </style>
