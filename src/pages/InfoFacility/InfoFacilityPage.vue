@@ -9,9 +9,7 @@
       <q-card flat class="rounded-borders q-mb-md q-pa-md">
         <q-card-section>
           <div class="row items-center justify-between q-mb-lg">
-            <div class="text-h5 text-weight-bold">
-              {{ gymData.name || 'Detail Informasi Gym' }}
-            </div>
+            <div class="text-h5 text-weight-bold">{{ gymData.name || 'Detail Informasi Gym' }}</div>
             <q-btn
               unelevated
               label="Edit Info"
@@ -49,7 +47,6 @@
                   </div>
                   <div class="text-body1">{{ gymData.address || '-' }}</div>
                 </div>
-
                 <div class="row q-col-gutter-md">
                   <div class="col-6">
                     <div class="info-block">
@@ -73,25 +70,14 @@
                     </div>
                   </div>
                 </div>
-
                 <div class="info-block">
                   <div class="text-subtitle2 text-weight-bold text-grey-7 q-mb-xs uppercase">
                     Jam Operasional
                   </div>
                   <div class="text-body1">{{ gymData.jamOperasional || '-' }}</div>
                 </div>
-
-                <div class="info-block">
-                  <div class="text-subtitle2 text-weight-bold text-grey-7 q-mb-xs uppercase">
-                    Deskripsi
-                  </div>
-                  <div class="text-body1 text-grey-8 leading-relaxed">
-                    {{ gymData.description || '-' }}
-                  </div>
-                </div>
               </div>
             </div>
-
             <div class="col-12 col-md-5">
               <div class="text-subtitle2 text-weight-bold q-mb-sm">Fasilitas Utama</div>
               <div class="row q-gutter-xs q-mb-lg">
@@ -101,11 +87,9 @@
                   outline
                   color="black"
                   icon="check_circle"
+                  >{{ fac }}</q-chip
                 >
-                  {{ fac }}
-                </q-chip>
               </div>
-
               <div class="text-subtitle2 text-weight-bold q-mb-sm">Tags</div>
               <div class="row q-gutter-xs">
                 <q-chip
@@ -114,9 +98,8 @@
                   color="black"
                   text-color="white"
                   square
+                  >{{ tag }}</q-chip
                 >
-                  {{ tag }}
-                </q-chip>
               </div>
             </div>
           </div>
@@ -130,34 +113,55 @@
             <div v-for="plan in subscriptionPlans" :key="plan.id" class="col-12 col-sm-4 col-md-3">
               <q-card flat class="package-card bg-grey-1">
                 <q-card-section class="q-pa-md">
-                  <div class="row items-center justify-between q-mb-sm">
-                    <div class="text-subtitle1 text-weight-bold">{{ plan.title }}</div>
-                    <div class="row q-gutter-xs">
-                      <q-btn
+                  <div class="row no-wrap items-center justify-between q-mb-sm">
+                    <div class="text-subtitle1 text-weight-bold ellipsis q-pr-sm">
+                      {{ plan.name }}
+                      <q-tooltip>{{ plan.name }}</q-tooltip>
+                    </div>
+
+                    <div class="row items-center shrink-0">
+                      <q-btn-dropdown
+                        flat
                         round
                         dense
-                        icon="edit"
-                        size="xs"
-                        color="blue"
-                        @click="editPlan(plan)"
-                      />
-                      <q-btn
-                        round
-                        dense
-                        icon="delete"
-                        size="xs"
-                        color="red"
-                        @click="confirmDeletePlan(plan)"
-                      />
+                        dropdown-icon="more_vert"
+                        no-icon-animation
+                        color="grey-7"
+                        class="no-shadow"
+                      >
+                        <q-list style="min-width: 100px">
+                          <q-item clickable v-close-popup @click="editPlan(plan)">
+                            <q-item-section avatar>
+                              <q-icon name="edit" color="blue" size="20px" />
+                            </q-item-section>
+                            <q-item-section>Edit</q-item-section>
+                          </q-item>
+
+                          <q-item clickable v-close-popup @click="confirmDeletePlan(plan)">
+                            <q-item-section avatar>
+                              <q-icon name="delete" color="red" size="20px" />
+                            </q-item-section>
+                            <q-item-section>Hapus</q-item-section>
+                          </q-item>
+                        </q-list>
+                      </q-btn-dropdown>
                     </div>
                   </div>
                   <div class="text-h6 text-weight-bolder">
-                    {{ plan.price }}<span class="text-caption">/bln</span>
+                    Rp {{ Number(plan.price).toLocaleString() }}
+                    <span class="text-caption">/ {{ plan.durationDays }} Hari</span>
                   </div>
                   <q-separator class="q-my-sm" />
-                  <div v-for="f in plan.features" :key="f" class="row no-wrap items-start q-mb-xs">
-                    <q-icon name="circle" size="6px" class="q-mt-sm q-mr-xs" />
-                    <div class="text-caption">{{ f }}</div>
+
+                  <div class="benefit-scroll-area">
+                    <div
+                      v-for="(benefit, index) in plan.benefit"
+                      :key="index"
+                      class="row no-wrap items-start q-mb-xs"
+                    >
+                      <q-icon name="check" size="14px" color="green" class="q-mt-xs q-mr-sm" />
+                      <div class="text-caption text-grey-9">{{ benefit }}</div>
+                    </div>
                   </div>
                 </q-card-section>
               </q-card>
@@ -185,25 +189,7 @@
               @click="goToTambahAlat"
             />
           </div>
-
-          <q-input
-            outlined
-            dense
-            v-model="search"
-            placeholder="Cari alat..."
-            class="q-mb-md bg-white"
-          >
-            <template v-slot:prepend><q-icon name="search" /></template>
-          </q-input>
-
-          <q-table
-            flat
-            :rows="equipments"
-            :columns="columns"
-            row-key="id"
-            :filter="search"
-            class="facilities-table"
-          >
+          <q-table flat :rows="equipments" :columns="columns" row-key="id" :filter="search">
             <template v-slot:body-cell-actions="props">
               <q-td :props="props">
                 <q-btn
@@ -226,60 +212,58 @@
       <q-card style="width: 400px" class="q-pa-md">
         <div class="text-h6 q-mb-md">{{ editingPlanId ? 'Edit' : 'Tambah' }} Paket</div>
         <q-input
-          v-model="newPlan.title"
-          label="Nama Paket (e.g. Member Pro)"
+          v-model="newPlan.name"
+          label="Nama Paket"
           outlined
           dense
           class="q-mb-sm"
+          :disable="!!editingPlanId"
         />
         <q-input
           v-model="newPlan.price"
-          label="Harga (e.g. Rp 200.000)"
+          label="Harga (Angka)"
+          type="number"
+          outlined
+          dense
+          class="q-mb-sm"
+          :disable="!!editingPlanId"
+        />
+        <q-input
+          v-model="newPlan.durationDays"
+          label="Durasi (Hari)"
+          type="number"
           outlined
           dense
           class="q-mb-md"
+          :disable="!!editingPlanId"
         />
 
-        <div class="text-caption text-weight-bold q-mb-sm">Fitur Paket:</div>
-        <div v-for="(feat, index) in newPlan.features" :key="index" class="row q-gutter-xs q-mb-sm">
-          <q-input
-            v-model="newPlan.features[index]"
-            outlined
-            dense
-            class="col"
-            placeholder="Akses Kolam..."
-          />
+        <div class="text-caption text-weight-bold q-mb-sm">
+          Edit Benefit {{ editingPlanId ? '(Hanya bagian ini yang akan tersimpan)' : '' }}:
+        </div>
+        <div v-for="(b, index) in newPlan.benefit" :key="index" class="row q-gutter-xs q-mb-sm">
+          <q-input v-model="newPlan.benefit[index]" outlined dense class="col" />
           <q-btn
             icon="remove"
             color="red"
             flat
-            @click="newPlan.features.splice(index, 1)"
-            v-if="newPlan.features.length > 1"
+            @click="newPlan.benefit.splice(index, 1)"
+            v-if="newPlan.benefit.length > 1"
           />
         </div>
         <q-btn
-          label="Tambah Fitur"
+          label="Tambah Benefit"
           icon="add"
           flat
           color="primary"
           no-caps
-          class="full-width q-mb-lg"
-          @click="newPlan.features.push('')"
+          class="full-width"
+          @click="newPlan.benefit.push('')"
         />
 
-        <div class="row justify-end q-gutter-sm">
-          <q-btn label="Batal" v-close-popup flat />
-          <q-btn label="Simpan Paket" color="primary" @click="submitNewPlan" />
-        </div>
-      </q-card>
-    </q-dialog>
-
-    <q-dialog v-model="showDeletePlanDialog">
-      <q-card class="q-pa-md">
-        <q-card-section>Apakah Anda yakin ingin menghapus paket ini?</q-card-section>
         <q-card-actions align="right">
           <q-btn label="Batal" v-close-popup flat />
-          <q-btn label="Ya, Hapus" color="red" @click="executeDelete" />
+          <q-btn label="Simpan" color="primary" @click="submitNewPlan" />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -287,81 +271,94 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useGymStore } from 'src/stores/Gym'
+import { api } from 'src/boot/axios' // Pastikan axios terkonfigurasi
+import { usePackageStore } from 'src/stores/Package'
 
 const slide = ref(0)
+const search = ref('')
 const router = useRouter()
 const $q = useQuasar()
 const gymStore = useGymStore()
 
-// --- DATA DINAMIS API ---
+// --- DATA DINAMIS ---
 const gymData = computed(() => gymStore.currentGym || {})
 const formattedTags = computed(() => {
   const t = gymData.value.tag
-  if (!t) return []
-  return t.split(',').map((s) => s.trim())
+  return t ? t.split(',').map((s) => s.trim()) : []
 })
 
-// --- STATE PAKET BERLANGGANAN ---
-const subscriptionPlans = ref([
-  {
-    id: 1,
-    title: 'Paket Basic',
-    price: 'Rp 150.000',
-    features: ['Akses Gym 24/7', 'Loker Standard'],
-  },
-])
-const showAddDialog = ref(false)
-const showDeletePlanDialog = ref(false)
-const editingPlanId = ref(null)
-const planToDelete = ref(null)
-const newPlan = reactive({ title: '', price: '', features: [''] })
-
-// --- STATE ALAT (EQUIPMENTS) ---
-const search = ref('')
+// --- STATE PAKET & ALAT ---
 const equipments = ref([])
+const showAddDialog = ref(false)
+const editingPlanId = ref(null)
+const newPlan = reactive({ name: '', price: '', durationDays: 30, benefit: [''] })
+const packageStore = usePackageStore()
+
+const subscriptionPlans = computed(() => packageStore.subscriptionPlans)
+
+const loadAllGymData = async (id) => {
+  if (!id) return
+
+  try {
+    // Memanggil API secara paralel agar lebih cepat
+    await Promise.all([gymStore.fetchGymDetail(id), packageStore.fetchPlans(id)])
+    loadEquipments() // Load data dari localStorage
+  } catch (error) {
+    $q.notify({ type: 'negative', message: 'Gagal memuat data gym' })
+  }
+}
+
+// --- WATCHER ---
+// Setiap kali ID di store berubah (dari select di layout), jalankan fungsi load data
+watch(
+  () => gymStore.selectedGymId,
+  async (newId) => {
+    if (newId) {
+      await loadAllGymData(newId)
+    }
+  },
+)
+
+onMounted(async () => {
+  if (gymStore.selectedGymId) {
+    await loadAllGymData(gymStore.selectedGymId)
+  }
+})
+
+const confirmDeletePlan = (plan) => {
+  $q.dialog({
+    title: 'Konfirmasi Hapus',
+    message: `Apakah Anda yakin ingin menghapus paket ${plan.name}?`,
+    cancel: true,
+    persistent: true,
+    ok: { label: 'Hapus', color: 'red', unelevated: true },
+  }).onOk(async () => {
+    try {
+      await packageStore.deletePlan(gymStore.selectedGymId, plan.id)
+      $q.notify({ type: 'positive', message: 'Paket berhasil dihapus' })
+    } catch (err) {
+      $q.notify({ type: 'negative', message: 'Gagal menghapus paket' })
+    } finally {
+    }
+  })
+}
+
+// --- LOGIC PAKET ---
+const addPlan = () => {
+  editingPlanId.value = null
+  Object.assign(newPlan, { name: '', price: '', durationDays: 30, benefit: [''] })
+  showAddDialog.value = true
+}
+
 const columns = [
   { name: 'name', label: 'Nama Alat', field: 'name', align: 'left', sortable: true },
   { name: 'qty', label: 'Jumlah', field: 'qty', align: 'center' },
   { name: 'actions', label: 'Aksi', field: 'actions', align: 'right' },
 ]
-
-// --- LIFECYCLE ---
-onMounted(async () => {
-  const id = gymStore.selectedGymId
-  if (id) {
-    try {
-      await gymStore.fetchGymDetail(id)
-      loadEquipments()
-    } catch {
-      $q.notify({ type: 'negative', message: 'Gagal sinkronisasi data API' })
-    }
-  }
-})
-
-// --- LOGIC: ALAT ---
-const loadEquipments = () => {
-  const raw = localStorage.getItem(`equipments_${gymStore.selectedGymId}`)
-  equipments.value = raw
-    ? JSON.parse(raw)
-    : [
-        { id: 1, name: 'Treadmill Pro-X', qty: 5 },
-        { id: 2, name: 'Dumbbell Set 1-10kg', qty: 2 },
-      ]
-}
-
-const goToTambahAlat = () => router.push('/info/alat/tambah')
-const goToDetail = (id) => router.push(`/info/alat/${id}`)
-
-// --- LOGIC: PAKET ---
-const addPlan = () => {
-  editingPlanId.value = null
-  Object.assign(newPlan, { title: '', price: '', features: [''] })
-  showAddDialog.value = true
-}
 
 const editPlan = (plan) => {
   editingPlanId.value = plan.id
@@ -369,26 +366,47 @@ const editPlan = (plan) => {
   showAddDialog.value = true
 }
 
-const submitNewPlan = () => {
-  if (editingPlanId.value) {
-    const idx = subscriptionPlans.value.findIndex((p) => p.id === editingPlanId.value)
-    subscriptionPlans.value[idx] = { ...newPlan, id: editingPlanId.value }
-  } else {
-    subscriptionPlans.value.push({ ...newPlan, id: Date.now() })
+const submitNewPlan = async () => {
+  const gymId = gymStore.selectedGymId
+  if (!gymId) return
+
+  try {
+    // Bersihkan benefit dari string kosong
+    const cleanedBenefits = newPlan.benefit.filter((b) => b.trim() !== '')
+
+    if (editingPlanId.value) {
+      // LOGIKA EDIT (Hanya Benefit)
+      await packageStore.updatePlanBenefit(gymId, editingPlanId.value, cleanedBenefits)
+      $q.notify({ type: 'positive', message: 'Benefit paket berhasil diperbarui' })
+    } else {
+      // LOGIKA TAMBAH BARU (Semua Field)
+      const payloadBaru = {
+        ...newPlan,
+        benefit: cleanedBenefits,
+      }
+      await packageStore.createPlan(gymId, payloadBaru)
+      $q.notify({ type: 'positive', message: 'Paket berhasil ditambahkan' })
+    }
+
+    // Refresh data & tutup dialog
+    await packageStore.fetchPlans(gymId)
+    showAddDialog.value = false
+  } catch (error) {
+    $q.notify({
+      type: 'negative',
+      message: error.response?.data?.message || 'Gagal menyimpan data',
+    })
+  } finally {
   }
-  showAddDialog.value = false
 }
 
-const confirmDeletePlan = (plan) => {
-  planToDelete.value = plan
-  showDeletePlanDialog.value = true
+// --- LOGIC LAINNYA ---
+const loadEquipments = () => {
+  const raw = localStorage.getItem(`equipments_${gymStore.selectedGymId}`)
+  equipments.value = raw ? JSON.parse(raw) : []
 }
-
-const executeDelete = () => {
-  subscriptionPlans.value = subscriptionPlans.value.filter((p) => p.id !== planToDelete.value.id)
-  showDeletePlanDialog.value = false
-}
-
+const goToTambahAlat = () => router.push('/info/alat/tambah')
+const goToDetail = (id) => router.push(`/info/alat/${id}`)
 const editInfo = () => router.push('/info/edit')
 </script>
 
@@ -436,5 +454,43 @@ const editInfo = () => router.push('/info/edit')
 
 .rounded-borders {
   border-radius: 12px;
+}
+
+//test
+
+.package-card {
+  /* Berikan tinggi minimal agar card yang benefit-nya sedikit tidak terlalu pendek */
+  min-height: 250px;
+  display: flex;
+  flex-direction: column;
+}
+
+.benefit-scroll-area {
+  /* Tinggi maksimal area benefit sebelum scroll muncul */
+  max-height: 120px;
+  overflow-y: auto;
+  padding-right: 4px; /* Ruang agar scrollbar tidak menutupi teks */
+
+  /* Membuat scrollbar terlihat lebih minimalis */
+  &::-webkit-scrollbar {
+    width: 4px;
+  }
+  &::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: #e0e0e0;
+    border-radius: 10px;
+  }
+  &::-webkit-scrollbar-thumb:hover {
+    background: #bdbdbd;
+  }
+}
+
+/* Memastikan kartu tambah paket tingginya mengikuti kartu paket lainnya */
+.plan-add-box {
+  height: 100%;
+  min-height: 250px;
+  /* ... rest of your style ... */
 }
 </style>
