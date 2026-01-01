@@ -336,7 +336,7 @@ onMounted(async () => {
     try {
       await gymStore.fetchGymDetail(id)
       loadEquipments()
-    } catch (e) {
+    } catch {
       $q.notify({ type: 'negative', message: 'Gagal sinkronisasi data API' })
     }
   }
