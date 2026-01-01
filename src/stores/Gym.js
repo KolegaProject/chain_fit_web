@@ -43,20 +43,6 @@ export const useGymStore = defineStore('gym', {
       }
     },
 
-    async fetchGymDetail(id) {
-      this.loading = true
-      try {
-        const response = await api.get(`api/v1/gym/${id}`)
-        this.currentGym = response.data.data
-        return response.data
-      } catch (error) {
-        console.error('Error fetching gym detail:', error)
-        throw error
-      } finally {
-        this.loading = false
-      }
-    },
-
     /**
      * Mengambil semua gym milik owner yang sedang login
      */
