@@ -1,90 +1,102 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders q-pa-xl shadow-1">
-      <q-card-section>
-        <div class="text-h5 text-weight-bold text-center q-mb-xl">
-          Detail Alat Gym
+    <q-card flat class="rounded-borders shadow-1 q-mb-lg bg-white">
+      <q-card-section class="header-height q-pa-md row items-center">
+        <div style="width: 42px" class="row items-center justify-start">
+          <q-btn flat round icon="arrow_back" color="grey-7" size="md" dense @click="goBack" />
         </div>
+        <q-icon name="fitness_center" color="black" size="32px" class="q-mr-md" />
+        <div class="text-h5 text-weight-bold">Detail Alat Gym</div>
 
-        <div class="row q-col-gutter-lg q-mb-xl">
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle1 text-weight-bold q-mb-sm">Nama Alat</div>
-            <div class="text-body1 bg-white q-pa-sm rounded-borders bordered-box px-md">
-              {{ equipment.name }}
-            </div>
-          </div>
+        <q-space />
+        <q-spinner-dots v-if="loading" color="grey-7" size="2em" />
+      </q-card-section>
+    </q-card>
 
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle1 text-weight-bold q-mb-sm">Jumlah</div>
-            <div class="text-body1 bg-white q-pa-sm rounded-borders bordered-box px-md">
-              {{ equipment.qty }}
-            </div>
-          </div>
-
-          <div class="col-12 col-md-4">
-            <div class="text-subtitle1 text-weight-bold q-mb-sm">Status</div>
-            <div class="text-body1 bg-white q-pa-sm rounded-borders bordered-box px-md">
-              {{ equipment.status }}
-            </div>
-          </div>
-        </div>
-
-        <div class="row q-col-gutter-md">
-          <div class="col-12 col-md-6">
-            <div class="video-wrapper bg-black rounded-borders flex flex-center">
-              <video
-                controls
-                class="full-width"
-                style="max-height: 400px; object-fit: contain;"
-              >
-                <source src="~assets/alatgym/videoAlat.mp4" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
-            </div>
-          </div>
-
-          <div class="col-12 col-md-6">
-            <div class="image-grid-container">
-              <div class="grid-item">
-                <q-img :src="localImages[0]" class="full-height bordered-image" fit="cover" />
-              </div>
-              <div class="grid-item">
-                <q-img :src="localImages[1]" class="full-height bordered-image" fit="cover" />
-              </div>
-              <div class="grid-item">
-                <q-img :src="localImages[2]" class="full-height bordered-image" fit="cover" />
-              </div>
-              <div class="grid-item">
-                <q-img :src="localImages[3]" class="full-height bordered-image" fit="cover" />
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="row justify-between q-gutter-md q-mt-xl">
-          <div>
-            <q-btn
-              flat
-              label="Kembali"
-              no-caps
-              class="btn-kembali q-ml-sm"
-              @click="goBack"
+    <q-card flat class="rounded-borders shadow-1 bg-white">
+      <q-card-section class="q-pa-xl">
+        <div v-if="!loading" class="row q-col-gutter-lg">
+          <div class="col-12">
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Nama Alat</div>
+            <q-input
+              v-model="equipment.name"
+              outlined
+              dense
+              class="custom-input-detail shadow-none"
             />
           </div>
 
-          <div class="row q-gutter-sm">
+          <div class="col-12 col-md-4">
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Jumlah Unit</div>
+            <q-input
+              v-model="equipment.jumlah"
+              type="number"
+              outlined
+              dense
+              class="custom-input-detail"
+            >
+              <template v-slot:append>
+                <span class="text-caption text-grey-6 text-weight-bold">UNIT</span>
+              </template>
+            </q-input>
+          </div>
+
+          <div class="col-12 col-md-8">
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">
+              Video Tutorial (URL)
+            </div>
+            <q-input
+              readonly
+              v-model="equipment.videoURL"
+              outlined
+              dense
+              class="custom-input-detail"
+            >
+              <template v-slot:prepend>
+                <q-icon name="play_circle" :color="equipment.videoURL ? 'red-7' : 'grey-4'" />
+              </template>
+              <template v-if="equipment.videoURL" v-slot:append>
+                <q-btn
+                  flat
+                  round
+                  color="blue-8"
+                  icon="open_in_new"
+                  size="sm"
+                  @click="openLink(equipment.videoURL)"
+                />
+              </template>
+            </q-input>
+          </div>
+        </div>
+
+        <div v-else class="row q-col-gutter-lg">
+          <div class="col-12"><q-skeleton type="QInput" /></div>
+          <div class="col-4"><q-skeleton type="QInput" /></div>
+          <div class="col-8"><q-skeleton type="QInput" /></div>
+        </div>
+
+        <q-separator class="q-my-xl" />
+
+        <div class="row justify-between items-center">
+          <q-btn flat label="Kembali" class="btn-batal" no-caps @click="goBack" />
+
+          <div class="row q-gutter-md">
             <q-btn
               unelevated
-              label="Edit"
-              class="btn-edit q-px-xl text-weight-bold"
+              label="Simpan Perubahan"
+              icon="save"
+              class="btn-edit"
               no-caps
-              @click="editEquipment"
+              :disabled="loading"
+              @click="showConfirmUpdate = true"
             />
             <q-btn
               unelevated
               label="Hapus"
-              class="btn-hapus q-px-xl text-weight-bold"
+              icon="delete"
+              class="btn-hapus"
               no-caps
+              :disabled="loading"
               @click="showConfirmDelete = true"
             />
           </div>
@@ -92,38 +104,55 @@
       </q-card-section>
     </q-card>
 
-    <!-- Confirmation Popup -->
-    <q-dialog v-model="showConfirmDelete" persistent>
-      <q-card class="dialog-card q-pa-lg text-center">
+    <q-dialog v-model="showConfirmUpdate" persistent>
+      <q-card class="dialog-card q-pa-md">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
-
-        <q-card-section class="q-pt-md">
-          <q-img
-            src="../../assets/popup/hapus.png"
-            style="width: 150px; height: auto"
-            class="q-mb-md"
-          />
-
-          <div class="text-h6 text-weight-bolder q-mb-sm">Apakah Anda yakin ingin melanjutkan?</div>
-          <div class="text-body2 text-grey-8">
-            Data alat gym yang dihapus tidak dapat dipulihkan.
+        <q-card-section class="text-center q-pt-lg">
+          <q-icon name="info" size="80px" color="blue-7" class="q-mb-md" />
+          <div class="text-h6 text-weight-bolder">Simpan Perubahan?</div>
+          <div class="text-body2 text-grey-7 q-mt-sm">
+            Apakah Anda yakin ingin memperbarui data <strong>{{ equipment.name }}</strong
+            >?
           </div>
         </q-card-section>
-
-        <q-card-actions align="center" class="q-pb-md q-gutter-x-md">
-          <q-btn
-            flat
-            label="Batal"
-            v-close-popup
-            class="btn-action-dialog btn-batal-dialog"
-            no-caps
-          />
+        <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
+          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
           <q-btn
             unelevated
-            label="Ya, Hapus Data"
-            class="btn-action-dialog btn-konfirmasi-dialog"
+            label="Ya, Simpan"
+            class="btn-dialog-gradient-blue"
             no-caps
-            @click="confirmDelete"
+            :loading="updateLoading"
+            @click="handleUpdate"
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="showConfirmDelete" persistent>
+      <q-card class="dialog-card q-pa-md">
+        <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
+        <q-card-section class="text-center q-pt-lg">
+          <q-img
+            src="../../assets/popup/hapus.png"
+            style="width: 140px; height: auto"
+            class="q-mb-md"
+          />
+          <div class="text-h6 text-weight-bolder">Hapus Data Alat?</div>
+          <div class="text-body2 text-grey-7 q-mt-sm">
+            Apakah Anda yakin ingin menghapus <strong>{{ equipment.name }}</strong
+            >?
+          </div>
+        </q-card-section>
+        <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
+          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
+          <q-btn
+            unelevated
+            label="Ya, Hapus"
+            class="btn-dialog-gradient"
+            no-caps
+            :loading="deleteLoading"
+            @click="handleDelete"
           />
         </q-card-actions>
       </q-card>
@@ -132,198 +161,190 @@
 </template>
 
 <script setup>
-const localImages = [
-  new URL('../../assets/alatgym/alat1.jpeg', import.meta.url).href,
-  new URL('../../assets/alatgym/alat2.jpeg', import.meta.url).href,
-  new URL('../../assets/alatgym/alat3.jpeg', import.meta.url).href,
-  new URL('../../assets/alatgym/alat4.jpeg', import.meta.url).href
-]
-
-import { reactive, ref, onMounted, onBeforeUnmount } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { useGymStore } from 'src/stores/Gym'
+import { useEquipmentStore } from 'src/stores/Equipment'
 
 const route = useRoute()
 const router = useRouter()
 const $q = useQuasar()
+const gymStore = useGymStore()
+const equipmentStore = useEquipmentStore()
 
 const showConfirmDelete = ref(false)
+const showConfirmUpdate = ref(false)
+const loading = ref(false)
+const deleteLoading = ref(false)
+const updateLoading = ref(false)
 
 const equipment = reactive({
   id: null,
-  name: 'Loading...',
-  qty: 0,
-  status: '-',
-  images: [],
-  imagesPreview: []
+  name: '',
+  jumlah: 0,
+  videoURL: '',
 })
 
-// add this handler so detail page can reload when edit page dispatches an update
-const handleUpdate = () => {
-  const id = route.params.id ? String(route.params.id) : null
-  if (id) loadData(id)
-}
+const fetchDetail = async () => {
+  const gymId = gymStore.selectedGymId
+  const equipId = route.params.id
+  if (!gymId || !equipId) return
 
-onMounted(() => {
-  const id = route.params.id ? String(route.params.id) : null
-  if (id) {
-    equipment.id = id
-    loadData(id)
-  }
-  window.addEventListener('equipments:updated', handleUpdate)
-})
-
-onBeforeUnmount(() => {
-  window.removeEventListener('equipments:updated', handleUpdate)
-})
-
-const loadData = (id) => {
+  loading.value = true
   try {
-    const raw = localStorage.getItem('equipments')
-    if (raw) {
-      const list = JSON.parse(raw)
-      const found = list.find(e => String(e.id) === String(id))
-      if (found) {
-        equipment.name = found.name || 'Alat Gym'
-        equipment.qty = Number(found.qty) || 0
-        equipment.status = found.status || 'Baik'
-        equipment.images = Array.isArray(found.images) ? found.images : []
-        equipment.imagesPreview = equipment.images.length > 0 ? found.images : []
-      }
-    }
+    const data = await equipmentStore.fetchEquipmentDetail(gymId, equipId)
+    Object.assign(equipment, data)
   } catch {
-    console.error('Failed to parse localStorage data')
+    $q.notify({ type: 'negative', message: 'Gagal mengambil data' })
+  } finally {
+    loading.value = false
   }
 }
 
+// DetailAlatGym.vue - di dalam <script setup>
+
+const handleUpdate = async () => {
+  const gymId = gymStore.selectedGymId
+  const equipId = equipment.id // Pastikan ID alat tersedia
+
+  if (!gymId || !equipId) {
+    $q.notify({ type: 'warning', message: 'Data ID tidak ditemukan' })
+    return
+  }
+
+  updateLoading.value = true
+  try {
+    const payload = {
+      name: equipment.name,
+      jumlah: equipment.jumlah,
+    }
+
+    // MEMANGGIL FUNGSI YANG SUDAH DISINKRONKAN
+    await equipmentStore.updateEquipment(gymId, equipId, payload)
+
+    $q.notify({
+      type: 'positive',
+      message: 'Berhasil memperbarui nama dan jumlah alat',
+      position: 'top',
+    })
+
+    showConfirmUpdate.value = false
+    await fetchDetail() // Refresh data dari server
+  } catch (error) {
+    console.error('Component Update Error:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Gagal memperbarui data. Periksa koneksi atau input Anda.',
+      position: 'top',
+    })
+  } finally {
+    updateLoading.value = false
+  }
+}
+
+const handleDelete = async () => {
+  const gymId = gymStore.selectedGymId
+  deleteLoading.value = true
+  try {
+    await equipmentStore.deleteEquipment(gymId, equipment.id)
+    $q.notify({ type: 'positive', message: 'Alat berhasil dihapus' })
+    router.push('/info')
+  } catch {
+    $q.notify({ type: 'negative', message: 'Gagal menghapus alat' })
+  } finally {
+    deleteLoading.value = false
+    showConfirmDelete.value = false
+  }
+}
+
+const openLink = (url) => {
+  if (url) window.open(url, '_blank')
+}
 const goBack = () => router.back()
 
-const editEquipment = () => {
-  router.push({ path: `/info/alat/edit/${equipment.id}` })
-}
-
-const deleteEquipment = () => {
-  try {
-    const raw = localStorage.getItem('equipments')
-    if (raw) {
-      let list = JSON.parse(raw)
-      list = list.filter(e => String(e.id) !== String(equipment.id))
-
-      localStorage.setItem('equipments', JSON.stringify(list))
-
-      $q.notify({
-        message: 'Data alat berhasil dihapus',
-        color: 'positive',
-        icon: 'check'
-      })
-
-      router.push('/info')
-    }
-  } catch (err) {
-    $q.notify({
-      message: 'Gagal menghapus data',
-      color: 'negative'
-    })
-    console.error(err)
-  }
-}
-
-const confirmDelete = () => {
-  showConfirmDelete.value = false
-  setTimeout(() => {
-    deleteEquipment()
-  }, 150)
-}
+onMounted(fetchDetail)
 </script>
 
 <style scoped lang="scss">
-.bordered-box {
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  min-height: 40px;
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
+.header-height {
+  height: 68px;
+}
+.rounded-borders {
+  border-radius: 12px;
 }
 
-.video-wrapper {
-  border: 1px solid #ccc;
-  height: 400px;
-  overflow: hidden;
+.custom-input-detail {
+  :deep(.q-field__control) {
+    border-radius: 10px;
+    background-color: #fafafa !important;
+    &:before {
+      border: 1px solid #e0e0e0 !important;
+    }
+  }
+  :deep(.q-field__native) {
+    font-weight: 500;
+    color: #222;
+  }
 }
 
-.image-grid-container {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 8px;
-  height: 400px;
+.btn-batal {
+  min-width: 120px;
+  background-color: #f0f2f5;
+  border-radius: 10px;
+  font-weight: 700;
+  color: #555;
 }
-
-.grid-item {
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
-
-.bordered-image {
-  border: 2px solid #ddd;
-  border-radius: 8px;
-  transition: transform 0.2s ease-in-out;
-}
-
-.bordered-image:hover {
-  transform: scale(1.05);
-  border-color: #bbb;
-}
-
-.btn-kembali {
-  background-color: #0c0c0c;
-  color: white;
-  border-radius: 8px;
-  min-width: 100px;
-}
-
 .btn-edit {
-  background-color: #2563eb;
+  min-width: 140px;
+  background: #2563eb;
   color: white;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-weight: 700;
 }
-
 .btn-hapus {
-  background-color: #ef4444;
+  min-width: 140px;
+  background: #ef4444;
   color: white;
-  border-radius: 8px;
+  border-radius: 10px;
+  font-weight: 700;
 }
 
 .dialog-card {
   width: 100%;
-  max-width: 450px;
-  border-radius: 20px;
+  max-width: 440px;
+  border-radius: 24px;
   position: relative;
 }
-
-.close-btn {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  background: #f0f0f0;
+.btn-dialog-flat {
+  width: 130px;
+  background-color: #f0f2f5;
+  border-radius: 12px;
+  font-weight: bold;
 }
-
-.btn-action-dialog {
-  width: 140px;
-  height: 44px;
+.btn-dialog-gradient {
+  width: 130px;
+  background: black;
+  color: white;
+  border-radius: 12px;
+  font-weight: bold;
+}
+.btn-dialog-gradient-blue {
+  width: 130px;
+  background: #2563eb;
+  color: white;
   border-radius: 12px;
   font-weight: bold;
 }
 
-.btn-batal-dialog {
-  background: #f0f0f0;
-  color: black;
+.close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background-color: #f0f0f0;
+  z-index: 10;
 }
-
-.btn-konfirmasi-dialog {
-  background: linear-gradient(to bottom, #a0a0a0, #666666);
-  color: white;
+.shadow-1 {
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05) !important;
 }
 </style>
