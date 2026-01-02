@@ -407,7 +407,7 @@ const submitNewPlan = async () => {
     }
     showAddDialog.value = false
     $q.notify({ type: 'positive', message: 'Data paket diperbarui' })
-  } catch (error) {
+  } catch {
     $q.notify({ type: 'negative', message: 'Gagal memproses paket' })
   }
 }

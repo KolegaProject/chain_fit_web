@@ -56,7 +56,7 @@ export const usePackageStore = defineStore('package', {
         await api.delete(`/api/v1/gym/${gymId}/paket-member/${paketId}`)
         this.subscriptionPlans = this.subscriptionPlans.filter((p) => p.id !== paketId)
       } catch (error) {
-        throw error
+        console.error('Gagal delete plan:', error)
       }
     },
   },

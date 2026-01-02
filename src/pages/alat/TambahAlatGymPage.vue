@@ -86,7 +86,7 @@
 </template>
 
 <script setup>
-import { reactive, computed } from 'vue'
+import { reactive } from 'vue'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useGymStore } from 'src/stores/Gym'
@@ -107,12 +107,12 @@ const newEquipment = reactive({
 const statusOptions = ['Baik', 'Butuh Perawatan', 'Rusak']
 
 // Logika untuk mendapatkan ID Youtube (untuk preview)
-const youtubeId = computed(() => {
-  if (!newEquipment.videoUrl) return null
-  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
-  const match = newEquipment.videoUrl.match(regExp)
-  return match && match[2].length === 11 ? match[2] : null
-})
+// const youtubeId = computed(() => {
+//   if (!newEquipment.videoUrl) return null
+//   const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/
+//   const match = newEquipment.videoUrl.match(regExp)
+//   return match && match[2].length === 11 ? match[2] : null
+// })
 
 const submitEquipment = async () => {
   // Validasi sederhana
@@ -142,7 +142,6 @@ const submitEquipment = async () => {
       type: 'negative',
       message: err.response?.data?.message || 'Gagal menyimpan ke server',
     })
-  } finally {
   }
 }
 

@@ -17,7 +17,7 @@ export const useStaffStore = defineStore('staff', {
         if (response.data.code === 200) {
           this.rows = response.data.data
         }
-      } catch (error) {
+      } catch {
         Notify.create({ type: 'negative', message: 'Gagal memuat data staff' })
       } finally {
         this.loading = false
@@ -30,7 +30,7 @@ export const useStaffStore = defineStore('staff', {
         // await api.delete(`/api/v1/gym/1/gym-staff/${id}`)
         this.rows = this.rows.filter((item) => item.id !== id)
         Notify.create({ type: 'positive', message: 'Staff berhasil dihapus' })
-      } catch (error) {
+      } catch {
         Notify.create({ type: 'negative', message: 'Gagal menghapus staff' })
       }
     },
