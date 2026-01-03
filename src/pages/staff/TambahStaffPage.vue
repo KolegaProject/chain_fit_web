@@ -104,7 +104,7 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { useStaffStore } from 'src/stores/staff' // Import Store
+import { useStaffStore } from 'src/stores/Staff' // Import Store
 import { useGymStore } from 'src/stores/Gym' // Asumsi Anda punya store Gym untuk ambil ID
 
 const router = useRouter()

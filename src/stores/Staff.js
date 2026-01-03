@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { api } from 'boot/axios'
 import { Notify } from 'quasar'
+import { useGymStore } from 'src/stores/Gym'
 
 export const useStaffStore = defineStore('staff', {
   state: () => ({
@@ -10,9 +11,13 @@ export const useStaffStore = defineStore('staff', {
 
   actions: {
     async fetchStaffData() {
+      const gymStore = useGymStore()
+      const gymId = gymStore.selectedGymId || 1 // Ambil dari store atau default 1
+
       this.loading = true
       try {
-        const response = await api.get('/api/v1/gym/1/gym-staff')
+        // Perbaikan: gymId sekarang sudah terdefinisi
+        const response = await api.get(`/api/v1/gym/${gymId}/gym-staff`)
         if (response.data.code === 200) {
           this.rows = response.data.data
         }

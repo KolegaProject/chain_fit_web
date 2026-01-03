@@ -163,7 +163,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useStaffStore } from 'src/stores/Staff'
 import { storeToRefs } from 'pinia'
+import { useGymStore } from 'src/stores/Gym'
 
+const gymStore = useGymStore()
 const router = useRouter()
 const staffStore = useStaffStore()
 const { rows, loading } = storeToRefs(staffStore)
@@ -187,8 +189,9 @@ onMounted(() => {
 
 const addMember = () => router.push('/staff/tambah')
 const editMember = (member) => {
-  // Mengirim ID Gym (1) dan ID User (member.id)
-  router.push(`/staff/edit/1/${member.id}`)
+  // Ambil ID Gym dari store agar konsisten
+  const gymId = gymStore.selectedGymId || 1
+  router.push(`/staff/edit/${gymId}/${member.id}`)
 }
 
 const deleteMember = (member) => {
