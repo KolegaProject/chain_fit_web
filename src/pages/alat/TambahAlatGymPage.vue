@@ -135,6 +135,7 @@ const submitEquipment = async () => {
 }
 
 const goBack = () => router.back()
+
 </script>
 
 <style scoped lang="scss">

@@ -53,23 +53,15 @@ import { storeToRefs } from 'pinia'
 import { usePackageStore } from 'stores/Package.js'
 import { useGymStore } from 'src/stores/Gym'
 
-
 const gymId = computed(() => gymStore.selectedGymId)
-
 const packageStore = usePackageStore()
 const router = useRouter()
 const route = useRoute()
 const $q = useQuasar()
 const anggotaStore = useAnggotaStore()
-
 const { rows } = storeToRefs(anggotaStore)
-
 const gymStore = useGymStore()
-
 const { subscriptionPlans } = storeToRefs(packageStore)
-
-
-
 const MEMBER_ID = route.params.id
 
 const form = ref({
@@ -174,6 +166,7 @@ onMounted(async () => {
     console.error('Gagal load data edit membership:', err)
   }
 })
+
 </script>
 
 

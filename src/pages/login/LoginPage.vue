@@ -100,20 +100,19 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from '../../stores/Auth' // Pastikan path benar
+import { useAuthStore } from '../../stores/Auth'
 
 const router = useRouter()
 const $q = useQuasar()
-const authStore = useAuthStore() // Inisialisasi store
+const authStore = useAuthStore()
 
 const username = ref('')
 const password = ref('')
-const loading = ref(false) // State untuk loading button
+const loading = ref(false)
 
 const handleLogin = async () => {
   loading.value = true
   try {
-    // 1. Log data sebelum dikirim
     console.log('Mengirim data login:', { username: username.value, password: password.value })
 
     const res = await authStore.login({
@@ -121,7 +120,6 @@ const handleLogin = async () => {
       password: password.value,
     })
 
-    // 2. Log hasil kembalian dari Store
     console.log('Login Berhasil! Response:', res)
     console.log('Token yang didapat:', res.data.access_token)
 
@@ -134,7 +132,6 @@ const handleLogin = async () => {
 
     router.push('/dashboard')
   } catch (error) {
-    // Mengambil pesan error dari field 'message' atau 'errors' sesuai struktur API kamu
     const errorMsg = error.response?.data?.message || 'Login Gagal, periksa username/password'
     $q.notify({
       message: errorMsg,
@@ -150,6 +147,7 @@ const handleLogin = async () => {
 const socialRedirect = () => {
   router.push('/register')
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -190,4 +188,5 @@ const socialRedirect = () => {
     text-decoration: underline;
   }
 }
+
 </style>

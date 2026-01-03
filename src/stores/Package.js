@@ -7,6 +7,7 @@ export const usePackageStore = defineStore('package', {
     loading: false,
   }),
 
+  // Actions untuk mengelola paket member
   actions: {
     async fetchPlans(gymId) {
       this.loading = true
@@ -20,14 +21,13 @@ export const usePackageStore = defineStore('package', {
       }
     },
 
-    // Action untuk membuat paket baru
+    // Membuat paket member baru
     async createPlan(gymId, planData) {
       try {
-        // Bungkus planData ke dalam Array sesuai contoh request Anda
         const payload = [
           {
             name: planData.name,
-            price: String(planData.price), // Pastikan string jika backend minta string
+            price: String(planData.price),
             durationDays: Number(planData.durationDays),
             benefit: planData.benefit,
           },
@@ -39,10 +39,11 @@ export const usePackageStore = defineStore('package', {
       }
     },
 
+    // Update benefit paket member
     async updatePlanBenefit(gymId, paketId, benefits) {
       try {
         const payload = {
-          benefit: benefits, // Sesuai format: { "benefit": ["...", "..."] }
+          benefit: benefits,
         }
         await api.put(`/api/v1/gym/${gymId}/paket-member/${paketId}`, payload)
       } catch (error) {
@@ -51,6 +52,7 @@ export const usePackageStore = defineStore('package', {
       }
     },
 
+    // Delete paket member
     async deletePlan(gymId, paketId) {
       try {
         await api.delete(`/api/v1/gym/${gymId}/paket-member/${paketId}`)

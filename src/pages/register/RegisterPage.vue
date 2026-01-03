@@ -174,7 +174,6 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const handleRegister = async () => {
-  // Reset errors
   Object.keys(errors).forEach((key) => (errors[key] = ''))
 
   try {
@@ -231,21 +230,16 @@ const handleGoogleLogin = async () => {
   try {
     const googleResponse = await googleTokenLogin()
 
-    // Fetch User Info from Google
     const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
       headers: { Authorization: `Bearer ${googleResponse.access_token}` },
     })
     const userInfo = await userInfoResponse.json()
 
-    // Generate compliant password (Min 8 chars, 1 uppercase, 1 special char)
-    // Example: "G-Auth" + random string + "!"
     const randomString = Math.random().toString(36).slice(-8)
     const generatedPassword = `G-Auth${randomString}!`
 
-    // Generate username from email
     const generatedUsername = userInfo.email.split('@')[0]
 
-    // Send to Backend
     const response = await fetch(
       `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`,
       {
@@ -272,7 +266,6 @@ const handleGoogleLogin = async () => {
       })
       router.push('/login')
     } else {
-      // If error (e.g. email already exists), show it
       throw new Error(data.message || data.data?.message || 'Gagal registrasi dengan Google')
     }
   } catch (error) {
@@ -290,20 +283,16 @@ const handleFacebookLogin = () => {
     (response) => {
       if (response.authResponse) {
         FB.api('/me', { fields: 'name, email' }, async (userInfo) => {
-          // console.log('Facebook User Info', userInfo)
           try {
             if (!userInfo.email) {
               throw new Error('Email tidak ditemukan di akun Facebook Anda.')
             }
 
-            // Generate compliant password
             const randomString = Math.random().toString(36).slice(-8)
             const generatedPassword = `F-Auth${randomString}!`
 
-            // Generate username from email
             const generatedUsername = userInfo.email.split('@')[0]
 
-            // Send to Backend
             const apiResponse = await fetch(
               `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`,
               {
@@ -350,6 +339,7 @@ const handleFacebookLogin = () => {
     { scope: 'public_profile,email' },
   )
 }
+
 </script>
 
 <style lang="scss" scoped>
@@ -398,8 +388,8 @@ const handleFacebookLogin = () => {
   flex-direction: column;
 }
 
-/* Ensure validation error doesn't push layout too much */
 :deep(.q-field--with-bottom) {
   padding-bottom: 12px;
 }
+
 </style>

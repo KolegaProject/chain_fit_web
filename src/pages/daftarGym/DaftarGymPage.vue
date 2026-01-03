@@ -224,6 +224,8 @@ import { useGymStore } from '../../stores/Gym'
 const $q = useQuasar()
 const router = useRouter()
 const loading = ref(false)
+const gymStore = useGymStore()
+
 
 const form = reactive({
   namaGym: '',
@@ -237,7 +239,6 @@ const form = reactive({
   image: null,
 })
 
-// Data operasional dibuat per hari
 const operationalDays = ref([
   { name: 'Senin', active: true, open: '12:00', close: '20:00' },
   { name: 'Selasa', active: true, open: '12:00', close: '20:00' },
@@ -247,8 +248,6 @@ const operationalDays = ref([
   { name: 'Sabtu', active: true, open: '08:00', close: '13:00' },
   { name: 'Minggu', active: false, open: '00:00', close: '00:00' },
 ])
-
-const gymStore = useGymStore()
 
 const onSubmit = async () => {
   loading.value = true
@@ -273,7 +272,6 @@ const onSubmit = async () => {
       formData.append('image', form.image)
     }
 
-    // PANGGIL ACTION DARI STORE
     await gymStore.registerGym(formData)
 
     $q.notify({ type: 'positive', message: 'Pendaftaran Berhasil!' })
@@ -288,6 +286,7 @@ const onSubmit = async () => {
     loading.value = false
   }
 }
+
 </script>
 
 <style scoped>
@@ -298,16 +297,19 @@ const onSubmit = async () => {
 .max-width-container {
   max-width: 1100px;
 }
+
 .main-form-card {
   border-radius: 16px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.05) !important;
 }
+
 .section-label {
   font-size: 0.75rem;
   font-weight: 800;
   color: #000;
   letter-spacing: 1.2px;
 }
+
 .input-label {
   display: block;
   font-size: 0.85rem;
@@ -315,22 +317,28 @@ const onSubmit = async () => {
   color: #424242;
   margin-bottom: 4px;
 }
+
 .day-row {
   border-bottom: 1px solid #e0e0e0;
   transition: background 0.3s;
 }
+
 .day-row:hover {
   background: #fdfdfd;
 }
+
 .day-row:last-child {
   border-bottom: none;
 }
+
 .border-bottom {
   border-bottom: 1px solid #eee;
 }
+
 .border-top {
   border-top: 1px solid #eee;
 }
+
 .time-input {
   width: 100%;
 }

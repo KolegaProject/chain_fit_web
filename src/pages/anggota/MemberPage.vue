@@ -3,9 +3,7 @@
     <q-card flat class="card">
       <q-card-section>
         <div class="title">Anggota Gym</div>
-
         <div class="row items-center q-col-gutter-md q-mb-md">
-          <!-- make search input longer (takes 9/12) -->
           <div class="col-9">
             <q-input
               dense
@@ -20,7 +18,6 @@
             </q-input>
           </div>
 
-          <!-- button in the remaining 3/12 -->
           <div class="col-3 text-right">
             <q-btn
               label="Tambah"
@@ -41,7 +38,6 @@
           separator="none"
           class="custom-table"
         >
-          <!-- STATUS -->
           <template #body-cell-status="props">
             <q-td :props="props">
               <q-chip
@@ -54,7 +50,6 @@
             </q-td>
           </template>
 
-          <!-- MASA AKTIF -->
           <template #body-cell-masaAktif="props">
             <q-td :props="props">
               <div class="masa-aktif">
@@ -64,7 +59,6 @@
             </q-td>
           </template>
 
-          <!-- ACTION -->
           <template #body-cell-actions="props">
             <q-td :props="props" class="text-right q-gutter-sm">
               <q-btn
@@ -89,10 +83,8 @@
       <q-card-section>
         <div class="title">Riwayat Absensi</div>
 
-        <!-- replaced: improved responsive search/filter/button row -->
         <div class="row items-center q-col-gutter-md q-mb-md">
 
-          <!-- SEARCH -->
           <div class="col-6">
             <q-input
               dense
@@ -107,7 +99,6 @@
             </q-input>
           </div>
 
-          <!-- FILTER TANGGAL -->
           <div class="col-3">
             <q-input
               dense
@@ -115,18 +106,7 @@
               v-model="filterTanggal"
               type="date"
             />
-
           </div>
-
-          <!-- BUTTON -->
-<!--          <div class="col-3 text-right">-->
-<!--            <q-btn-->
-<!--              label="Tambah"-->
-<!--              unelevated-->
-<!--              class="btn-dark"-->
-<!--            />-->
-<!--          </div>-->
-
         </div>
 
         <q-table
@@ -176,22 +156,18 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { useQuasar } from 'quasar'                    // added
+import { useQuasar } from 'quasar'
 import { useAnggotaStore } from 'src/stores/Anggota.js'
 import { storeToRefs } from 'pinia'
 
 const router = useRouter()
-const $q = useQuasar()                                // added
-
+const $q = useQuasar()
 const anggotaStore = useAnggotaStore()
 const { rows, riwayatAbsensi } = storeToRefs(anggotaStore)
-
 const GYM_ID = 1
-
 const filterAnggota = ref('')
 const filterAbsensi = ref('')
 const filterTanggal = ref('')
-
 const showConfirmDelete = ref(false)
 const selectedMemberToDelete = ref(null)
 const deleting = ref(false)
@@ -246,7 +222,6 @@ const columnsAbsensi = [
   { name: 'waktu', label: 'Waktu', field: 'waktu', align: 'center' }
 ]
 
-
 onMounted(() => {
   anggotaStore.fetchAnggota(GYM_ID)
   anggotaStore.fetchRiwayatAbsensi(GYM_ID)
@@ -255,7 +230,6 @@ onMounted(() => {
 const rowsAnggota = computed(() =>
   (rows.value || []).map(item => ({
     id: item.id,
-    // tolerate various field names coming from API
     nama: item.name ?? item.user?.name ?? item.nama ?? '-',
     email: item.email ?? item.user?.email ?? '-',
     status: item.status ?? item.state ?? '-',
@@ -271,7 +245,7 @@ const mappedAbsensi = computed(() =>
       id: item.id,
       nama: item.membership?.user?.name ?? '-',
       email: item.membership?.user?.email ?? '-',
-      tanggal: date.toISOString().slice(0, 10), // yyyy-MM-dd
+      tanggal: date.toISOString().slice(0, 10),
       waktu: date.toLocaleTimeString('id-ID', {
         hour: '2-digit',
         minute: '2-digit'
@@ -304,7 +278,6 @@ const deleteAnggota = row => {
   if (!row) return
 
   if (row.status === 'AKTIF') {
-    // use $q.notify (now available)
     $q.notify({
       type: 'negative',
       message: 'Member masih aktif. Member Tidak Bisa di Hapus.'
@@ -315,7 +288,6 @@ const deleteAnggota = row => {
   selectedMemberToDelete.value = row
   showConfirmDelete.value = true
 }
-
 
 const executeDelete = async () => {
   if (!selectedMemberToDelete.value) return
@@ -332,13 +304,12 @@ const executeDelete = async () => {
   }
 }
 
-
-
 const getDotClass = days => {
   if (days >= 10) return 'dot-green'
   if (days > 0) return 'dot-orange'
   return 'dot-red'
 }
+
 </script>
 
 <style scoped>
@@ -347,7 +318,6 @@ const getDotClass = days => {
   background: white;
 }
 
-/* TITLE */
 .title {
   font-size: 20px;
   font-weight: 800;
@@ -355,7 +325,6 @@ const getDotClass = days => {
   margin-bottom: 20px;
 }
 
-/* TABLE */
 .custom-table :deep(th) {
   text-align: center;
   font-weight: 800;
@@ -444,12 +413,14 @@ const getDotClass = days => {
   max-width: 440px;
   border-radius: 24px;
 }
+
 .btn-dialog-flat {
   width: 130px;
   background-color: #f0f2f5;
   border-radius: 12px;
   font-weight: bold;
 }
+
 .btn-dialog-gradient {
   width: 130px;
   background: black;
@@ -457,6 +428,7 @@ const getDotClass = days => {
   border-radius: 12px;
   font-weight: bold;
 }
+
 .close-btn {
   position: absolute;
   top: 12px;

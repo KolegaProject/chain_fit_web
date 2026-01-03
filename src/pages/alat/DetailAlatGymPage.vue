@@ -202,8 +202,6 @@ const fetchDetail = async () => {
   }
 }
 
-// DetailAlatGym.vue - di dalam <script setup>
-
 const handleUpdate = async () => {
   const gymId = gymStore.selectedGymId
   const equipId = equipment.id // Pastikan ID alat tersedia
@@ -220,7 +218,6 @@ const handleUpdate = async () => {
       jumlah: equipment.jumlah,
     }
 
-    // MEMANGGIL FUNGSI YANG SUDAH DISINKRONKAN
     await equipmentStore.updateEquipment(gymId, equipId, payload)
 
     $q.notify({

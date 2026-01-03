@@ -207,11 +207,7 @@ import VueApexCharts from 'vue3-apexcharts'
 
 const router = useRouter()
 const apexchart = VueApexCharts
-
-// Loading State
 const isLoading = ref(true)
-
-// Stats Data
 const totalMembers = ref(0)
 const totalStaff = ref(7)
 const totalEquipment = ref(0)
@@ -224,8 +220,8 @@ const summaryStats = computed(() => [
   { label: 'Pemasukan', value: totalRevenue.value, icon: 'payments', color: 'positive' },
 ])
 
-// --- CHARTS CONFIGURATION ---
 const incomeSeries = ref([{ name: 'Pemasukan', data: [31, 40, 28, 51, 42, 109, 100] }])
+
 const incomeChartOptions = {
   chart: { toolbar: { show: false }, zoom: { enabled: false }, fontFamily: 'inherit' },
   colors: ['#21BA45'],
@@ -244,6 +240,7 @@ const incomeChartOptions = {
 }
 
 const expenseSeries = ref([{ name: 'Pengeluaran', data: [15, 23, 18, 40, 25, 30, 20] }])
+
 const expenseChartOptions = {
   chart: { toolbar: { show: false }, fontFamily: 'inherit' },
   colors: ['#C10015'],
@@ -256,7 +253,6 @@ const expenseChartOptions = {
   grid: { strokeDashArray: 4 },
 }
 
-// --- TABLE & FACILITIES DATA ---
 const transactionColumns = [
   { name: 'nama', label: 'Item/Kebutuhan', field: 'nama', align: 'left' },
   { name: 'type', label: 'Tipe', field: 'type', align: 'left' },
@@ -277,7 +273,6 @@ const equipmentSummary = ref([
 ])
 
 onMounted(() => {
-  // Simulasi pengambilan data
   setTimeout(() => {
     const members = JSON.parse(localStorage.getItem('members') || '[]')
     const equipments = JSON.parse(localStorage.getItem('equipments') || '[]')
@@ -286,6 +281,7 @@ onMounted(() => {
     isLoading.value = false
   }, 1000)
 })
+
 </script>
 
 <style lang="scss" scoped>
@@ -331,4 +327,5 @@ onMounted(() => {
 .chart-card {
   border: 1px solid rgba(0, 0, 0, 0.05);
 }
+
 </style>

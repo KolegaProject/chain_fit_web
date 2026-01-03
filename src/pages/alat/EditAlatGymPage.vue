@@ -67,8 +67,6 @@
               </div>
             </div>
           </div>
-
-          <!-- Image grid -->
           <div class="col-12 col-md-6">
             <div class="media-grid media-grid--image">
               <div class="media-item" v-for="i in 4" :key="'img-' + i">

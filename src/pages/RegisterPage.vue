@@ -126,7 +126,7 @@
 import { reactive } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
-import { useAuthStore } from '../stores/Auth' // Pastikan path file benar
+import { useAuthStore } from '../stores/Auth'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -143,9 +143,8 @@ const doRegister = async () => {
   const authStore = useAuthStore()
 
   try {
-    // Mapping data agar sesuai dengan format JSON yang Anda inginkan
     const payload = {
-      name: form.fullname, // Mapping 'fullname' dari UI ke 'name' untuk API
+      name: form.fullname,
       username: form.username,
       email: form.email,
       password: form.password,
@@ -160,7 +159,6 @@ const doRegister = async () => {
     })
     router.push('/login')
   } catch (err) {
-    // Mengambil pesan error dari response backend (jika ada)
     const errorMessage = err.response?.data?.errors?.message || 'Registrasi Gagal'
     $q.notify({
       type: 'negative',
@@ -221,7 +219,6 @@ const goToLogin = () => {
   flex-direction: column;
 }
 
-/* Ensure validation error doesn't push layout too much */
 :deep(.q-field--with-bottom) {
   padding-bottom: 12px;
 }

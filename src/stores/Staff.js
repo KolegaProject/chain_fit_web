@@ -9,6 +9,7 @@ export const useStaffStore = defineStore('staff', {
     loading: false,
   }),
 
+  // Membuat aksi untuk mengelola data staff gym
   actions: {
     async fetchStaffData() {
       const gymStore = useGymStore()
@@ -16,7 +17,6 @@ export const useStaffStore = defineStore('staff', {
 
       this.loading = true
       try {
-        // Perbaikan: gymId sekarang sudah terdefinisi
         const response = await api.get(`/api/v1/gym/${gymId}/gym-staff`)
         if (response.data.code === 200) {
           this.rows = response.data.data
@@ -28,15 +28,14 @@ export const useStaffStore = defineStore('staff', {
       }
     },
 
+    // Update data staff gym
     async updateStaff(gymId, userId, payload) {
       this.loading = true
       try {
-        // Gunakan FormData karena API menerima File (image)
         const formData = new FormData()
         formData.append('name', payload.nama)
         formData.append('email', payload.email)
 
-        // Append file jika ada (payload.image adalah objek File dari input)
         if (payload.imageFile) {
           formData.append('image', payload.imageFile)
         }
@@ -64,6 +63,7 @@ export const useStaffStore = defineStore('staff', {
       }
     },
 
+    // Membuat staff gym baru
     async createStaff(gymId, payload) {
       this.loading = true
       try {
@@ -76,8 +76,6 @@ export const useStaffStore = defineStore('staff', {
         const response = await api.post(`/api/v1/gym/${gymId}/gym-staff`, body)
 
         if (response.status === 201 || response.data.code === 200) {
-          // OPTIMASI: Tambahkan data yang baru dibuat ke dalam state local
-          // Jika API mengembalikan data object staff yang baru, gunakan itu:
           if (response.data.data) {
             this.rows.push(response.data.data)
           }
@@ -102,8 +100,7 @@ export const useStaffStore = defineStore('staff', {
       }
     },
 
-    // ... state lainnya
-
+    // Mengambil detail staff gym berdasarkan ID
     async fetchStaffById(gymId, userId) {
       this.loading = true
       try {
@@ -119,13 +116,12 @@ export const useStaffStore = defineStore('staff', {
       }
     },
 
+    // Menghapus staff gym
     async deleteStaff(gymId, userId) {
       try {
-        // URL sekarang menggunakan gymId dinamis dari parameter
         const response = await api.delete(`/api/v1/gym/${gymId}/gym-staff/${userId}`)
 
         if (response.status === 200 || response.data.code === 200) {
-          // Hapus dari state lokal agar tabel langsung terupdate
           this.rows = this.rows.filter((item) => item.id !== userId)
 
           Notify.create({

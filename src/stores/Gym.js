@@ -3,8 +3,8 @@ import { api } from 'src/boot/axios'
 
 export const useGymStore = defineStore('gym', {
   state: () => ({
-    myGyms: [], // Menyimpan daftar gym yang dikelola user
-    currentGym: null, // Menyimpan detail gym yang sedang dipilih/diedit
+    myGyms: [],
+    currentGym: null,
     selectedGymId: null,
     loading: false,
   }),
@@ -12,14 +12,11 @@ export const useGymStore = defineStore('gym', {
   persist: true,
 
   actions: {
-    /**
-     * Mendaftarkan Gym Baru
-     * Menggunakan FormData karena mengirimkan File (Image)
-     */
     setSelectedGymId(id) {
       this.selectedGymId = id
     },
 
+    // Mendaftarkan gym baru
     async registerGym(formData) {
       this.loading = true
       try {
@@ -29,7 +26,6 @@ export const useGymStore = defineStore('gym', {
           },
         })
 
-        // Opsional: Update list gym lokal setelah berhasil daftar
         if (response.data.data) {
           this.myGyms.push(response.data.data)
         }
@@ -43,9 +39,7 @@ export const useGymStore = defineStore('gym', {
       }
     },
 
-    /**
-     * Mengambil semua gym milik owner yang sedang login
-     */
+   // Mengambil daftar gym yang dikelola user
     async fetchMyGyms() {
       this.loading = true
       try {
@@ -60,9 +54,7 @@ export const useGymStore = defineStore('gym', {
       }
     },
 
-    /**
-     * Mengambil detail satu gym berdasarkan ID
-     */
+    // Mengambil detail gym berdasarkan ID
     async fetchGymDetail(id) {
       this.loading = true
       try {
@@ -77,9 +69,7 @@ export const useGymStore = defineStore('gym', {
       }
     },
 
-    /**
-     * Menghapus Gym
-     */
+    // Menghapus gym berdasarkan ID
     async deleteGym(id) {
       try {
         await api.delete(`api/v1/gym/${id}`)

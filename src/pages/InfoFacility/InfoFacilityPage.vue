@@ -335,14 +335,13 @@ const router = useRouter()
 const $q = useQuasar()
 const slide = ref(0)
 const search = ref('')
-
 const gymStore = useGymStore()
 const packageStore = usePackageStore()
 const equipmentStore = useEquipmentStore()
-
 const gymData = computed(() => gymStore.currentGym || {})
 const subscriptionPlans = computed(() => packageStore.subscriptionPlans)
 const equipments = computed(() => equipmentStore.equipments)
+
 const formattedTags = computed(() => {
   const t = gymData.value.tag
   return t ? t.split(',').map((s) => s.trim()) : []
@@ -357,12 +356,12 @@ const equipmentColumns = [
 
 const showAddDialog = ref(false)
 const editingPlanId = ref(null)
+
 const newPlan = reactive({ name: '', price: '', durationDays: 30, benefit: [''] })
 
 const loadAllData = async (gymId) => {
   if (!gymId) return
   try {
-    // loading dikontrol oleh gymStore.loading
     await Promise.all([
       gymStore.fetchGymDetail(gymId),
       packageStore.fetchPlans(gymId),
@@ -437,6 +436,7 @@ const editInfo = () => router.push('/info/edit')
     font-size: 11px;
   }
 }
+
 .package-card {
   border-radius: 12px;
   border: 1px solid #dee2e6;
@@ -449,6 +449,7 @@ const editInfo = () => router.push('/info/edit')
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   }
 }
+
 .plan-add-box {
   height: 100%;
   min-height: 250px;
@@ -460,6 +461,7 @@ const editInfo = () => router.push('/info/edit')
     border-color: #94a3b8;
   }
 }
+
 .btn-tambah {
   background: #000;
   color: white;
@@ -468,6 +470,7 @@ const editInfo = () => router.push('/info/edit')
 .rounded-borders {
   border-radius: 12px;
 }
+
 .benefit-scroll-area {
   max-height: 120px;
   overflow-y: auto;
@@ -483,4 +486,5 @@ const editInfo = () => router.push('/info/edit')
     border-radius: 10px;
   }
 }
+
 </style>

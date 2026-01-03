@@ -176,7 +176,6 @@ const showAddAbsensi = ref(false)
 const search = ref('')
 const isLoading = ref(true)
 
-// --- DATA CHART ---
 const incomeSeries = [{ name: 'Pemasukan', data: [30, 40, 35, 50, 49, 60, 70] }]
 const incomeChartOptions = {
   chart: { toolbar: { show: false }, fontFamily: 'inherit' },
@@ -196,7 +195,6 @@ const expenseChartOptions = {
   dataLabels: { enabled: false },
 }
 
-// --- DATA TABEL ---
 const columns = [
   { name: 'no', label: 'No', field: 'no', align: 'left' },
   { name: 'nama', label: 'Nama', field: 'nama', align: 'left' },
@@ -217,7 +215,6 @@ const rowsPemasukan = [
 ]
 
 onMounted(() => {
-  // Simulasi loading data dari API
   setTimeout(() => {
     isLoading.value = false
   }, 1000)
@@ -255,18 +252,19 @@ onMounted(() => {
   }
 }
 
-/* DIALOG STYLES */
 .dialog-card {
   width: 100%;
   max-width: 480px;
   border-radius: 24px;
 }
+
 .btn-dialog-flat {
   width: 140px;
   background-color: #f0f2f5;
   border-radius: 12px;
   font-weight: bold;
 }
+
 .btn-dialog-gradient {
   width: 140px;
   background: linear-gradient(to bottom, #a0a0a0, #666666);
@@ -274,10 +272,12 @@ onMounted(() => {
   border-radius: 12px;
   font-weight: bold;
 }
+
 .close-btn {
   position: absolute;
   top: 12px;
   right: 12px;
   background-color: #f0f0f0;
 }
+
 </style>

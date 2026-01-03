@@ -12,7 +12,6 @@ export const useEquipmentStore = defineStore('equipment', {
       try {
         this.loading = true
         const response = await api.get(`/api/v1/gym/${gymId}/equipment`)
-        // Sesuaikan dengan struktur return API Anda: response.data.data
         this.equipments = response.data.data || []
         return this.equipments
       } catch (error) {
@@ -23,6 +22,7 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
 
+    // Membuat equipment baru
     async createEquipment(gymId, data) {
       try {
         this.loading = true
@@ -41,6 +41,7 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
 
+    // Mengambil detail equipment berdasarkan ID
     async fetchEquipmentDetail(gymId, equipId) {
       try {
         this.loading = true
@@ -53,6 +54,7 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
 
+    // Menghapus equipment berdasarkan ID
     async deleteEquipment(gymId, equipId) {
       try {
         this.loading = true
@@ -64,12 +66,11 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
 
-    // Di dalam actions: { ... }
+    // Memperbarui data equipment
     async updateEquipment(gymId, equipId, payload) {
       try {
         this.loading = true
 
-        // Perbaikan: Konversi jumlah menjadi String sesuai permintaan API (Error 400)
         const response = await api.put(`/api/v1/gym/${gymId}/equipment/${equipId}`, {
           name: payload.name,
           jumlah: payload.jumlah.toString(), // Ubah ke String di sini
@@ -84,9 +85,6 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
   },
-
-  // Tambahkan di dalam actions: { ... }
-  // src/stores/Equipment.js
 })
 
 if (import.meta.hot) {

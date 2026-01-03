@@ -38,9 +38,7 @@ export const useAnggotaStore = defineStore('anggota', {
       }
     },
 
-    // =============================
-    // GET RIWAYAT ABSENSI
-    // =============================
+    // Get riwayat absensi anggota
     async fetchRiwayatAbsensi(gymId) {
       this.loadingRiwayat = true
       try {
@@ -54,14 +52,10 @@ export const useAnggotaStore = defineStore('anggota', {
       }
     },
 
-    // =============================
-    // DELETE ANGGOTA (MEMBERSHIP)
-    // =============================
+    // Delete anggota
     async deleteAnggota(gymId, membershipId) {
       try {
         await api.delete(`/api/v1/gym/${gymId}/memberships/${membershipId}`)
-
-        // update UI langsung
         this.rows = this.rows.filter(r => r.id !== membershipId)
       } catch (err) {
         console.error('Gagal menghapus anggota:', err)
@@ -69,25 +63,7 @@ export const useAnggotaStore = defineStore('anggota', {
       }
     },
 
-    // =============================
-    // GET PAKET MEMBER
-    // =============================
-    async fetchPaketMember(gymId) {
-      this.loadingPaket = true
-      try {
-        const res = await api.get(`/api/v1/gym/${gymId}/paket-member`)
-        this.paketMember = res.data.data ?? []
-      } catch (err) {
-        console.error('Gagal ambil paket member:', err)
-        this.paketMember = []
-      } finally {
-        this.loadingPaket = false
-      }
-    },
-
-
-// UPDATE MEMBERSHIP (FRONTEND HITUNG HARI)
-// =============================
+    // Update membership anggota
     async updateMembership(gymId, membershipId, payload) {
       try {
         return await api.put(

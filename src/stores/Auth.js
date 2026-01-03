@@ -4,7 +4,7 @@ import { api } from 'src/boot/axios'
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     user: null,
-    gyms: [], // Tambahkan state untuk menyimpan daftar gym
+    gyms: [],
     token: null,
     refreshToken: null,
   }),
@@ -12,13 +12,12 @@ export const useAuthStore = defineStore('auth', {
   persist: true,
 
   actions: {
-    // Action untuk set user & gym secara manual jika diperlukan
     setUser(userData, gymData = []) {
       this.user = userData
       this.gyms = gymData
     },
 
-    // Action untuk ambil data profile (Me)
+    // Get profile user yang sedang login
     async fetchUser() {
       try {
         const response = await api.get('api/v1/auth/me')
@@ -35,11 +34,13 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    // Register owner baru
     async register(credential) {
       const response = await api.post('api/v1/auth/register-owner', credential)
       return response.data
     },
 
+    // Login user dan simpan token
     async login(credential) {
       const response = await api.post('api/v1/auth/login', credential)
       const { access_token, refresh_token } = response.data.data
@@ -58,6 +59,7 @@ export const useAuthStore = defineStore('auth', {
       return response.data
     },
 
+    // Logout user dan hapus token
     logout() {
       this.token = null
       this.refreshToken = null

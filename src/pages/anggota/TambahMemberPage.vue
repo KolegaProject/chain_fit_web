@@ -82,17 +82,11 @@ import { usePackageStore } from 'src/stores/Package'
 import { storeToRefs } from 'pinia'
 import { api } from 'src/boot/axios'
 
-
 const $q = useQuasar()
-
 const gymStore = useGymStore()
 const packageStore = usePackageStore()
-
 const { subscriptionPlans } = storeToRefs(packageStore)
-
 const gymId = computed(() => gymStore.selectedGymId)
-
-
 const router = useRouter()
 const form = ref({ nama: '', email: '', selectedPaket: null })
 
@@ -127,8 +121,6 @@ onMounted(async () => {
     })
   }
 })
-
-
 
 const goBack = () => {
   router.push('/anggota')
@@ -199,21 +191,25 @@ const submitForm = async () => {
   max-width: 1000px;
   margin: 0 auto;
 }
+
 .custom-input :deep(.q-field__control) {
   border-radius: 10px;
   background-color: white;
   border: 1.5px solid #000;
 }
+
 .paket-card {
   border-radius: 12px;
   background-color: #94a3b8;
   color: white;
   border: 2px solid transparent;
 }
+
 .paket-selected {
   background-color: #475569;
   border-color: #0c0c0c;
 }
+
 .btn-tambah {
   background-color: #0c0c0c;
   color: white;
@@ -236,4 +232,5 @@ const submitForm = async () => {
   font-size: 13px;
   font-weight: 600;
 }
+
 </style>
