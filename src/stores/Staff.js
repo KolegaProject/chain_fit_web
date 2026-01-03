@@ -119,14 +119,13 @@ export const useStaffStore = defineStore('staff', {
       }
     },
 
-    async deleteStaff(userId) {
-      // Pastikan loading state aktif jika ingin ada spinner di tombol hapus
+    async deleteStaff(gymId, userId) {
       try {
-        // Ganti '1' dengan ID Gym yang sesuai
-        const response = await api.delete(`/api/v1/gym/1/gym-staff/${userId}`)
+        // URL sekarang menggunakan gymId dinamis dari parameter
+        const response = await api.delete(`/api/v1/gym/${gymId}/gym-staff/${userId}`)
 
         if (response.status === 200 || response.data.code === 200) {
-          // Update state lokal agar baris di tabel langsung hilang
+          // Hapus dari state lokal agar tabel langsung terupdate
           this.rows = this.rows.filter((item) => item.id !== userId)
 
           Notify.create({
@@ -143,6 +142,7 @@ export const useStaffStore = defineStore('staff', {
           message: errorMsg,
           position: 'top',
         })
+        return false
       }
     },
   },

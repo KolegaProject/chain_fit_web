@@ -203,16 +203,17 @@ const executeDelete = async () => {
   if (!selectedMemberToDelete.value) return
 
   deleting.value = true
-  try {
-    // Memanggil action store dengan ID staff
-    await staffStore.deleteStaff(selectedMemberToDelete.value.id)
+
+  const gymId = gymStore.selectedGymId || 1
+
+  const success = await staffStore.deleteStaff(gymId, selectedMemberToDelete.value.id)
+
+  if (success) {
     showConfirmDelete.value = false
-  } catch (error) {
-    console.error('Error detail:', error)
-  } finally {
-    deleting.value = false
     selectedMemberToDelete.value = null
   }
+
+  deleting.value = false
 }
 </script>
 
