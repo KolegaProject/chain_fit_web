@@ -48,12 +48,21 @@
                 color="black"
                 outlined
                 v-model="password"
-                type="password"
+                :type="showPassword ? 'text' : 'password'"
                 placeholder="Password"
                 bg-color="white"
                 dense
                 required
-              />
+              >
+                <template #append>
+                  <q-icon
+                    :name="showPassword ? 'visibility_off' : 'visibility'"
+                    class="cursor-pointer"
+                    @click="showPassword = !showPassword"
+                  />
+                </template>
+              </q-input>
+
 
               <q-btn
                 type="submit"
@@ -109,6 +118,8 @@ const authStore = useAuthStore()
 const username = ref('')
 const password = ref('')
 const loading = ref(false)
+const showPassword = ref(false)
+
 
 const handleLogin = async () => {
   loading.value = true
