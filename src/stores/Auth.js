@@ -59,6 +59,24 @@ export const useAuthStore = defineStore('auth', {
       return response.data
     },
 
+    async loginSocialAccount(credential) {
+      const response = await api.post('api/v1/auth/login-social-account', credential);
+      const { access_token, refresh_token } = response.data.data;
+
+      this.token = access_token;
+      this.refreshToken = refresh_token;
+
+      localStorage.setItem('access_token', access_token);
+      localStorage.setItem('refresh_token', refresh_token);
+
+      api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
+
+      // Opsional: Langsung panggil fetchUser setelah login berhasil
+      await this.fetchUser()
+
+      return response.data;
+    },
+
     // Logout user dan hapus token
     logout() {
       this.token = null
