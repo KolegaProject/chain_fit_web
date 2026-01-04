@@ -9,7 +9,7 @@
               dense
               outlined
               v-model="filterAnggota"
-              placeholder="Search..."
+              placeholder="Cari Nama atau Email..."
               class="search-input-full"
             >
               <template #prepend>
@@ -34,7 +34,7 @@
           :columns="columnsAnggota"
           row-key="id"
           :filter="filterAnggota"
-          hide-bottom
+          :pagination="paginationConfig"
           separator="none"
           class="custom-table"
         >
@@ -84,7 +84,6 @@
         <div class="title">Riwayat Absensi</div>
 
         <div class="row items-center q-col-gutter-md q-mb-md">
-
           <div class="col-6">
             <q-input
               dense
@@ -114,13 +113,12 @@
           :rows="filteredAbsensi"
           :columns="columnsAbsensi"
           row-key="id"
-          hide-bottom
+          :pagination="paginationConfig"
           separator="none"
           class="custom-table"
         />
       </q-card-section>
     </q-card>
-
     <q-dialog v-model="showConfirmDelete" persistent>
       <q-card class="dialog-card q-pa-md">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
@@ -132,8 +130,7 @@
           />
           <div class="text-h6 text-weight-bolder">Hapus Data Anggota?</div>
           <div class="text-body2 text-grey-7 q-mt-sm">
-            Hapus anggota <strong>{{ selectedMemberToDelete ? (selectedMemberToDelete.nama || selectedMemberToDelete.name) : '' }}</strong
-            >? Data tidak dapat dipulihkan.
+            Hapus anggota <strong>{{ selectedMemberToDelete?.nama }}</strong>? Data tidak dapat dipulihkan.
           </div>
         </q-card-section>
         <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
@@ -149,78 +146,45 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
-
   </q-page>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAnggotaStore } from 'src/stores/Anggota.js'
-import { storeToRefs } from 'pinia'
-import { watch } from 'vue'
 import { useGymStore } from 'src/stores/Gym'
-
-
+import { storeToRefs } from 'pinia'
 
 const router = useRouter()
 const $q = useQuasar()
 const anggotaStore = useAnggotaStore()
+const gymStore = useGymStore()
+
 const { rows, riwayatAbsensi } = storeToRefs(anggotaStore)
+const gymId = computed(() => gymStore.selectedGymId)
+
 const filterAnggota = ref('')
 const filterAbsensi = ref('')
 const filterTanggal = ref('')
 const showConfirmDelete = ref(false)
 const selectedMemberToDelete = ref(null)
 const deleting = ref(false)
-const gymStore = useGymStore()
 
-const gymId = computed(() => gymStore.selectedGymId)
+// const showAddAbsensi = ref(false)
 
-
+const paginationConfig = ref({
+  rowsPerPage: 10,
+  page: 1
+})
 
 const columnsAnggota = [
-  {
-    name: 'nama',
-    label: 'Nama',
-    field: 'nama',
-    align: 'left',
-    headerStyle: 'width: 22%',
-    style: 'width: 22%'
-  },
-  {
-    name: 'email',
-    label: 'Email',
-    field: 'email',
-    align: 'left',
-    headerStyle: 'width: 26%',
-    style: 'width: 26%'
-  },
-  {
-    name: 'status',
-    label: 'Status Member',
-    field: 'status',
-    align: 'center',
-    headerStyle: 'width: 16%',
-    style: 'width: 16%'
-  },
-  {
-    name: 'masaAktif',
-    label: 'Masa Aktif',
-    field: 'masaAktif',
-    align: 'center',
-    headerStyle: 'width: 16%',
-    style: 'width: 16%'
-  },
-  {
-    name: 'actions',
-    label: '',
-    field: 'actions',
-    align: 'right',
-    headerStyle: 'width: 20%',
-    style: 'width: 20%'
-  }
+  { name: 'nama', label: 'Nama', field: 'nama', align: 'left' },
+  { name: 'email', label: 'Email', field: 'email', align: 'left' },
+  { name: 'status', label: 'Status Member', field: 'status', align: 'center' },
+  { name: 'masaAktif', label: 'Masa Aktif', field: 'masaAktif', align: 'center' },
+  { name: 'actions', label: '', field: 'actions', align: 'right' }
 ]
 
 const columnsAbsensi = [
@@ -231,69 +195,56 @@ const columnsAbsensi = [
 ]
 
 onMounted(() => {
-  if (!gymId.value) {
-    $q.notify({
-      type: 'negative',
-      message: 'Gym belum dipilih'
-    })
-    return
+  if (gymId.value) {
+    anggotaStore.fetchAnggota(gymId.value)
+    anggotaStore.fetchRiwayatAbsensi(gymId.value)
   }
-
-  anggotaStore.fetchAnggota(gymId.value)
-  anggotaStore.fetchRiwayatAbsensi(gymId.value)
 })
-
 
 const rowsAnggota = computed(() =>
   (rows.value || []).map(item => ({
     id: item.id,
-    nama: item.name ?? item.user?.name ?? item.nama ?? '-',
-    email: item.email ?? item.user?.email ?? '-',
-    status: item.status ?? item.state ?? '-',
-    masaAktif: item.masaAktifHari ?? item.masaAktif ?? 0
+    nama: item.name ?? '-',
+    email: item.email ?? '-',
+    status: item.status,
+    masaAktif: item.masaAktifHari ?? 0
   }))
 )
 
 const mappedAbsensi = computed(() =>
   (riwayatAbsensi.value || []).map(item => {
     const date = new Date(item.checkInAt)
-
     return {
       id: item.id,
       nama: item.membership?.user?.name ?? '-',
       email: item.membership?.user?.email ?? '-',
       tanggal: date.toISOString().slice(0, 10),
-      waktu: date.toLocaleTimeString('id-ID', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+      waktu: date.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' })
     }
   })
 )
 
-
 const filteredAbsensi = computed(() => {
   let data = mappedAbsensi.value
-
   if (filterTanggal.value) {
     data = data.filter(r => r.tanggal === filterTanggal.value)
   }
-
   if (filterAbsensi.value) {
+    const search = filterAbsensi.value.toLowerCase()
     data = data.filter(r =>
-      r.tanggal.includes(filterAbsensi.value) ||
-      r.waktu.includes(filterAbsensi.value)
+      r.nama.toLowerCase().includes(search) ||
+      r.email.toLowerCase().includes(search)
     )
   }
-
   return data
 })
 
 const goToTambahAnggota = () => router.push('/anggota/tambah')
 const editAnggota = row => router.push(`/anggota/edit/${row.id}`)
+
 const deleteAnggota = row => {
   if (!row) return
-
+  // Validasi: Member aktif biasanya tidak boleh dihapus demi integritas data
   if (row.status === 'AKTIF') {
     $q.notify({
       type: 'negative',
@@ -301,24 +252,20 @@ const deleteAnggota = row => {
     })
     return
   }
-
   selectedMemberToDelete.value = row
   showConfirmDelete.value = true
 }
 
 const executeDelete = async () => {
   if (!selectedMemberToDelete.value) return
-
   deleting.value = true
   try {
-    await anggotaStore.deleteAnggota(
-      gymId.value,
-      selectedMemberToDelete.value.id
-    )
+    await anggotaStore.deleteAnggota(gymId.value, selectedMemberToDelete.value.id)
+    $q.notify({ type: 'positive', message: 'Member berhasil dihapus' })
     showConfirmDelete.value = false
     selectedMemberToDelete.value = null
   } catch (err) {
-    console.error('Gagal menghapus anggota:', err)
+    $q.notify({ type: 'negative', message: err.message || 'Gagal menghapus member' })
   } finally {
     deleting.value = false
   }
@@ -336,7 +283,6 @@ watch(gymId, (newId) => {
     anggotaStore.fetchRiwayatAbsensi(newId)
   }
 })
-
 </script>
 
 <style scoped>
@@ -356,28 +302,16 @@ watch(gymId, (newId) => {
   text-align: center;
   font-weight: 800;
   font-size: 15px;
+  color: #616161;
 }
 
-.custom-table :deep(th:first-child),
-.custom-table :deep(td:first-child),
-.custom-table :deep(th:nth-child(2)),
-.custom-table :deep(td:nth-child(2)) {
-  text-align: left;
-}
-
-.custom-table :deep(td) {
-  vertical-align: middle;
-  white-space: nowrap;
-}
-
-.search-input {
-  max-width: none;
-  width: 100%;
+.custom-table :deep(.q-table__bottom) {
+  border-top: 1px solid #edf2f7;
+  justify-content: center; /* Merapikan posisi pagination */
 }
 
 .search-input-full {
   width: 100%;
-  max-width: none;
 }
 
 .status-chip {
@@ -403,13 +337,13 @@ watch(gymId, (newId) => {
   gap: 8px;
   padding: 6px 14px;
   border-radius: 12px;
-  background: #dcfce7;
+  background: #f1f5f9;
   font-weight: 600;
 }
 
 .dot {
-  width: 6px;
-  height: 6px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
 }
 
@@ -421,18 +355,19 @@ watch(gymId, (newId) => {
   background: #0c0c0c;
   color: white;
   border-radius: 10px;
+  padding: 8px 20px;
 }
 
 .btn-edit {
   background: #2563eb;
   color: white;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .btn-delete {
   background: #dc2626;
   color: white;
-  border-radius: 10px;
+  border-radius: 8px;
 }
 
 .dialog-card {
@@ -461,15 +396,89 @@ watch(gymId, (newId) => {
   top: 12px;
   right: 12px;
   background-color: #f0f0f0;
-  z-index: 10;
 }
 
 @media (max-width: 1024px) {
-  .col-9,
-  .col-3,
-  .col-6 {
+  .col-9, .col-3, .col-6 {
     width: 100% !important;
+    text-align: left !important;
+    margin-bottom: 10px;
   }
 }
-
 </style>
+
+<!--          <div class="col-3 text-right">-->
+<!--            <q-btn-->
+<!--              label="Tambah Absensi"-->
+<!--              unelevated-->
+<!--              icon="add"-->
+<!--              class="btn-dark"-->
+<!--              @click="showAddAbsensi = true"-->
+<!--            />-->
+<!--          </div>-->
+
+<!--    <q-dialog v-model="showAddAbsensi" persistent>-->
+<!--      <q-card style="width: 420px" class="q-pa-md">-->
+<!--        <div class="text-h6 q-mb-md">Tambah Absensi</div>-->
+
+<!--        <q-select-->
+<!--          v-model="absensiForm.membershipId"-->
+<!--          :options="rowsAnggota"-->
+<!--          option-label="nama"-->
+<!--          option-value="id"-->
+<!--          label="Pilih Member"-->
+<!--          outlined-->
+<!--          dense-->
+<!--          emit-value-->
+<!--          map-options-->
+<!--          class="q-mb-md"-->
+<!--        />-->
+
+<!--        <q-card-actions align="right">-->
+<!--          <q-btn flat label="Batal" v-close-popup />-->
+<!--          <q-btn-->
+<!--            label="Simpan"-->
+<!--            color="primary"-->
+<!--            unelevated-->
+<!--            @click="submitAbsensi"-->
+<!--          />-->
+<!--        </q-card-actions>-->
+<!--      </q-card>-->
+<!--    </q-dialog>-->
+
+<!--// const submitAbsensi = async () => {-->
+<!--//   if (!absensiForm.value.membershipId) {-->
+<!--//     $q.notify({-->
+<!--//       type: 'negative',-->
+<!--//       message: 'Silakan pilih member'-->
+<!--//     })-->
+<!--//     return-->
+<!--//   }-->
+<!--//-->
+<!--//   try {-->
+<!--//     await anggotaStore.createAbsensi(-->
+<!--//       absensiForm.value.membershipId-->
+<!--//     )-->
+<!--//-->
+<!--//-->
+<!--//     await anggotaStore.fetchRiwayatAbsensi(gymId.value)-->
+<!--//-->
+<!--//     showAddAbsensi.value = false-->
+<!--//     absensiForm.value.membershipId = null-->
+<!--//-->
+<!--//     $q.notify({-->
+<!--//       type: 'positive',-->
+<!--//       message: 'Absensi berhasil ditambahkan'-->
+<!--//     })-->
+<!--//   } catch (err) {-->
+<!--//     console.error(err)-->
+<!--//     $q.notify({-->
+<!--//       type: 'negative',-->
+<!--//       message: 'Gagal menambahkan absensi'-->
+<!--//     })-->
+<!--//   }-->
+<!--// }-->
+
+<!--// const absensiForm = ref({-->
+<!--//   membershipId: null-->
+<!--// })-->

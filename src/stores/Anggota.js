@@ -5,12 +5,8 @@ export const useAnggotaStore = defineStore('anggota', {
   state: () => ({
     rows: [],
     riwayatAbsensi: [],
-    paketMember: [],
-
     loading: false,
     loadingRiwayat: false,
-    loadingPaket: false,
-
     total: 0
   }),
 
@@ -38,7 +34,6 @@ export const useAnggotaStore = defineStore('anggota', {
       }
     },
 
-    // Get riwayat absensi anggota
     async fetchRiwayatAbsensi(gymId) {
       this.loadingRiwayat = true
       try {
@@ -52,18 +47,19 @@ export const useAnggotaStore = defineStore('anggota', {
       }
     },
 
-    // Delete anggota
     async deleteAnggota(gymId, membershipId) {
       try {
         await api.delete(`/api/v1/gym/${gymId}/memberships/${membershipId}`)
         this.rows = this.rows.filter(r => r.id !== membershipId)
       } catch (err) {
-        console.error('Gagal menghapus anggota:', err)
-        throw err
+        const message =
+          err.response?.data?.message ||
+          'Member masih aktif dan tidak bisa dihapus'
+
+        throw new Error(message)
       }
     },
 
-    // Update membership anggota
     async updateMembership(gymId, membershipId, payload) {
       try {
         return await api.put(
@@ -71,7 +67,21 @@ export const useAnggotaStore = defineStore('anggota', {
           payload
         )
       } catch (err) {
-        console.error('Gagal update membership:', err)
+        const message =
+          err.response?.data?.message ||
+          'Membership masih aktif, tidak dapat diubah'
+
+        throw new Error(message)
+      }
+    },
+
+    async createAbsensi(membershipId) {
+      try {
+        await api.post('/api/v1/attendance', {
+          membershipId
+        })
+      } catch (err) {
+        console.error('Gagal menambah absensi:', err)
         throw err
       }
     }
