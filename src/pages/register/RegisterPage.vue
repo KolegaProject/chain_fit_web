@@ -151,9 +151,11 @@ import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { googleTokenLogin } from 'vue3-google-login'
+import { useAuthStore } from '../../stores/Auth'
 
 const router = useRouter()
 const $q = useQuasar()
+const authStore = useAuthStore()
 
 const form = reactive({
   name: '',
@@ -177,52 +179,44 @@ const handleRegister = async () => {
   Object.keys(errors).forEach((key) => (errors[key] = ''))
 
   try {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: form.name,
-          username: form.username,
-          password: form.password,
-          email: form.email,
-        }),
-      },
-    )
+    const response = await authStore.register({
+      name: form.name,
+      username: form.username,
+      password: form.password,
+      email: form.email,
+    })
 
-    const data = await response.json()
-
-    if (response.ok && data.code === 200) {
+    if (response.code === 200) {
       $q.notify({
-        message: data.data?.message || 'Registrasi berhasil!',
+        message: response.data?.message || 'Registrasi berhasil!',
         color: 'positive',
         icon: 'check_circle',
       })
       router.push('/login')
     } else {
-      // Handle Validation Errors
-      if (data.status === 'Bad Request' && data.errors?.validation) {
-        const validationErrors = data.errors.validation
+       throw new Error(response.data?.message || response.message || 'Terjadi kesalahan saat registrasi')
+    }
+  } catch (error) {
+    console.error('Registration error:', error)
+    if (error.response?.data?.status === 'Bad Request' && error.response?.data?.errors?.validation) {
+        const validationErrors = error.response.data.errors.validation
         Object.keys(validationErrors).forEach((field) => {
           if (Object.prototype.hasOwnProperty.call(errors, field)) {
             errors[field] = validationErrors[field][0]
           }
         })
-        throw new Error(data.errors.message || 'Cek kembali inputan anda')
-      }
-
-      throw new Error(data.data?.message || data.message || 'Terjadi kesalahan saat registrasi')
+         $q.notify({
+          message: error.response.data.errors.message || 'Cek kembali inputan anda',
+          color: 'negative',
+          icon: 'error',
+        })
+    } else {
+        $q.notify({
+          message: error.message || error.response?.data?.message || 'Gagal menghubungkan ke server',
+          color: 'negative',
+          icon: 'error',
+        })
     }
-  } catch (error) {
-    console.error('Registration error:', error)
-    $q.notify({
-      message: error.message || 'Gagal menghubungkan ke server',
-      color: 'negative',
-      icon: 'error',
-    })
   }
 }
 
@@ -240,25 +234,14 @@ const handleGoogleLogin = async () => {
 
     const generatedUsername = userInfo.email.split('@')[0]
 
-    const response = await fetch(
-      `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: userInfo.name,
-          username: generatedUsername,
-          password: generatedPassword,
-          email: userInfo.email,
-        }),
-      },
-    )
+    const response = await authStore.register({
+      name: userInfo.name,
+      username: generatedUsername,
+      password: generatedPassword,
+      email: userInfo.email,
+    })
 
-    const data = await response.json()
-
-    if (response.ok && data.code === 200) {
+    if (response.code === 200) {
       $q.notify({
         message: 'Login Google berhasil! Akun telah dibuat.',
         color: 'positive',
@@ -266,12 +249,12 @@ const handleGoogleLogin = async () => {
       })
       router.push('/login')
     } else {
-      throw new Error(data.message || data.data?.message || 'Gagal registrasi dengan Google')
+      throw new Error(response.message || response.data?.message || 'Gagal registrasi dengan Google')
     }
   } catch (error) {
     console.error('Google Login Error', error)
     $q.notify({
-      message: error.message || 'Gagal login dengan Google',
+      message: error.message || error.response?.data?.message || 'Gagal login dengan Google',
       color: 'negative',
       icon: 'error',
     })
@@ -293,25 +276,14 @@ const handleFacebookLogin = () => {
 
             const generatedUsername = userInfo.email.split('@')[0]
 
-            const apiResponse = await fetch(
-              `${import.meta.env.VITE_API_BASE_URL}/api/v1/auth/register-owner`,
-              {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  name: userInfo.name,
-                  username: generatedUsername,
-                  password: generatedPassword,
-                  email: userInfo.email,
-                }),
-              },
-            )
+            const apiResponse = await authStore.register({
+              name: userInfo.name,
+              username: generatedUsername,
+              password: generatedPassword,
+              email: userInfo.email,
+            })
 
-            const data = await apiResponse.json()
-
-            if (apiResponse.ok && data.code === 200) {
+             if (apiResponse.code === 200) {
               $q.notify({
                 message: 'Login Facebook berhasil! Akun telah dibuat.',
                 color: 'positive',
@@ -320,13 +292,13 @@ const handleFacebookLogin = () => {
               router.push('/login')
             } else {
               throw new Error(
-                data.message || data.data?.message || 'Gagal registrasi dengan Facebook',
+                apiResponse.message || apiResponse.data?.message || 'Gagal registrasi dengan Facebook',
               )
             }
           } catch (error) {
             console.error('Facebook Auth API Error', error)
             $q.notify({
-              message: error.message || 'Gagal login dengan Facebook',
+              message: error.message || error.response?.data?.message || 'Gagal login dengan Facebook',
               color: 'negative',
               icon: 'error',
             })
