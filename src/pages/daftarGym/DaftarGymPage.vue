@@ -7,6 +7,7 @@
             <q-icon name="add_business" size="md" class="q-mr-sm" color="black" />
             <h1 class="text-h5 text-weight-bolder text-dark q-ma-none">Pendaftaran Gym Baru</h1>
           </div>
+          
           <p class="text-body2 text-grey-7 q-mt-xs q-mb-none">
             Lengkapi data di bawah ini untuk mendaftarkan fasilitas gym Anda
           </p>
