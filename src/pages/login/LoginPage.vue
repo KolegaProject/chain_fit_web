@@ -80,7 +80,7 @@
             </div>
 
             <div class="row justify-center q-gutter-x-md q-mb-lg">
-              <q-btn flat round @click="socialRedirect">
+              <q-btn flat round @click="handleGoogleLogin">
                 <q-avatar size="32px">
                   <img src="https://www.svgrepo.com/show/355037/google.svg" />
                 </q-avatar>
@@ -110,6 +110,7 @@ import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from '../../stores/Auth'
+import { googleTokenLogin } from 'vue3-google-login'
 
 const router = useRouter()
 const $q = useQuasar()
@@ -152,6 +153,47 @@ const handleLogin = async () => {
     })
   } finally {
     loading.value = false
+  }
+}
+
+const handleGoogleLogin = async () => {
+  loading.value = true;
+  try {
+    const googleResponse = await googleTokenLogin();
+
+    const userInfoResponse = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${googleResponse.access_token}` },
+    })
+    const userGoogleInfo = await userInfoResponse.json();
+    const username = userGoogleInfo.email.split('@')[0];
+
+    const res = await authStore.loginSocialAccount({
+      username: username,
+      provider: 'google'
+    });
+
+    console.log('Login Google Berhasil! Response:', res);
+    console.log('Token yang didapat:', res.data.access_token);
+
+    $q.notify({
+      message: 'Selamat Datang Kembali!',
+      color: 'positive',
+      icon: 'check_circle',
+      position: 'top',
+    })
+
+    router.push('/dashboard') 
+  } catch (error) {
+    console.error('Google Login Error', error);
+    
+    const errorMsg = error.response?.data?.message || 'Login Gagal, periksa username/password'
+    $q.notify({
+      message: errorMsg || 'Gagal login dengan Google',
+      color: 'negative',
+      icon: 'error'
+    });
+  } finally {
+    loading.value = false;
   }
 }
 
