@@ -147,7 +147,8 @@ const form = ref({
 // Image State
 const imagePreview = ref('')
 const imageFile = ref(null)
-const defaultPhoto = 'https://cdn.quasar.dev/img/avatar.png'
+const defaultPhoto =
+  'https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg'
 const fileInput = ref(null)
 
 // Params dari URL
