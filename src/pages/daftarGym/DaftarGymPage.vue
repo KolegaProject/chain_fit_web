@@ -2,16 +2,14 @@
   <q-page class="q-pa-lg bg-grey-2">
     <q-card flat bordered class="main-form-card overflow-hidden">
       <q-card-section class="bg-white q-pa-xl border-bottom">
-        <div class="row items-center justify-between">
-          <div class="col-12 col-sm-auto text-center text-sm-left">
-            <h1 class="text-h5 text-weight-bolder text-dark q-ma-none">
-              <q-icon name="add_business" size="md" class="q-mr-sm" color="black" />
-              Pendaftaran Gym Baru
-            </h1>
-            <p class="text-body2 text-grey-7 q-mt-xs q-mb-none">
-              Lengkapi data di bawah ini untuk mendaftarkan fasilitas gym Anda
-            </p>
+        <div class="col-12 col-sm-auto column items-start">
+          <div class="row items-center">
+            <q-icon name="add_business" size="md" class="q-mr-sm" color="black" />
+            <h1 class="text-h5 text-weight-bolder text-dark q-ma-none">Pendaftaran Gym Baru</h1>
           </div>
+          <p class="text-body2 text-grey-7 q-mt-xs q-mb-none">
+            Lengkapi data di bawah ini untuk mendaftarkan fasilitas gym Anda
+          </p>
         </div>
       </q-card-section>
 
@@ -226,7 +224,6 @@ const router = useRouter()
 const loading = ref(false)
 const gymStore = useGymStore()
 
-
 const form = reactive({
   namaGym: '',
   maxCapacity: '',
@@ -286,7 +283,6 @@ const onSubmit = async () => {
     loading.value = false
   }
 }
-
 </script>
 
 <style scoped>
