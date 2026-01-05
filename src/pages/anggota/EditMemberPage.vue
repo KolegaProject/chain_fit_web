@@ -124,15 +124,15 @@ const onSaveClick = async () => {
     }
 
     // Hitung masa aktif baru
-    const masaAktifLama = Number(member.masaAktifHari ?? 0)
-    const masaAktifBaru = masaAktifLama + Number(paket.durationDays)
+    // const masaAktifLama = Number(member.masaAktifHari ?? 0)
+    // const masaAktifBaru = masaAktifLama + Number(paket.durationDays)
 
     await anggotaStore.updateMembership(
       gymId.value,
       MEMBER_ID,
       {
         paketId: form.value.selectedPaket,
-        masaAktifHari: masaAktifBaru
+        // masaAktifHari: masaAktifBaru
       }
     )
 
