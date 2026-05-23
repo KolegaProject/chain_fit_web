@@ -10,9 +10,16 @@
 
         <div class="row items-center q-gutter-sm">
           <q-btn flat dense icon="notifications" class="bg-grey-2 q-pa-sm" size="sm" />
-          <q-avatar class="q-ml-md" size="35px">
-            <img src="https://i.scdn.co/image/ab67616d00001e02d45ec66aa3cf3864205fd068" />
-          </q-avatar>
+
+          <!-- 👇 Foto Profil (Sekarang berfungsi sebagai tombol ke profil) 👇 -->
+          <q-btn round flat dense to="/profile" class="q-ml-md">
+            <q-avatar size="35px">
+              <img src="https://i.scdn.co/image/ab67616d00001e02d45ec66aa3cf3864205fd068" />
+            </q-avatar>
+            <q-tooltip>Lihat Profil Pengguna</q-tooltip>
+          </q-btn>
+          <!-- 👆 ========================================================= 👆 -->
+
           <span class="text-weight-medium q-ml-md">
             {{ authStore.user?.name || 'Tamu' }}
           </span>
