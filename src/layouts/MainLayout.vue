@@ -9,16 +9,67 @@
         <q-space />
 
         <div class="row items-center q-gutter-sm">
-          <q-btn flat dense icon="notifications" class="bg-grey-2 q-pa-sm" size="sm" />
+          <!-- 👇 TOMBOL & POP-UP NOTIFIKASI 👇 -->
+          <q-btn
+            flat
+            dense
+            icon="notifications"
+            class="bg-grey-2 q-pa-sm relative-position"
+            size="sm"
+          >
+            <!-- Menu Dropdown Notifikasi -->
+            <q-menu
+              anchor="bottom right"
+              self="top right"
+              :offset="[0, 10]"
+              style="width: 340px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"
+            >
+              <!-- Header Notifikasi -->
+              <div class="row items-center justify-between q-pa-md">
+                <div class="text-subtitle1 text-weight-bold">Notifikasi</div>
+                <div
+                  class="bg-grey-2 text-grey-8 q-px-sm q-py-xs text-caption text-weight-medium"
+                  style="border-radius: 16px"
+                >
+                  0 Baru
+                </div>
+              </div>
 
-          <!-- 👇 Foto Profil (Sekarang berfungsi sebagai tombol ke profil) 👇 -->
+              <q-separator color="grey-2" />
+
+              <!-- Body: Empty State -->
+              <div class="column flex-center q-py-xl q-px-md text-center">
+                <q-avatar size="80px" color="grey-1" class="q-mb-md">
+                  <q-icon name="notifications_none" color="grey-4" size="40px" />
+                </q-avatar>
+                <div class="text-weight-bold text-body1 q-mb-xs">Belum ada notifikasi baru</div>
+                <div class="text-grey-6 text-body2" style="max-width: 250px; line-height: 1.4">
+                  Kami akan memberi tahu Anda jika ada aktivitas penting di sini.
+                </div>
+              </div>
+
+              <q-separator color="grey-2" />
+
+              <!-- Footer Action -->
+              <div class="q-pa-sm text-center">
+                <q-btn
+                  flat
+                  no-caps
+                  color="primary"
+                  label="Tandai semua dibaca"
+                  class="full-width text-weight-medium border-radius-8"
+                />
+              </div>
+            </q-menu>
+          </q-btn>
+          <!-- 👆 ============================= 👆 -->
+
           <q-btn round flat dense to="/profile" class="q-ml-md">
             <q-avatar size="35px">
               <img src="https://i.scdn.co/image/ab67616d00001e02d45ec66aa3cf3864205fd068" />
             </q-avatar>
             <q-tooltip>Lihat Profil Pengguna</q-tooltip>
           </q-btn>
-          <!-- 👆 ========================================================= 👆 -->
 
           <span class="text-weight-medium q-ml-md">
             {{ authStore.user?.name || 'Tamu' }}
@@ -140,7 +191,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue' // Tambahkan onMounted & computed
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { useAuthStore } from '../stores/Auth'
@@ -229,5 +280,10 @@ const menuLinks = [
 
 .logo-container {
   min-height: 60px;
+}
+
+/* Styling tambahan untuk radius tombol */
+.border-radius-8 {
+  border-radius: 8px;
 }
 </style>
