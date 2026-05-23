@@ -17,6 +17,7 @@
           height="36px"
           class="rounded-borders"
         />
+        <!-- 👇 Tombol diubah agar pindah ke route /finance/tambah 👇 -->
         <q-btn
           v-else
           unelevated
@@ -25,7 +26,7 @@
           color="primary"
           no-caps
           class="rounded-borders q-px-md"
-          @click="showAddAbsensi = true"
+          @click="$router.push('/finance/tambah')"
         />
       </q-card-section>
     </q-card>
@@ -141,29 +142,6 @@
         </q-card>
       </div>
     </div>
-
-    <q-dialog v-model="showAddAbsensi" persistent>
-      <q-card class="dialog-card q-pa-md">
-        <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
-        <q-card-section class="text-center q-pt-lg">
-          <div class="text-h6 text-weight-bolder">Tambah Transaksi Baru</div>
-        </q-card-section>
-        <q-card-section>
-          <div class="text-subtitle1 text-weight-bold q-mb-xs">Nama Item</div>
-          <q-input
-            outlined
-            v-model="search"
-            placeholder="Contoh: Listrik, Paket A..."
-            dense
-            class="custom-search-input"
-          />
-        </q-card-section>
-        <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
-          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
-          <q-btn unelevated label="Konfirmasi" class="btn-dialog-gradient" no-caps />
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
   </q-page>
 </template>
 
@@ -172,8 +150,6 @@ import { ref, onMounted } from 'vue'
 import VueApexCharts from 'vue3-apexcharts'
 
 const apexchart = VueApexCharts
-const showAddAbsensi = ref(false)
-const search = ref('')
 const isLoading = ref(true)
 
 const incomeSeries = [{ name: 'Pemasukan', data: [30, 40, 35, 50, 49, 60, 70] }]
@@ -251,33 +227,4 @@ onMounted(() => {
     padding: 12px 16px;
   }
 }
-
-.dialog-card {
-  width: 100%;
-  max-width: 480px;
-  border-radius: 24px;
-}
-
-.btn-dialog-flat {
-  width: 140px;
-  background-color: #f0f2f5;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
-.btn-dialog-gradient {
-  width: 140px;
-  background: linear-gradient(to bottom, #a0a0a0, #666666);
-  color: white;
-  border-radius: 12px;
-  font-weight: bold;
-}
-
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: #f0f0f0;
-}
-
 </style>

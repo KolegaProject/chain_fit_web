@@ -28,7 +28,6 @@
             />
           </div>
 
-          <!-- Jumlah -->
           <div class="col-12 col-md-4">
             <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Jumlah Unit</div>
             <q-input
@@ -44,7 +43,6 @@
             </q-input>
           </div>
 
-          <!-- Health Status -->
           <div class="col-12 col-md-4">
             <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Kondisi Alat</div>
             <q-select
@@ -64,7 +62,6 @@
             </q-select>
           </div>
 
-          <!-- Video URL (tetap) -->
           <div class="col-12 col-md-4">
             <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">
               Video Tutorial (URL)

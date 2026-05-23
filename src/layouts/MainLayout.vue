@@ -9,7 +9,6 @@
         <q-space />
 
         <div class="row items-center q-gutter-sm">
-          <!-- 👇 TOMBOL & POP-UP NOTIFIKASI 👇 -->
           <q-btn
             flat
             dense
@@ -17,14 +16,13 @@
             class="bg-grey-2 q-pa-sm relative-position"
             size="sm"
           >
-            <!-- Menu Dropdown Notifikasi -->
+
             <q-menu
               anchor="bottom right"
               self="top right"
               :offset="[0, 10]"
               style="width: 340px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1)"
             >
-              <!-- Header Notifikasi -->
               <div class="row items-center justify-between q-pa-md">
                 <div class="text-subtitle1 text-weight-bold">Notifikasi</div>
                 <div
@@ -62,7 +60,6 @@
               </div>
             </q-menu>
           </q-btn>
-          <!-- 👆 ============================= 👆 -->
 
           <q-btn round flat dense to="/profile" class="q-ml-md">
             <q-avatar size="35px">
@@ -211,7 +208,6 @@ onMounted(async () => {
     await authStore.fetchUser()
     console.log('Data user berhasil dimuat:', authStore.user)
 
-    // Map data gym dari authStore ke options
     gymOptions.value = authStore.gyms.map((gym) => ({
       label: gym.name,
       value: gym.id,
@@ -229,7 +225,6 @@ onMounted(async () => {
 
 const selectedGym = computed({
   get: () => {
-    // Cari object option yang sesuai dengan ID yang tersimpan di store
     return gymOptions.value.find((opt) => opt.value === gymStore.selectedGymId) || null
   },
   set: (newVal) => {
@@ -273,7 +268,6 @@ const menuLinks = [
   color: white !important;
 }
 
-/* Transitions for smoother mini/full switching */
 .q-drawer--mini-animate {
   transition: width 0.3s ease-in-out;
 }
@@ -282,7 +276,6 @@ const menuLinks = [
   min-height: 60px;
 }
 
-/* Styling tambahan untuk radius tombol */
 .border-radius-8 {
   border-radius: 8px;
 }

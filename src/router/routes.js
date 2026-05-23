@@ -76,14 +76,17 @@ const routes = [
         component: () => import('pages/InfoFacility/EditInfoFacilityPage.vue'),
         meta: { title: 'Edit Informasi & Fasilitas' },
       },
-
-      // 👇 TAMBAHKAN ROUTE PROFIL DI SINI 👇
       {
         path: 'profile',
         component: () => import('pages/profile/ProfilePage.vue'),
         meta: { title: 'Profil Pengguna' },
       },
-      // 👆 ================================= 👆
+      {
+        path: 'finance/tambah',
+        component: () => import('pages/managementKeuangan/TambahKeuangan.vue'),
+        meta: { title: 'Manajemen Keuangan' }, // Title dipertahankan agar header tetap menampilkan "Manajemen Keuangan"
+      },
+
     ],
   },
   {
