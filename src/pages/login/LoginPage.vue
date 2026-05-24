@@ -15,7 +15,6 @@
                 />
               </div>
 
-              <!-- Teks Overlay Bawah -->
               <div
                 class="text-box q-pa-lg"
                 style="
@@ -36,19 +35,15 @@
           </q-img>
         </div>
 
-        <!-- ================= BAGIAN KANAN (FORM LOGIN) ================= -->
         <div class="col-12 col-md-6 flex flex-center bg-white">
           <!-- Diperlebar max-width nya agar input tampak seperti di desain -->
           <div class="form-container q-pa-lg">
             <div class="text-center q-mb-xl">
-              <div class="text-h6 text-weight-bold q-mb-sm text-dark">
-                Selamat Datang Kembali
-              </div>
+              <div class="text-h6 text-weight-bold q-mb-sm text-dark">Selamat Datang Kembali</div>
               <div class="text-body2 text-grey-8">Lanjutkan progres yang sudah kamu mulai</div>
             </div>
 
             <q-form @submit="handleLogin" class="q-gutter-y-lg">
-              <!-- Input Email (dense dihilangkan agar lebih tinggi) -->
               <q-input
                 color="black"
                 outlined
@@ -59,7 +54,6 @@
                 required
               />
 
-              <!-- Wrapper Input Password & Lupa Password -->
               <div>
                 <q-input
                   color="black"
@@ -81,13 +75,17 @@
                 </q-input>
 
                 <div class="row justify-end q-mt-sm">
-                  <router-link to="/lupa-password" class="text-body2 text-dark no-decoration">
+                  <!-- 👇 Ini yang diubah menjadi span @click 👇 -->
+                  <span
+                    class="text-body2 text-dark cursor-pointer no-decoration"
+                    @click="$router.push('/lupa-password')"
+                  >
                     Lupa Password?
-                  </router-link>
+                  </span>
+                  <!-- 👆 ===================================== 👆 -->
                 </div>
               </div>
 
-              <!-- Tombol Login -->
               <q-btn
                 type="submit"
                 label="Login"
@@ -249,10 +247,9 @@ const socialRedirect = () => {
 
 .form-container {
   width: 100%;
-  max-width: 460px; /* Diperlebar agar menyerupai proporsi desain */
+  max-width: 460px;
 }
 
-/* Modifikasi input bawaan Quasar agar lebih bersih mirip desain */
 .custom-input {
   :deep(.q-field__control) {
     border-radius: 4px;
@@ -263,11 +260,11 @@ const socialRedirect = () => {
 }
 
 .btn-continue {
-  background-color: #111827 !important; /* Warna dark navy/black sesuai desain */
+  background-color: #111827 !important;
   color: white;
   text-transform: none;
   border-radius: 4px;
-  height: 52px; /* Lebih tinggi mengikuti tinggi input */
+  height: 52px;
   font-size: 16px;
   font-weight: 400;
 
@@ -281,5 +278,9 @@ const socialRedirect = () => {
   &:hover {
     text-decoration: underline;
   }
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

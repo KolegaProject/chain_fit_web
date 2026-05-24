@@ -29,7 +29,7 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     const token = localStorage.getItem('access_token')
     const isAuthenticated = !!token || !!authStore.token
 
-    const publicPages = ['/login', '/register']
+    const publicPages = ['/login', '/register', '/lupa-password']
     const isPublicPage = publicPages.includes(to.path)
 
     if (!isAuthenticated && !isPublicPage) {

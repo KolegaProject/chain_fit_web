@@ -1,8 +1,6 @@
 const routes = [
   {
     path: '/',
-    // Gunakan redirect ke dashboard.
-    // Jika belum login, middleware di index.js akan menangkapnya dan melempar ke /login
     redirect: '/dashboard',
   },
   {
@@ -86,7 +84,6 @@ const routes = [
         component: () => import('pages/managementKeuangan/TambahKeuangan.vue'),
         meta: { title: 'Manajemen Keuangan' }, // Title dipertahankan agar header tetap menampilkan "Manajemen Keuangan"
       },
-
     ],
   },
   {
@@ -96,6 +93,10 @@ const routes = [
   {
     path: '/register',
     component: () => import('pages/register/RegisterPage.vue'),
+  },
+  {
+    path: '/lupa-password',
+    component: () => import('pages/login/LupaPasswordPage.vue'),
   },
   {
     path: '/:catchAll(.*)*',
