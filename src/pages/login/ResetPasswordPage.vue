@@ -2,12 +2,13 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
-        <!-- ================= BAGIAN KIRI (GAMBAR) ================= -->
         <div class="col-12 col-md-6 gt-sm relative-position">
-          <!-- 👇 Ganti nama file ini dengan gambar wanita angkat beban di asetmu 👇 -->
-          <q-img src="../../assets/LoginPage-asset1.jpg" class="full-height-img" fit="cover">
+          <q-img
+            src="../../assets/login-register/ResetPasswordPage.jpeg"
+            class="full-height-img"
+            fit="cover"
+          >
             <div class="absolute-full column justify-between q-pa-xl bg-transparent-overlay">
-              <!-- Logo Chain Fit -->
               <div class="logo-wrapper q-pt-md">
                 <q-img
                   src="../../assets/ChainFitLogo.png"
@@ -16,7 +17,6 @@
                 />
               </div>
 
-              <!-- Teks Overlay Bawah -->
               <div
                 class="text-box q-pa-lg"
                 style="
@@ -29,36 +29,33 @@
                   class="text-body1 text-white text-weight-regular q-ma-none"
                   style="line-height: 1.6"
                 >
-                  Keamanan akun Anda adalah prioritas kami. Pastikan untuk membuat password yang
-                  kuat dan unik untuk menjaga keamanan data progres latihan Anda.
+                  Your account security is our priority. Make sure to create a strong and unique
+                  password to keep your training progress data safe.
                 </p>
               </div>
             </div>
           </q-img>
         </div>
 
-        <!-- ================= BAGIAN KANAN (FORM) ================= -->
         <div class="col-12 col-md-6 flex flex-center bg-white">
           <div class="form-container q-pa-lg text-center">
-            <!-- Judul & Subjudul -->
+            <!-- Title & Subtitle -->
             <div class="q-mb-xl">
-              <h1 class="text-h4 text-weight-bold q-mb-md text-dark q-mt-none">Ganti Password</h1>
-              <p class="text-body1 text-grey-7">Buat password baru yang kuat untuk akun Anda.</p>
+              <h1 class="text-h4 text-weight-bold q-mb-md text-dark q-mt-none">Reset Password</h1>
+              <p class="text-body1 text-grey-7">Create a new, strong password for your account.</p>
             </div>
 
-            <!-- Form -->
             <q-form @submit="handleSimpanPassword" class="q-gutter-y-md text-left">
-              <!-- Input Password Baru -->
               <div>
-                <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                  >Password Baru</label
-                >
+                <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
+                  New Password
+                </label>
                 <q-input
                   color="black"
                   outlined
                   v-model="password.new"
                   :type="showNewPwd ? 'text' : 'password'"
-                  placeholder="Masukkan password baru"
+                  placeholder="Enter new password"
                   bg-color="white"
                   class="custom-input"
                   required
@@ -72,21 +69,20 @@
                   </template>
                 </q-input>
                 <div class="text-caption text-grey-6 q-mt-xs" style="font-size: 11px">
-                  Minimal 8 karakter, kombinasi huruf dan angka.
+                  Minimum 8 characters, a combination of letters and numbers.
                 </div>
               </div>
 
-              <!-- Input Konfirmasi Password -->
               <div class="q-mt-md">
-                <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                  >Konfirmasi Password Baru</label
-                >
+                <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
+                  Confirm New Password
+                </label>
                 <q-input
                   color="black"
                   outlined
                   v-model="password.confirm"
                   :type="showConfirmPwd ? 'text' : 'password'"
-                  placeholder="Ulangi password baru"
+                  placeholder="Repeat new password"
                   bg-color="white"
                   class="custom-input"
                   required
@@ -101,10 +97,10 @@
                 </q-input>
               </div>
 
-              <!-- Tombol Simpan -->
+              <!-- Save Button -->
               <q-btn
                 type="submit"
-                label="Simpan Password"
+                label="Save Password"
                 class="full-width btn-continue q-mt-lg"
                 unelevated
                 :loading="loading"
@@ -113,13 +109,12 @@
 
             <q-separator class="q-my-xl bg-transparent" />
 
-            <!-- Tombol Kembali ke Login -->
             <router-link
               to="/login"
-              class="text-body2 text-grey-8 no-decoration row items-center justify-center transition-color"
+              class="text-body2 text-grey-8 no-decoration row items-center justify-center transition-color hover-underline"
             >
               <q-icon name="arrow_back" size="16px" class="q-mr-sm" />
-              Kembali ke Login
+              Back to login
             </router-link>
           </div>
         </div>
@@ -146,20 +141,18 @@ const password = reactive({
 })
 
 const handleSimpanPassword = async () => {
-  // Validasi kecocokan password
   if (password.new !== password.confirm) {
     $q.notify({
-      message: 'Password baru dan konfirmasi tidak cocok!',
+      message: 'New password and confirmation do not match!',
       color: 'warning',
       position: 'top',
     })
     return
   }
 
-  // Validasi minimal 8 karakter (sederhana)
   if (password.new.length < 8) {
     $q.notify({
-      message: 'Password minimal 8 karakter.',
+      message: 'Password must be at least 8 characters long.',
       color: 'warning',
       position: 'top',
     })
@@ -168,22 +161,20 @@ const handleSimpanPassword = async () => {
 
   loading.value = true
   try {
-    // Simulasi request API ke backend
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     $q.notify({
-      message: 'Password berhasil diubah! Silakan login.',
+      message: 'Password successfully reset! Please log in.',
       color: 'positive',
       icon: 'check_circle',
       position: 'top',
     })
 
-    // Arahkan kembali ke halaman login
     router.push('/login')
   } catch (error) {
-    console.error('Gagal reset password:', error)
+    console.error('Failed to reset password:', error)
     $q.notify({
-      message: 'Terjadi kesalahan, silakan coba lagi.',
+      message: 'An error occurred, please try again.',
       color: 'negative',
       icon: 'warning',
       position: 'top',
@@ -211,7 +202,7 @@ const handleSimpanPassword = async () => {
 
 .form-container {
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
 }
 
 .block {
@@ -234,7 +225,7 @@ const handleSimpanPassword = async () => {
   border-radius: 4px;
   height: 52px;
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400;
 
   &:hover {
     background-color: #1f2937 !important;
@@ -250,5 +241,9 @@ const handleSimpanPassword = async () => {
   &:hover {
     color: #111827 !important;
   }
+}
+
+.hover-underline:hover {
+  text-decoration: underline;
 }
 </style>

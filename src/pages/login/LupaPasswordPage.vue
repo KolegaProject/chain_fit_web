@@ -2,10 +2,10 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
-        <!-- ================= BAGIAN KIRI (FORM) ================= -->
+        <!-- ================= LEFT SIDE (FORM) ================= -->
         <div class="col-12 col-md-6 bg-white flex column justify-center q-pa-xl">
           <div class="form-container" style="max-width: 460px; margin: 0 auto; width: 100%">
-            <!-- Tombol Kembali ke Login -->
+            <!-- Back to Login Link -->
             <router-link
               to="/login"
               class="row items-center text-dark no-decoration q-mb-xl text-weight-medium transition-color hover-underline"
@@ -14,15 +14,15 @@
               Back to login
             </router-link>
 
-            <!-- Judul & Deskripsi -->
+            <!-- Title & Description -->
             <h1 class="text-h4 text-weight-bold q-mt-none q-mb-sm text-dark">Forgot Password</h1>
             <p class="text-body1 text-grey-7 q-mb-xl" style="line-height: 1.5">
               Select which contact details should we use to reset your password.
             </p>
 
-            <!-- Pilihan Metode Pemulihan -->
+            <!-- Recovery Method Options -->
             <div class="q-gutter-y-md q-mb-lg">
-              <!-- Opsi 1: Email -->
+              <!-- Option 1: Email -->
               <div
                 class="method-card row items-center q-pa-md cursor-pointer transition-all"
                 :class="selectedMethod === 'email' ? 'method-active' : 'method-inactive'"
@@ -41,7 +41,7 @@
                 </div>
               </div>
 
-              <!-- Opsi 2: SMS / WhatsApp -->
+              <!-- Option 2: SMS / WhatsApp -->
               <div
                 class="method-card row items-center q-pa-md cursor-pointer transition-all"
                 :class="selectedMethod === 'sms' ? 'method-active' : 'method-inactive'"
@@ -61,7 +61,7 @@
               </div>
             </div>
 
-            <!-- Tombol Continue -->
+            <!-- Continue Button -->
             <q-btn
               label="Continue"
               icon-right="arrow_forward"
@@ -72,11 +72,14 @@
           </div>
         </div>
 
-        <!-- ================= BAGIAN KANAN (GAMBAR) ================= -->
+        <!-- ================= RIGHT SIDE (IMAGE) ================= -->
         <div class="col-12 col-md-6 gt-sm relative-position">
-          <!-- Sesuaikan path gambar aslimu di sini -->
-          <q-img src="../../assets/LoginPage-asset1.jpg" class="full-height-img" fit="cover">
-            <!-- Box Overlay Hitam di Bawah -->
+          <q-img
+            src="../../assets/login-register/LupaPasswordPage.jpeg"
+            class="full-height-img"
+            fit="cover"
+          >
+            <!-- Bottom Black Overlay Box -->
             <div class="absolute-bottom q-pa-xl" style="background: transparent">
               <div
                 class="text-box q-pa-xl"
@@ -118,12 +121,12 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// State untuk menyimpan pilihan pengguna (default ke 'email')
+// State to store user selection (default to 'email')
 const selectedMethod = ref('email')
 
 const handleContinue = () => {
-  console.log('Metode pemulihan yang dipilih:', selectedMethod.value)
-  // Navigasi ke halaman verifikasi PIN
+  console.log('Selected recovery method:', selectedMethod.value)
+  // Navigate to PIN verification page
   router.push('/verifikasi-pin')
 }
 </script>
@@ -134,19 +137,19 @@ const handleContinue = () => {
   width: 100%;
 }
 
-/* Styling untuk Kartu Pilihan Metode */
+/* Styling for Method Selection Cards */
 .method-card {
-  border-radius: 8px;
+  border-radius: 4px; /* Matched with input border-radius */
   border: 2px solid transparent;
 }
 
 .method-active {
-  border-color: #111827; /* Border hitam tebal jika dipilih */
+  border-color: #111827; /* Thick black border if selected */
   background-color: #ffffff;
 }
 
 .method-inactive {
-  border-color: #e5e7eb; /* Border abu-abu tipis jika tidak dipilih */
+  border-color: #e5e7eb; /* Thin gray border if not selected */
   background-color: #ffffff;
 }
 
@@ -157,24 +160,24 @@ const handleContinue = () => {
 .icon-wrapper {
   width: 48px;
   height: 48px;
-  border-radius: 8px;
+  border-radius: 4px; /* Matched with input border-radius */
 }
 
-/* Tombol Continue */
+/* Continue Button */
 .btn-continue {
   background-color: #111827 !important;
   color: white;
   text-transform: none;
-  border-radius: 8px;
-  height: 56px;
+  border-radius: 4px; /* Matched with Login/Register */
+  height: 52px; /* Matched with Login/Register */
   font-size: 16px;
-  font-weight: 500;
+  font-weight: 400; /* Matched with Login/Register */
 
   &:hover {
     background-color: #1f2937 !important;
   }
 
-  /* Menjauhkan sedikit jarak ikon panah dengan teks */
+  /* Add slight spacing between icon and text */
   :deep(.q-icon) {
     margin-left: 8px;
   }

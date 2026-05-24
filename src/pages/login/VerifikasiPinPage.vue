@@ -2,12 +2,13 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
-        <!-- ================= BAGIAN KIRI (GAMBAR) ================= -->
         <div class="col-12 col-md-6 gt-sm relative-position">
-          <!-- Sesuaikan nama gambar aslimu -->
-          <q-img src="../../assets/LoginPage-asset1.jpg" class="full-height-img" fit="cover">
+          <q-img
+            src="../../assets/login-register/VerifikasiPinPage.jpeg"
+            class="full-height-img"
+            fit="cover"
+          >
             <div class="absolute-full column justify-between q-pa-xl bg-transparent-overlay">
-              <!-- Logo Chain Fit -->
               <div class="logo-wrapper q-pt-md">
                 <q-img
                   src="../../assets/ChainFitLogo.png"
@@ -16,7 +17,6 @@
                 />
               </div>
 
-              <!-- Teks Overlay Bawah -->
               <div
                 class="text-box q-pa-lg"
                 style="
@@ -29,38 +29,31 @@
                   class="text-body1 text-white text-weight-regular q-ma-none"
                   style="line-height: 1.6"
                 >
-                  Keamanan akun Anda adalah prioritas kami. Verifikasi langkah ini untuk memastikan
-                  progres latihan Anda tetap aman.
+                  Your account security is our priority. Verify this step to ensure your training
+                  progress remains safe.
                 </p>
               </div>
             </div>
           </q-img>
         </div>
 
-        <!-- ================= BAGIAN KANAN (FORM VERIFIKASI) ================= -->
         <div class="col-12 col-md-6 flex flex-center bg-white">
           <div class="form-container q-pa-lg text-center">
-            <!-- Judul & Subjudul -->
             <div class="q-mb-md">
-              <h1 class="text-h4 text-weight-bold q-mb-sm text-dark q-mt-none">Verifikasi Akun</h1>
-              <p class="text-body1 text-grey-7">
-                Masukkan 6 digit kode PIN yang dikirim ke email Anda.
-              </p>
+              <h1 class="text-h4 text-weight-bold q-mb-sm text-dark q-mt-none">Verify Account</h1>
+              <p class="text-body1 text-grey-7">Enter the 6-digit PIN code sent to your email.</p>
             </div>
 
-            <!-- Pill Info Email -->
             <div class="q-mb-xl">
               <div
                 class="bg-grey-2 inline-block q-px-md q-py-sm text-weight-bold text-dark text-caption"
                 style="border-radius: 20px"
               >
-                Kode telah dikirim ke a***@chainfit.com
+                Code sent to a***@chainfit.com
               </div>
             </div>
 
-            <!-- Form PIN -->
             <q-form @submit="handleVerifikasi" class="q-gutter-y-lg">
-              <!-- Kotak Input OTP (6 Digit) -->
               <div class="row justify-center q-gutter-x-sm q-mb-lg">
                 <input
                   v-for="(digit, index) in 6"
@@ -80,40 +73,37 @@
                 />
               </div>
 
-              <!-- Tombol Verifikasi -->
               <q-btn
                 type="submit"
-                label="Verifikasi"
+                label="Verify"
                 class="full-width btn-continue"
                 unelevated
                 :loading="loading"
               />
             </q-form>
 
-            <!-- Teks Kirim Ulang -->
             <div class="q-mt-xl text-body2 text-grey-7">
-              Belum menerima kode?
+              Haven't received the code?
               <span v-if="timeLeft > 0" class="text-dark text-weight-bold q-ml-xs">
-                Kirim ulang kode dalam {{ formattedTime }}
+                Resend code in {{ formattedTime }}
               </span>
               <span
                 v-else
                 class="text-dark text-weight-bold q-ml-xs cursor-pointer hover-underline"
                 @click="resendCode"
               >
-                Kirim ulang sekarang
+                Resend now
               </span>
             </div>
 
             <q-separator class="q-my-xl bg-grey-3" />
 
-            <!-- Tombol Kembali ke Login -->
             <router-link
               to="/login"
-              class="text-body2 text-grey-8 no-decoration row items-center justify-center transition-color"
+              class="text-body2 text-grey-8 no-decoration row items-center justify-center transition-color hover-underline"
             >
               <q-icon name="arrow_back" size="16px" class="q-mr-sm" />
-              Kembali ke Login
+              Back to login
             </router-link>
           </div>
         </div>
@@ -125,55 +115,43 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useQuasar } from 'quasar'
-// import useRouter dihapus sementara karena belum digunakan
-
 import { useRouter } from 'vue-router'
 
 const router = useRouter()
-
 const $q = useQuasar()
 
 const loading = ref(false)
 
-// State untuk OTP/PIN
 const pin = ref(['', '', '', '', '', ''])
 const pinRefs = ref([])
 
-// State untuk Timer Hitung Mundur
 const timeLeft = ref(59)
 let timerInterval = null
 
-// --- LOGIKA INPUT OTP ---
 const handleInput = (index, event) => {
   const value = event.target.value
-  // Pastikan hanya angka yang dimasukkan
   if (!/^\d*$/.test(value)) {
     pin.value[index] = ''
     return
   }
 
-  // Otomatis pindah ke kotak berikutnya jika sudah terisi
   if (value && index < 5) {
     pinRefs.value[index + 1].focus()
   }
 }
 
-// parameter 'event' dihapus agar tidak error ESLint
 const handleDelete = (index) => {
-  // Pindah ke kotak sebelumnya jika kotak saat ini kosong dan tombol backspace ditekan
   if (!pin.value[index] && index > 0) {
     pinRefs.value[index - 1].focus()
   }
 }
 
-// --- LOGIKA VERIFIKASI ---
 const handleVerifikasi = async () => {
   const kodePin = pin.value.join('')
 
-  // Validasi: Pastikan 6 digit terisi
   if (kodePin.length < 6) {
     $q.notify({
-      message: 'Harap masukkan 6 digit PIN secara lengkap.',
+      message: 'Please enter the full 6-digit PIN.',
       color: 'warning',
       position: 'top',
     })
@@ -182,23 +160,20 @@ const handleVerifikasi = async () => {
 
   loading.value = true
   try {
-    // Simulasi request API
     await new Promise((resolve) => setTimeout(resolve, 1500))
 
     $q.notify({
-      message: 'Verifikasi berhasil!',
+      message: 'Verification successful!',
       color: 'positive',
       icon: 'check_circle',
       position: 'top',
     })
 
-    // 👇 Ini kode untuk pindah ke halaman Reset Password 👇
     router.push('/reset-password')
   } catch (error) {
-    // Variabel error digunakan dengan console.error
-    console.error('Verifikasi gagal:', error)
+    console.error('Verification failed:', error)
     $q.notify({
-      message: 'PIN salah atau kadaluarsa.',
+      message: 'Invalid or expired PIN.',
       color: 'negative',
       icon: 'error',
       position: 'top',
@@ -207,7 +182,7 @@ const handleVerifikasi = async () => {
     loading.value = false
   }
 }
-// --- LOGIKA TIMER ---
+
 const formattedTime = computed(() => {
   const seconds = timeLeft.value.toString().padStart(2, '0')
   return `00:${seconds}`
@@ -225,13 +200,11 @@ const startTimer = () => {
 }
 
 const resendCode = async () => {
-  // Logika kirim ulang API di sini
   $q.notify({
-    message: 'Kode PIN baru telah dikirim ke email Anda.',
+    message: 'A new PIN code has been sent to your email.',
     color: 'positive',
     position: 'top',
   })
-  // Mulai ulang timer
   startTimer()
 }
 
@@ -261,15 +234,14 @@ onUnmounted(() => {
 
 .form-container {
   width: 100%;
-  max-width: 480px;
+  max-width: 460px;
 }
 
-/* Styling Kotak OTP Custom */
 .otp-input {
   width: 52px;
   height: 56px;
   border: 1px solid #d1d5db;
-  border-radius: 6px;
+  border-radius: 4px;
   text-align: center;
   font-size: 24px;
   font-weight: 700;
@@ -291,8 +263,7 @@ onUnmounted(() => {
   border-radius: 4px;
   height: 52px;
   font-size: 16px;
-  font-weight: 500;
-
+  font-weight: 400;
   &:hover {
     background-color: #1f2937 !important;
   }

@@ -2,11 +2,11 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
-        <!-- ================= BAGIAN KIRI (GAMBAR) ================= -->
+        <!-- ================= LEFT SIDE (IMAGE) ================= -->
         <div class="col-12 col-md-6 gt-sm relative-position">
-          <q-img src="../../assets/LoginPage-asset1.jpg" class="full-height-img" fit="cover">
+          <q-img src="../../assets/login-register/LoginPage.jpg" class="full-height-img" fit="cover">
             <div class="absolute-full column justify-between q-pa-xl bg-transparent-overlay">
-              <!-- Logo Atas -->
+              <!-- Logo -->
               <div class="logo-wrapper q-pt-md">
                 <q-img
                   src="../../assets/ChainFitLogo.png"
@@ -15,6 +15,7 @@
                 />
               </div>
 
+              <!-- Bottom Overlay Text -->
               <div
                 class="text-box q-pa-lg"
                 style="
@@ -27,28 +28,30 @@
                   class="text-body1 text-white text-weight-regular q-ma-none"
                   style="line-height: 1.6"
                 >
-                  Welcome back!. Stay consistent, lanjutkan apa yang sudah kamu mulai, Semua kontrol
-                  ada di tanganmu.
+                  Welcome back! Stay consistent and continue what you started. All control is in
+                  your hands.
                 </p>
               </div>
             </div>
           </q-img>
         </div>
 
+        <!-- ================= RIGHT SIDE (FORM) ================= -->
         <div class="col-12 col-md-6 flex flex-center bg-white">
-          <!-- Diperlebar max-width nya agar input tampak seperti di desain -->
           <div class="form-container q-pa-lg">
+            <!-- Header -->
             <div class="text-center q-mb-xl">
-              <div class="text-h6 text-weight-bold q-mb-sm text-dark">Selamat Datang Kembali</div>
-              <div class="text-body2 text-grey-8">Lanjutkan progres yang sudah kamu mulai</div>
+              <h2 class="text-h6 text-weight-bold q-mb-sm text-dark q-mt-none">Welcome Back</h2>
+              <p class="text-body2 text-grey-8">Pick up where you left off</p>
             </div>
 
+            <!-- Form -->
             <q-form @submit="handleLogin" class="q-gutter-y-lg">
               <q-input
                 color="black"
                 outlined
                 v-model="username"
-                placeholder="Email"
+                placeholder="Email Address"
                 bg-color="white"
                 class="custom-input"
                 required
@@ -75,34 +78,33 @@
                 </q-input>
 
                 <div class="row justify-end q-mt-sm">
-                  <!-- 👇 Ini yang diubah menjadi span @click 👇 -->
                   <span
                     class="text-body2 text-dark cursor-pointer no-decoration"
                     @click="$router.push('/lupa-password')"
                   >
-                    Lupa Password?
+                    Forgot Password?
                   </span>
-                  <!-- 👆 ===================================== 👆 -->
                 </div>
               </div>
 
+              <!-- Login Button -->
               <q-btn
                 type="submit"
-                label="Login"
+                label="Log In"
                 class="full-width btn-continue q-mt-md"
                 unelevated
                 :loading="loading"
               />
             </q-form>
 
-            <!-- Garis Or continue with -->
+            <!-- Divider -->
             <div class="row items-center q-my-xl">
               <q-separator class="col bg-grey-3" />
-              <span class="q-px-md text-body2 text-grey-7">Or continue with</span>
+              <span class="q-px-md text-body2 text-grey-7">Or log in with</span>
               <q-separator class="col bg-grey-3" />
             </div>
 
-            <!-- Tombol Sosial Media (Dibuat outline sesuai desain) -->
+            <!-- Social Media Buttons -->
             <div class="row justify-center q-gutter-x-lg q-mb-xl">
               <q-btn outline round color="grey-4" class="q-pa-sm" @click="handleGoogleLogin">
                 <q-avatar size="24px">
@@ -116,14 +118,14 @@
               </q-btn>
             </div>
 
-            <!-- Footer Daftar -->
+            <!-- Footer -->
             <div class="text-center text-body2 text-grey-8">
-              Belum punya akun ?
+              Don't have an account?
               <router-link
                 to="/register"
                 class="text-weight-medium text-dark no-decoration q-ml-xs"
               >
-                Daftar
+                Sign up
               </router-link>
             </div>
           </div>
@@ -144,7 +146,6 @@ const router = useRouter()
 const $q = useQuasar()
 const authStore = useAuthStore()
 
-// State Form
 const username = ref('')
 const password = ref('')
 const loading = ref(false)
@@ -153,18 +154,14 @@ const showPassword = ref(false)
 const handleLogin = async () => {
   loading.value = true
   try {
-    console.log('Mengirim data login:', { username: username.value, password: password.value })
-
-    const res = await authStore.login({
+    // Menghapus 'const res =' karena kita hanya perlu menunggu prosesnya selesai
+    await authStore.login({
       username: username.value,
       password: password.value,
     })
 
-    console.log('Login Berhasil! Response:', res)
-    console.log('Token yang didapat:', res.data.access_token)
-
     $q.notify({
-      message: 'Selamat Datang Kembali!',
+      message: 'Welcome back!',
       color: 'positive',
       icon: 'check_circle',
       position: 'top',
@@ -172,7 +169,7 @@ const handleLogin = async () => {
 
     router.push('/dashboard')
   } catch (error) {
-    const errorMsg = error.response?.data?.message || 'Login Gagal, periksa username/password'
+    const errorMsg = error.response?.data?.message || 'Login failed. Please check your credentials.'
     $q.notify({
       message: errorMsg,
       color: 'negative',
@@ -193,18 +190,16 @@ const handleGoogleLogin = async () => {
       headers: { Authorization: `Bearer ${googleResponse.access_token}` },
     })
     const userGoogleInfo = await userInfoResponse.json()
-    const username = userGoogleInfo.email.split('@')[0]
+    const googleUsername = userGoogleInfo.email.split('@')[0]
 
-    const res = await authStore.loginSocialAccount({
-      username: username,
+    // Menghapus 'const res ='
+    await authStore.loginSocialAccount({
+      username: googleUsername,
       provider: 'google',
     })
 
-    console.log('Login Google Berhasil! Response:', res)
-    console.log('Token yang didapat:', res.data.access_token)
-
     $q.notify({
-      message: 'Selamat Datang Kembali!',
+      message: 'Welcome back!',
       color: 'positive',
       icon: 'check_circle',
       position: 'top',
@@ -214,11 +209,12 @@ const handleGoogleLogin = async () => {
   } catch (error) {
     console.error('Google Login Error', error)
 
-    const errorMsg = error.response?.data?.message || 'Login Gagal, periksa username/password'
+    const errorMsg = error.response?.data?.message || 'Failed to log in with Google.'
     $q.notify({
-      message: errorMsg || 'Gagal login dengan Google',
+      message: errorMsg,
       color: 'negative',
       icon: 'error',
+      position: 'top',
     })
   } finally {
     loading.value = false
@@ -250,6 +246,7 @@ const socialRedirect = () => {
   max-width: 460px;
 }
 
+/* Identical input styling to RegisterPage */
 .custom-input {
   :deep(.q-field__control) {
     border-radius: 4px;
@@ -259,6 +256,7 @@ const socialRedirect = () => {
   }
 }
 
+/* Identical button styling */
 .btn-continue {
   background-color: #111827 !important;
   color: white;
