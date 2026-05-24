@@ -29,7 +29,13 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     const token = localStorage.getItem('access_token')
     const isAuthenticated = !!token || !!authStore.token
 
-    const publicPages = ['/login', '/register', '/lupa-password', '/verifikasi-pin']
+    const publicPages = [
+      '/login',
+      '/register',
+      '/lupa-password',
+      '/verifikasi-pin',
+      '/reset-password',
+    ]
     const isPublicPage = publicPages.includes(to.path)
 
     if (!isAuthenticated && !isPublicPage) {

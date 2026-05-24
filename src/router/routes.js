@@ -103,6 +103,10 @@ const routes = [
     component: () => import('pages/login/VerifikasiPinPage.vue'),
   },
   {
+    path: '/reset-password',
+    component: () => import('pages/login/ResetPasswordPage.vue'),
+  },
+  {
     path: '/:catchAll(.*)*',
     component: () => import('pages/error/ErrorNotFound.vue'),
   },

@@ -127,6 +127,10 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useQuasar } from 'quasar'
 // import useRouter dihapus sementara karena belum digunakan
 
+import { useRouter } from 'vue-router'
+
+const router = useRouter()
+
 const $q = useQuasar()
 
 const loading = ref(false)
@@ -187,6 +191,9 @@ const handleVerifikasi = async () => {
       icon: 'check_circle',
       position: 'top',
     })
+
+    // 👇 Ini kode untuk pindah ke halaman Reset Password 👇
+    router.push('/reset-password')
   } catch (error) {
     // Variabel error digunakan dengan console.error
     console.error('Verifikasi gagal:', error)
@@ -200,7 +207,6 @@ const handleVerifikasi = async () => {
     loading.value = false
   }
 }
-
 // --- LOGIKA TIMER ---
 const formattedTime = computed(() => {
   const seconds = timeLeft.value.toString().padStart(2, '0')
