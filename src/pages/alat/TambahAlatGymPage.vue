@@ -1,31 +1,33 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders shadow-1 q-mb-lg bg-white">
+    <!-- Header Card -->
+    <q-card flat class="custom-card shadow-1 q-mb-lg bg-white">
       <q-card-section class="header-height q-pa-md row items-center">
         <div style="width: 42px" class="row items-center justify-start">
           <q-btn flat round icon="arrow_back" color="grey-7" size="md" dense @click="goBack" />
         </div>
-        <q-icon name="fitness_center" color="black" size="32px" class="q-mr-md" />
-        <div class="text-h5 text-weight-bold">Tambah Alat Gym Baru</div>
+        <q-icon name="fitness_center" color="dark" size="32px" class="q-mr-md" />
+        <div class="text-h5 text-weight-bold text-dark">Add New Gym Equipment</div>
       </q-card-section>
     </q-card>
 
-    <q-card flat class="rounded-borders shadow-1 bg-white">
+    <!-- Form Card -->
+    <q-card flat class="custom-card shadow-1 bg-white">
       <q-card-section class="q-pa-xl">
         <div class="row q-col-gutter-lg">
           <div class="col-12">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Nama Alat</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Equipment Name</div>
             <q-input
               outlined
               dense
               v-model="newEquipment.name"
-              placeholder="Contoh: Smith Machine, Leg Press..."
+              placeholder="e.g., Smith Machine, Leg Press..."
               class="custom-input shadow-none"
             />
           </div>
 
           <div class="col-12 col-md-4">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Jumlah Unit</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Quantity</div>
             <q-input
               outlined
               dense
@@ -35,14 +37,14 @@
               min="1"
             >
               <template v-slot:append>
-                <div class="text-caption text-grey-6 text-weight-medium">UNIT</div>
+                <div class="text-caption text-grey-7 text-weight-medium">UNITS</div>
               </template>
             </q-input>
           </div>
 
           <div class="col-12 col-md-8">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">
-              Link Video Tutorial (YouTube)
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">
+              Tutorial Video Link (YouTube)
             </div>
             <q-input
               outlined
@@ -52,32 +54,32 @@
               class="custom-input"
             >
               <template v-slot:prepend>
-                <q-icon name="play_circle" color="red-7" />
+                <q-icon name="play_circle" color="negative" />
               </template>
             </q-input>
           </div>
 
           <div class="col-12">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Deskripsi</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Description</div>
             <q-input
               outlined
               dense
               type="textarea"
               autogrow
               v-model="newEquipment.description"
-              placeholder="Contoh: latihan punggung biar postur lebih tegak..."
+              placeholder="e.g., Great for back exercises to improve posture and build muscle strength..."
               class="custom-input"
             />
           </div>
 
           <div class="col-12">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Foto</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Photo</div>
             <q-file
               outlined
               dense
               v-model="newEquipment.image"
               accept="image/*"
-              label="Upload foto alat"
+              label="Upload equipment photo"
               class="custom-input"
               clearable
             >
@@ -90,12 +92,13 @@
 
         <q-separator class="q-my-xl" />
 
+        <!-- Action Buttons -->
         <div class="row justify-end q-gutter-md">
-          <q-btn flat label="Batal" class="btn-batal" no-caps @click="goBack" />
+          <q-btn flat label="Cancel" class="btn-cancel" no-caps @click="goBack" />
           <q-btn
             unelevated
-            label="Simpan Data Alat"
-            class="btn-simpan"
+            label="Save Equipment"
+            class="btn-save"
             no-caps
             :loading="loading"
             @click="submitEquipment"
@@ -130,13 +133,21 @@ const newEquipment = reactive({
 
 const submitEquipment = async () => {
   if (!newEquipment.name) {
-    $q.notify({ message: 'Nama alat wajib diisi', color: 'negative', position: 'top' })
+    $q.notify({
+      message: 'Equipment name is required',
+      color: 'warning',
+      position: 'top',
+    })
     return
   }
 
   const gymId = gymStore.selectedGymId
   if (!gymId) {
-    $q.notify({ message: 'Silahkan pilih Gym terlebih dahulu', color: 'negative', position: 'top' })
+    $q.notify({
+      message: 'Please select a Gym first',
+      color: 'warning',
+      position: 'top',
+    })
     return
   }
 
@@ -152,7 +163,8 @@ const submitEquipment = async () => {
 
     $q.notify({
       type: 'positive',
-      message: 'Alat gym berhasil ditambahkan',
+      icon: 'check_circle',
+      message: 'Gym equipment successfully added',
       position: 'top',
     })
 
@@ -160,7 +172,8 @@ const submitEquipment = async () => {
   } catch (err) {
     $q.notify({
       type: 'negative',
-      message: err.response?.data?.message || 'Gagal menyimpan ke server',
+      icon: 'error',
+      message: err.response?.data?.message || 'Failed to save to the server',
       position: 'top',
     })
   } finally {
@@ -176,48 +189,42 @@ const goBack = () => router.back()
   height: 68px;
 }
 
-.rounded-borders {
-  border-radius: 12px;
+.custom-card {
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
 }
 
 .custom-input {
   :deep(.q-field__control) {
-    border-radius: 10px;
-    background-color: #fafafa;
-    transition: all 0.3s ease;
-
-    &:before {
-      border: 1px solid #e0e0e0 !important;
-    }
-
-    &:hover:before {
-      border-color: #222 !important;
-    }
-
-    &.q-field__control--focused:after {
-      border-color: #000 !important;
-    }
+    border-radius: 4px;
+  }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
   }
 }
 
-.btn-batal {
+.btn-cancel {
   min-width: 120px;
-  background-color: #f0f2f5;
-  border-radius: 10px;
-  font-weight: 700;
-  color: #555;
+  color: #4b5563;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
-.btn-simpan {
+.btn-save {
   min-width: 180px;
-  background: linear-gradient(135deg, #444 0%, #000 100%);
+  background-color: #111827 !important;
   color: white;
-  border-radius: 10px;
-  font-weight: 700;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  font-weight: 500;
+  height: 44px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #1f2937 !important;
+  }
 }
 
 .shadow-1 {
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
 }
 </style>

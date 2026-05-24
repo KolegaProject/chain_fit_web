@@ -1,25 +1,23 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders shadow-1 q-mb-lg bg-white">
+    <q-card flat class="custom-card q-mb-lg bg-white shadow-1">
       <q-card-section class="header-height q-pa-md row items-center justify-between header-section">
         <div class="row items-center">
-          <div style="width: 42px" v-if="false"></div>
-          <q-icon name="badge" color="black" size="32px" class="q-mr-md" />
-          <div class="text-h5 text-weight-bold">Manajemen Staff Gym</div>
+          <q-icon name="badge" color="dark" size="32px" class="q-mr-md" />
+          <div class="text-h5 text-weight-bold text-dark">Gym Staff Management</div>
         </div>
         <q-btn
           unelevated
-          label="Tambah Staff"
+          label="Add Staff"
           icon="add"
-          color="primary"
           no-caps
-          class="rounded-borders q-px-md"
+          class="btn-dark q-px-md"
           @click="addMember"
         />
       </q-card-section>
     </q-card>
 
-    <q-card flat class="rounded-borders shadow-1 overflow-hidden bg-white">
+    <q-card flat class="custom-card shadow-1 overflow-hidden bg-white">
       <q-card-section class="q-pa-none">
         <div class="row q-pa-md border-bottom">
           <div class="col-12 col-md-4">
@@ -27,8 +25,8 @@
               outlined
               dense
               v-model="filter"
-              placeholder="Cari nama atau email..."
-              class="search-input"
+              placeholder="Search by name or email..."
+              class="custom-input"
             >
               <template v-slot:prepend>
                 <q-icon name="search" size="xs" />
@@ -43,28 +41,20 @@
           :columns="columns"
           row-key="id"
           :filter="filter"
-          class="staff-table"
+          class="dashboard-table"
           :pagination="{ rowsPerPage: 10 }"
         >
           <template v-slot:no-data v-if="loading">
             <div class="full-width">
               <div v-for="n in 5" :key="n" class="row q-pa-md items-center border-bottom">
-                <div class="col-1 q-pr-md">
-                  <q-skeleton type="QAvatar" size="48px" />
-                </div>
+                <div class="col-1 q-pr-md"><q-skeleton type="QAvatar" size="48px" /></div>
                 <div class="col-3 q-pr-md">
                   <q-skeleton type="text" width="60%" class="q-mb-sm" />
                   <q-skeleton type="text" width="40%" />
                 </div>
-                <div class="col-3 q-pr-md">
-                  <q-skeleton type="text" width="50%" />
-                </div>
-                <div class="col-3 q-pr-md">
-                  <q-skeleton type="text" width="80%" />
-                </div>
-                <div class="col-2 row justify-center">
-                  <q-skeleton type="rect" width="60px" height="30px" />
-                </div>
+                <div class="col-3 q-pr-md"><q-skeleton type="text" width="50%" /></div>
+                <div class="col-3 q-pr-md"><q-skeleton type="text" width="80%" /></div>
+                <div class="col-2 row justify-center"><q-skeleton type="rect" width="60px" height="30px" /></div>
               </div>
             </div>
           </template>
@@ -80,7 +70,7 @@
 
           <template v-slot:body-cell-name="props">
             <q-td :props="props">
-              <div class="text-subtitle2 text-weight-bold text-grey-10">{{ props.value }}</div>
+              <div class="text-subtitle2 text-weight-bold text-dark">{{ props.value }}</div>
             </q-td>
           </template>
 
@@ -92,10 +82,7 @@
 
           <template v-slot:body-cell-email="props">
             <q-td :props="props">
-              <div
-                class="text-subtitle2 text-blue-8 text-weight-medium"
-                style="text-decoration: underline"
-              >
+              <div class="text-subtitle2 text-primary text-weight-medium" style="text-decoration: underline">
                 {{ props.value }}
               </div>
             </q-td>
@@ -105,19 +92,17 @@
             <q-td :props="props">
               <div class="row no-wrap justify-center q-gutter-x-sm">
                 <q-btn
-                  flat
-                  round
-                  color="blue-7"
-                  icon="edit"
-                  size="md"
+                  unelevated
+                  label="Edit"
+                  no-caps
+                  class="btn-edit"
                   @click="editMember(props.row)"
                 />
                 <q-btn
-                  flat
-                  round
-                  color="negative"
-                  icon="delete"
-                  size="md"
+                  unelevated
+                  label="Delete"
+                  no-caps
+                  class="btn-delete"
                   @click="deleteMember(props.row)"
                 />
               </div>
@@ -131,23 +116,18 @@
       <q-card class="dialog-card q-pa-md">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
         <q-card-section class="text-center q-pt-lg">
-          <q-img
-            src="../../assets/popup/hapus.png"
-            style="width: 140px; height: auto"
-            class="q-mb-md"
-          />
-          <div class="text-h6 text-weight-bolder">Hapus Data Staff?</div>
+          <q-icon name="warning" size="60px" color="negative" class="q-mb-md" />
+          <div class="text-h6 text-weight-bold text-dark">Delete Staff?</div>
           <div class="text-body2 text-grey-7 q-mt-sm">
-            Hapus staff <strong>{{ selectedMemberToDelete?.name }}</strong
-            >? Data tidak dapat dipulihkan.
+            Are you sure you want to delete <strong>{{ selectedMemberToDelete?.name }}</strong>? This action cannot be undone.
           </div>
         </q-card-section>
         <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
-          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
+          <q-btn flat label="Cancel" v-close-popup class="btn-dialog-flat" no-caps />
           <q-btn
             unelevated
-            label="Ya, Hapus"
-            class="btn-dialog-gradient"
+            label="Yes, Delete"
+            class="btn-delete"
             no-caps
             :loading="deleting"
             @click="executeDelete"
@@ -177,10 +157,10 @@ const deleting = ref(false)
 
 const columns = [
   { name: 'avatar', align: 'left', label: '', field: 'profileImage' },
-  { name: 'name', align: 'left', label: 'Nama', field: 'name', sortable: true },
+  { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true },
   { name: 'role', align: 'left', label: 'Role', field: 'role', sortable: true },
   { name: 'email', align: 'left', label: 'Email', field: 'email', sortable: true },
-  { name: 'actions', align: 'center', label: 'Opsi', field: 'actions' },
+  { name: 'actions', align: 'center', label: 'Options', field: 'actions' },
 ]
 
 onMounted(() => {
@@ -189,7 +169,6 @@ onMounted(() => {
 
 const addMember = () => router.push('/staff/tambah')
 const editMember = (member) => {
-  // Ambil ID Gym dari store agar konsisten
   const gymId = gymStore.selectedGymId || 1
   router.push(`/staff/edit/${gymId}/${member.id}`)
 }
@@ -201,89 +180,90 @@ const deleteMember = (member) => {
 
 const executeDelete = async () => {
   if (!selectedMemberToDelete.value) return
-
   deleting.value = true
-
   const gymId = gymStore.selectedGymId || 1
-
-  const success = await staffStore.deleteStaff(gymId, selectedMemberToDelete.value.id)
-
-  if (success) {
+  try {
+    await staffStore.deleteStaff(gymId, selectedMemberToDelete.value.id)
     showConfirmDelete.value = false
     selectedMemberToDelete.value = null
+  } catch (err) {
+    console.error('Delete error:', err)
+  } finally {
+    deleting.value = false
   }
-
-  deleting.value = false
 }
 </script>
 
 <style lang="scss" scoped>
-.staff-table {
-  background: transparent;
-
-  :deep(thead tr th) {
-    font-size: 1rem;
-    font-weight: 700;
-    line-height: 1.75rem;
-    letter-spacing: 0.00937em;
-    color: #222;
-    background-color: #f8f9fa;
-    padding: 18px 16px;
-  }
-
-  :deep(tbody tr td) {
-    font-size: 15px;
-    color: #333;
-    padding: 16px;
-    border-bottom: 1px solid #f5f5f5;
-  }
-
-  :deep(tbody tr:hover) {
-    background-color: #fafafa;
-  }
+.custom-card {
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
 }
 
-.search-input {
-  font-size: 15px;
+.custom-input {
   :deep(.q-field__control) {
-    height: 48px;
-    border-radius: 10px;
+    border-radius: 4px;
+  }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
   }
 }
 
-.rounded-borders {
-  border-radius: 12px;
-}
-.border-bottom {
-  border-bottom: 1px solid #f0f0f0;
-}
-.dialog-card {
-  width: 100%;
-  max-width: 440px;
-  border-radius: 24px;
-}
-.btn-dialog-flat {
-  width: 130px;
-  background-color: #f0f2f5;
-  border-radius: 12px;
-  font-weight: bold;
-}
-.btn-dialog-gradient {
-  width: 130px;
-  background: black;
-  color: white;
-  border-radius: 12px;
-  font-weight: bold;
-}
-.close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: #f0f0f0;
-  z-index: 10;
+.dashboard-table {
+  background: transparent;
+  :deep(thead tr th) {
+    font-size: 14px;
+    font-weight: 700;
+    background-color: #f9fafb;
+    color: #374151;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e5e7eb;
+  }
+  :deep(tbody tr td) {
+    font-size: 14px;
+    padding: 16px;
+    border-bottom: 1px solid #f3f4f6;
+  }
 }
 
-.header-height {
-  height: 68px;
+.btn-dark {
+  background-color: #111827 !important;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  height: 40px;
 }
+
+.btn-edit {
+  border-radius: 4px;
+  border: 1px solid #111827;
+  color: #111827;
+  font-weight: 500;
+  background-color: transparent !important;
+  transition: all 0.3s ease;
+  padding: 0 16px;
+
+  &:hover {
+    background-color: #111827 !important;
+    color: white !important;
+  }
+}
+
+.btn-delete {
+  border-radius: 4px;
+  background-color: #ef4444;
+  color: white;
+  font-weight: 500;
+  padding: 0 16px;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #dc2626 !important;
+  }
+}
+
+.dialog-card { width: 100%; max-width: 400px; border-radius: 8px; }
+.btn-dialog-flat { width: 100px; background-color: #f3f4f6; border-radius: 4px; color: #374151; }
+.close-btn { position: absolute; top: 8px; right: 8px; }
+.header-height { height: 68px; }
 </style>

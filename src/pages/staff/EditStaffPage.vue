@@ -1,61 +1,66 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders q-mb-lg bg-white shadow-1">
+    <q-card flat class="custom-card q-mb-lg bg-white shadow-1">
       <q-card-section class="header-height q-pa-md row items-center justify-between">
         <div class="row items-center">
-          <div style="width: 42px" class="row items-center justify-start">
-            <q-btn flat round icon="arrow_back" color="grey-7" size="md" dense @click="goBack" />
-          </div>
-          <q-icon name="edit" color="black" size="32px" class="q-mr-md" />
-          <div class="text-h5 text-weight-bold">Edit Staff</div>
+          <q-btn
+            flat
+            round
+            icon="arrow_back"
+            color="grey-7"
+            size="md"
+            dense
+            @click="goBack"
+            class="q-mr-sm"
+          />
+          <q-icon name="edit" color="dark" size="32px" class="q-mr-md" />
+          <div class="text-h5 text-weight-bold text-dark">Edit Staff Member</div>
         </div>
-
         <q-spinner-dots v-if="staffStore.loading" color="primary" size="2em" />
       </q-card-section>
     </q-card>
 
-    <q-card flat class="rounded-borders shadow-1 bg-white">
+    <q-card flat class="custom-card shadow-1 bg-white">
       <q-card-section class="q-pa-xl">
         <div class="row q-col-gutter-xl">
           <div class="col-12 col-md-8">
             <div class="row q-col-gutter-y-lg q-col-gutter-x-md">
               <div class="col-12 col-sm-6">
-                <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Nama Lengkap</div>
+                <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Full Name</div>
                 <q-input
                   outlined
                   v-model="form.nama"
-                  placeholder="Masukkan nama lengkap"
+                  placeholder="e.g., John Doe"
                   dense
                   class="custom-input"
                 />
               </div>
 
               <div class="col-12 col-sm-6">
-                <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Email</div>
+                <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Email</div>
                 <q-input
                   outlined
                   disable
                   v-model="form.email"
                   placeholder="email@example.com"
                   dense
-                  class="custom-input"
+                  class="custom-input bg-grey-1"
                 />
               </div>
 
               <div class="col-12 col-sm-6">
-                <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Role</div>
+                <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Role</div>
                 <q-input
                   outlined
                   v-model="form.role"
                   dense
                   disable
                   class="custom-input bg-grey-1"
-                  hint="Role tidak dapat diubah di halaman ini"
                 />
               </div>
 
               <div class="col-12 col-sm-6">
-                <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Instansi Gym</div>
+                <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Gym Branch</div>
                 <q-input
                   outlined
                   v-model="form.gymName"
@@ -69,8 +74,8 @@
 
           <div class="col-12 col-md-4 flex flex-center">
             <div class="column items-center">
-              <div class="text-subtitle2 q-mb-md text-weight-bold text-grey-9 text-center">
-                Foto Profil
+              <div class="text-subtitle2 q-mb-md text-weight-bold text-dark text-center">
+                Profile Photo
               </div>
 
               <div class="photo-container shadow-1">
@@ -88,7 +93,7 @@
                   unelevated
                   round
                   dense
-                  color="blue-7"
+                  color="primary"
                   icon="photo_camera"
                   @click="triggerFileInput"
                 />
@@ -104,7 +109,7 @@
               </div>
 
               <input ref="fileInput" type="file" accept="image/*" @change="onFileChange" hidden />
-              <div class="text-caption text-grey-6 q-mt-sm">Format: JPG, PNG (Maks 2MB)</div>
+              <div class="text-caption text-grey-6 q-mt-sm">JPG, PNG (Max 2MB)</div>
             </div>
           </div>
         </div>
@@ -112,11 +117,11 @@
         <q-separator class="q-my-xl" />
 
         <div class="row justify-end q-gutter-md">
-          <q-btn flat label="Batal" class="btn-dialog-flat" no-caps @click="goBack" />
+          <q-btn flat label="Cancel" class="btn-cancel" no-caps @click="goBack" />
           <q-btn
             unelevated
-            label="Simpan Perubahan"
-            class="btn-dialog-gradient"
+            label="Save Changes"
+            class="btn-save"
             no-caps
             :loading="staffStore.loading"
             @click="submitUpdate"
@@ -136,59 +141,36 @@ const router = useRouter()
 const route = useRoute()
 const staffStore = useStaffStore()
 
-// State Form
-const form = ref({
-  nama: '',
-  email: '',
-  role: '',
-  gymName: '',
-})
-
-// Image State
+const form = ref({ nama: '', email: '', role: '', gymName: '' })
 const imagePreview = ref('')
 const imageFile = ref(null)
 const defaultPhoto =
   'https://t4.ftcdn.net/jpg/02/15/84/43/360_F_215844325_ttX9YiIIyeaR7Ne6EaLLjMAmy4GvPC69.jpg'
 const fileInput = ref(null)
 
-// Params dari URL
-const gymId = route.params.id // Asumsi route: /staff/edit/:id/:userId
+const gymId = route.params.id
 const userId = route.params.userId
 
-// --- 1. PANGGIL DATA SAAT MOUNTED ---
 onMounted(async () => {
-  // Ambil parameter dari URL
-  const gId = route.params.id
-  const uId = route.params.userId
-
-  console.log('Fetching Data for Gym:', gId, 'User:', uId)
-
-  if (gId && uId) {
-    const data = await staffStore.fetchStaffById(gId, uId)
-
+  if (gymId && userId) {
+    const data = await staffStore.fetchStaffById(gymId, userId)
     if (data) {
-      // MAPPING: Pastikan field kiri sesuai dengan form, field kanan sesuai API
       form.value.nama = data.name || data.nama || ''
       form.value.email = data.email || ''
       form.value.role = data.role || ''
-      form.value.gymName = data.gym?.name || 'Instansi Gym'
-
-      // Foto Profil
+      form.value.gymName = data.gym?.name || 'Gym Branch'
       imagePreview.value = data.profileImage || ''
     }
-  } else {
-    console.error('Parameter ID tidak lengkap di URL')
   }
 })
-// --- handlers ---
+
 const triggerFileInput = () => fileInput.value.click()
 
 const onFileChange = (evt) => {
   const file = evt.target.files[0]
   if (!file) return
-
   imageFile.value = file
-  imagePreview.value = URL.createObjectURL(file) // Preview instan
+  imagePreview.value = URL.createObjectURL(file)
 }
 
 const removePhoto = () => {
@@ -203,57 +185,55 @@ const submitUpdate = async () => {
   const payload = {
     nama: form.value.nama,
     email: form.value.email,
-    imageFile: imageFile.value, // Dikirim sebagai file asli untuk FormData
+    imageFile: imageFile.value,
   }
-
   const success = await staffStore.updateStaff(gymId, userId, payload)
-  if (success) {
-    goBack()
-  }
+  if (success) goBack()
 }
 </script>
 
 <style lang="scss" scoped>
-.rounded-borders {
-  border-radius: 12px;
+.custom-card {
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
 }
 
 .custom-input {
   :deep(.q-field__control) {
-    border-radius: 10px;
-    background-color: #fafafa;
-    &:before {
-      border: 1px solid #e0e0e0 !important;
-    }
-    &:hover:before {
-      border-color: #222 !important;
-    }
+    border-radius: 4px;
+  }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
   }
 }
 
 .photo-container {
   width: 200px;
   height: 240px;
-  border-radius: 16px;
+  border-radius: 4px;
   overflow: hidden;
-  border: 2px dashed #e0e0e0;
+  border: 1px solid #e5e7eb;
   background: #fff;
 }
 
-.btn-dialog-flat {
-  width: 140px;
-  background-color: #f0f2f5;
-  border-radius: 12px;
-  font-weight: bold;
-  color: #555;
+.btn-cancel {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  color: #374151;
+  padding: 0 25px;
 }
 
-.btn-dialog-gradient {
-  min-width: 180px;
-  background: black;
+.btn-save {
+  background-color: #111827 !important;
   color: white;
-  border-radius: 12px;
-  font-weight: bold;
+  border-radius: 4px;
+  font-weight: 500;
+  height: 40px;
+  padding: 0 35px;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #1f2937 !important;
+  }
 }
 
 .header-height {

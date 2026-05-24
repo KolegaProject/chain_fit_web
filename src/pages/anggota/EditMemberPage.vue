@@ -1,12 +1,12 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders shadow-1 custom-card">
-      <q-card-section class="q-pa-xl">
-        <div class="text-h5 text-center text-weight-bolder q-mb-xl">Pembaruan Keanggotaan</div>
+    <q-card flat class="custom-card q-pa-xl shadow-1">
+      <q-card-section>
+        <div class="text-h5 text-center text-weight-bold q-mb-xl text-dark">Membership Renewal</div>
 
         <div class="row q-col-gutter-x-md q-col-gutter-y-lg">
           <div class="col-12">
-            <div class="text-weight-bold q-mb-md">Paket Gym</div>
+            <div class="text-weight-bold q-mb-md text-dark">Subscription Plan</div>
             <div class="row q-col-gutter-md">
               <div v-for="paket in paketOptions" :key="paket.id" class="col-12 col-sm-4">
                 <q-card
@@ -18,11 +18,13 @@
                   <q-card-section class="row items-center no-wrap q-pa-md">
                     <div class="col">
                       <div class="text-subtitle1 text-weight-bolder">{{ paket.nama }}</div>
-                      <div class="text-body2 text-weight-bold">Rp {{ paket.harga.toLocaleString() }}</div>
+                      <div class="text-body2 text-weight-bold">
+                        Rp {{ paket.harga.toLocaleString() }}
+                      </div>
                     </div>
                     <div class="col-auto row items-baseline">
-                      <div class="text-h3 text-weight-bolder">{{ paket.durasi }}</div>
-                      <div class="text-caption q-ml-xs">/hari</div>
+                      <div class="text-h4 text-weight-bolder">{{ paket.durasi }}</div>
+                      <div class="text-caption q-ml-xs">days</div>
                     </div>
                   </q-card-section>
                 </q-card>
@@ -36,8 +38,8 @@
         </div>
 
         <div class="row justify-end q-mt-xl q-gutter-md">
-          <q-btn unelevated no-caps label="Batal" class="btn-batal" @click="goBack" />
-          <q-btn unelevated no-caps label="Simpan" class="btn-tambah" @click="onSaveClick" />
+          <q-btn flat label="Cancel" class="btn-cancel" no-caps @click="goBack" />
+          <q-btn unelevated label="Save Changes" class="btn-save" no-caps @click="onSaveClick" />
         </div>
       </q-card-section>
     </q-card>
@@ -66,162 +68,125 @@ const MEMBER_ID = route.params.id
 
 const form = ref({
   memberId: MEMBER_ID,
-  selectedPaket: null
+  selectedPaket: null,
 })
 
 const errors = reactive({
-  selectedPaket: ''
+  selectedPaket: '',
 })
 
-// Opsi paket untuk ditampilkan
 const paketOptions = computed(() =>
-  subscriptionPlans.value.map(p => ({
+  subscriptionPlans.value.map((p) => ({
     id: p.id,
     nama: p.name,
     harga: Number(p.price),
-    durasi: p.durationDays
-  }))
+    durasi: p.durationDays,
+  })),
 )
 
-// Kembali ke halaman anggota
 const goBack = () => router.push('/anggota')
 
-// Pilih paket
-const selectPaket = id => {
+const selectPaket = (id) => {
   form.value.selectedPaket = id
   errors.selectedPaket = ''
 }
 
-// Validasi form
 const validate = () => {
   if (!form.value.selectedPaket) {
-    errors.selectedPaket = 'Silakan pilih paket'
-    $q.notify({ type: 'warning', message: 'Pilih paket terlebih dahulu' })
+    errors.selectedPaket = 'Please select a plan'
+    $q.notify({ type: 'warning', message: 'Please select a plan first', position: 'top' })
     return false
   }
   return true
 }
 
-// Simpan perubahan membership
 const onSaveClick = async () => {
   if (!validate()) return
 
   try {
-    const member = rows.value.find(
-      r => String(r.id) === String(MEMBER_ID)
-    )
+    const member = rows.value.find((r) => String(r.id) === String(MEMBER_ID))
+    if (!member) throw new Error('Member not found')
 
-    if (!member) {
-      throw new Error('Member tidak ditemukan')
-    }
+    const paket = subscriptionPlans.value.find((p) => p.id === form.value.selectedPaket)
+    if (!paket) throw new Error('Plan not found')
 
-    const paket = subscriptionPlans.value.find(
-      p => p.id === form.value.selectedPaket
-    )
-
-    if (!paket) {
-      throw new Error('Paket tidak ditemukan')
-    }
-
-    // Hitung masa aktif baru
-    // const masaAktifLama = Number(member.masaAktifHari ?? 0)
-    // const masaAktifBaru = masaAktifLama + Number(paket.durationDays)
-
-    await anggotaStore.updateMembership(
-      gymId.value,
-      MEMBER_ID,
-      {
-        paketId: form.value.selectedPaket,
-        // masaAktifHari: masaAktifBaru
-      }
-    )
+    await anggotaStore.updateMembership(gymId.value, MEMBER_ID, {
+      paketId: form.value.selectedPaket,
+    })
 
     $q.notify({
       type: 'positive',
-      message: `Membership berhasil diperpanjang (+${paket.durationDays} hari)`
+      icon: 'check_circle',
+      message: `Membership successfully renewed (+${paket.durationDays} days)`,
+      position: 'top',
     })
 
     router.push('/anggota')
-
   } catch (err) {
     console.error(err)
     $q.notify({
       type: 'negative',
-      message: err.message || 'Gagal memperbarui membership'
+      message: err.message || 'Failed to update membership',
+      position: 'top',
     })
   }
 }
 
-// Load paket dan data member saat mounted
 onMounted(async () => {
-  if (!gymId.value) {
-    console.warn('Gym ID belum tersedia')
-    return
-  }
+  if (!gymId.value) return
 
   try {
     await packageStore.fetchPlans(gymId.value)
-
-    const member = rows.value.find(
-      r => String(r.id) === String(MEMBER_ID)
-    )
-
+    const member = rows.value.find((r) => String(r.id) === String(MEMBER_ID))
     if (member) {
       form.value.selectedPaket = member.paketId ?? null
     }
   } catch (err) {
-    console.error('Gagal load data edit membership:', err)
+    console.error('Failed to load membership data:', err)
   }
 })
-
 </script>
-
 
 <style lang="scss" scoped>
 .custom-card {
-  border-radius: 15px;
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
   max-width: 1000px;
   margin: 0 auto;
 }
 
 .paket-card {
-  border-radius: 10px;
-  background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
-  color: white;
+  border-radius: 4px;
+  background: #f9fafb;
+  color: #374151;
   transition: all 0.2s ease;
-  border: 2px solid transparent;
+  border: 2px solid #e5e7eb;
   cursor: pointer;
-}
 
-.paket-card:hover {
-  transform: translateY(-4px);
+  &:hover {
+    border-color: #9ca3af;
+  }
 }
 
 .paket-selected {
-  background: linear-gradient(135deg, #475569 0%, #1e293b 100%);
-  border-color: #0c0c0c;
-  transform: translateY(-2px);
-}
-
-.text-h3 {
-  line-height: 1;
-  letter-spacing: -1px;
-}
-
-.btn-batal {
-  background-color: #e53935;
+  background: #111827;
   color: white;
-  border-radius: 8px;
-  font-weight: bold;
-  height: 40px;
+  border-color: #111827;
+}
+
+.btn-cancel {
+  border: 1px solid #d1d5db;
+  border-radius: 4px;
+  font-weight: 500;
   padding: 0 25px;
+  color: #374151;
 }
 
-.btn-tambah {
-  background-color: #0c0c0c;
+.btn-save {
+  background-color: #111827 !important;
   color: white;
-  border-radius: 8px;
-  font-weight: bold;
+  border-radius: 4px;
+  font-weight: 500;
   height: 40px;
   padding: 0 35px;
 }

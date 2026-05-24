@@ -1,125 +1,125 @@
 <template>
-  <q-page class="q-pa-lg bg-grey-1">
-    <!-- Header Halaman -->
+  <q-page class="q-pa-lg bg-grey-2">
+    <!-- Header -->
     <div class="row items-center justify-between q-mb-xl">
       <div class="row items-center">
         <q-icon name="account_balance_wallet" size="28px" class="q-mr-sm" />
-        <div class="text-h5 text-weight-bold">Tambah Transaksi</div>
+        <div class="text-h5 text-weight-bold text-dark">Add Transaction</div>
       </div>
       <q-btn
         flat
         unelevated
-        color="primary"
-        class="bg-blue-1 text-weight-medium border-radius-8 q-px-md"
+        color="dark"
+        class="border-radius-4 q-px-md"
         icon="arrow_back"
-        label="Kembali"
+        label="Back"
         no-caps
         @click="kembali"
       />
     </div>
 
-    <!-- Area Card Form -->
+    <!-- Form Area -->
     <div class="row justify-center">
       <div class="col-12 col-md-8 col-lg-7">
-        <q-card flat bordered class="border-radius-12 q-pa-xl">
-          <div class="text-subtitle1 text-weight-bold q-mb-md">Detail Transaksi</div>
+        <q-card flat bordered class="custom-card q-pa-xl">
+          <div class="text-subtitle1 text-weight-bold q-mb-md text-dark">Transaction Details</div>
 
           <q-separator class="q-mb-lg" />
 
-          <!-- Toggle Pemasukan / Pengeluaran -->
-          <div class="row bg-blue-1 q-pa-xs border-radius-8 q-mb-lg">
+          <!-- Income / Expense Toggle -->
+          <div class="row bg-grey-2 q-pa-xs border-radius-4 q-mb-lg">
             <q-btn
-              class="col border-radius-6 text-weight-bold"
-              :unelevated="form.jenis === 'pemasukan'"
-              :flat="form.jenis !== 'pemasukan'"
-              :color="form.jenis === 'pemasukan' ? 'white' : 'transparent'"
-              :text-color="form.jenis === 'pemasukan' ? 'primary' : 'grey-7'"
-              label="Pemasukan"
-              @click="form.jenis = 'pemasukan'"
+              class="col border-radius-4 text-weight-bold"
+              :unelevated="form.jenis === 'income'"
+              :flat="form.jenis !== 'income'"
+              :color="form.jenis === 'income' ? 'dark' : 'transparent'"
+              :text-color="form.jenis === 'income' ? 'white' : 'grey-7'"
+              label="Income"
+              @click="form.jenis = 'income'"
               no-caps
             />
             <q-btn
-              class="col border-radius-6 text-weight-bold"
-              :unelevated="form.jenis === 'pengeluaran'"
-              :flat="form.jenis !== 'pengeluaran'"
-              :color="form.jenis === 'pengeluaran' ? 'white' : 'transparent'"
-              :text-color="form.jenis === 'pengeluaran' ? 'primary' : 'grey-7'"
-              label="Pengeluaran"
-              @click="form.jenis = 'pengeluaran'"
+              class="col border-radius-4 text-weight-bold"
+              :unelevated="form.jenis === 'expense'"
+              :flat="form.jenis !== 'expense'"
+              :color="form.jenis === 'expense' ? 'dark' : 'transparent'"
+              :text-color="form.jenis === 'expense' ? 'white' : 'grey-7'"
+              label="Expense"
+              @click="form.jenis = 'expense'"
               no-caps
             />
           </div>
 
-          <!-- Form Input -->
+          <!-- Form Inputs -->
           <div class="q-mb-md">
-            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-              >Nama Transaksi</label
-            >
+            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
+              Transaction Name
+            </label>
             <q-input
               outlined
               dense
               v-model="form.nama"
-              placeholder="Contoh: Paket Membership"
-              class="bg-white border-radius-8"
+              placeholder="e.g., Monthly Membership"
+              class="bg-white custom-input"
             />
           </div>
 
           <div class="q-mb-md">
-            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-              >Jumlah (Rp)</label
-            >
+            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
+              Amount (Rp)
+            </label>
             <q-input
               outlined
               dense
               v-model="form.jumlah"
               type="number"
               placeholder="0"
-              class="bg-white border-radius-8"
+              class="bg-white custom-input"
             />
           </div>
 
           <div class="q-mb-lg">
-            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-              >Metode Pembayaran</label
-            >
+            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
+              Payment Method
+            </label>
             <q-select
               outlined
               dense
               v-model="form.metode"
               :options="metodeOptions"
-              placeholder="Pilih Bank/E-Wallet"
-              class="bg-white border-radius-8"
+              placeholder="Select Bank/E-Wallet"
+              class="bg-white custom-input"
               dropdown-icon="expand_more"
             />
           </div>
 
-          <!-- Tombol Tambah ke Daftar -->
+          <!-- Add to List Button -->
           <q-btn
             unelevated
-            color="dark"
-            class="full-width border-radius-8 q-mb-xl q-py-sm"
+            color="grey-8"
+            class="full-width border-radius-4 q-mb-xl q-py-sm"
             icon="add"
-            label="Tambah ke Daftar"
+            label="Add to List"
             no-caps
           />
 
           <q-separator class="q-mb-lg" />
 
-          <!-- Action Buttons (Batal & Simpan) -->
+          <!-- Action Buttons -->
           <div class="row justify-end q-gutter-sm">
             <q-btn
-              outline
+              flat
               color="dark"
-              label="Batal"
-              class="border-radius-8 q-px-md"
+              label="Cancel"
+              class="border-radius-4 q-px-md"
               no-caps
               @click="kembali"
             />
             <q-btn
               unelevated
               color="dark"
-              label="Simpan Transaksi"
-              class="border-radius-8 q-px-md"
+              label="Save Transaction"
+              class="border-radius-4 q-px-md"
               no-caps
               @click="simpanTransaksi"
             />
@@ -140,46 +140,54 @@ const $q = useQuasar()
 
 // State Form
 const form = reactive({
-  jenis: 'pemasukan',
+  jenis: 'income',
   nama: '',
   jumlah: '',
   metode: null,
 })
 
-// Opsi Select
+// Options
 const metodeOptions = ['BNI', 'Mandiri', 'BCA', 'Gopay', 'OVO', 'Dana', 'Cash']
 
-// Aksi Navigasi
+// Navigation
 const kembali = () => {
   router.push('/finance')
 }
 
-// Aksi Simpan
+// Save Action
 const simpanTransaksi = () => {
-  // Tambahkan logika simpan API di sini
-  console.log('Menyimpan transaksi:', form)
+  console.log('Saving transaction:', form)
 
   $q.notify({
     type: 'positive',
-    message: 'Transaksi berhasil disimpan',
+    icon: 'check_circle',
+    message: 'Transaction saved successfully',
     position: 'top',
   })
 
-  // Kembali ke halaman manajemen keuangan
   router.push('/finance')
 }
 </script>
 
-<style scoped>
-.border-radius-12 {
-  border-radius: 12px;
-}
-.border-radius-8 {
+<style scoped lang="scss">
+.custom-card {
   border-radius: 8px;
+  border: 1px solid #f3f4f6;
 }
-.border-radius-6 {
-  border-radius: 6px;
+
+.custom-input {
+  :deep(.q-field__control) {
+    border-radius: 4px;
+  }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
+  }
 }
+
+.border-radius-4 {
+  border-radius: 4px;
+}
+
 .block {
   display: block;
 }

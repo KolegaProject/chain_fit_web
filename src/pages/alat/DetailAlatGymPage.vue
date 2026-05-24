@@ -1,25 +1,27 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <q-card flat class="rounded-borders shadow-1 q-mb-lg bg-white">
+    <!-- Header Card -->
+    <q-card flat class="custom-card shadow-1 q-mb-lg bg-white">
       <q-card-section class="header-height q-pa-md row items-center">
         <div style="width: 42px" class="row items-center justify-start">
           <q-btn flat round icon="arrow_back" color="grey-7" size="md" dense @click="goBack" />
         </div>
 
-        <q-icon name="fitness_center" color="black" size="32px" class="q-mr-md" />
-        <div class="text-h5 text-weight-bold">Detail Alat Gym</div>
+        <q-icon name="fitness_center" color="dark" size="32px" class="q-mr-md" />
+        <div class="text-h5 text-weight-bold text-dark">Equipment Details</div>
 
         <q-space />
         <q-spinner-dots v-if="loading" color="grey-7" size="2em" />
       </q-card-section>
     </q-card>
 
-    <q-card flat class="rounded-borders shadow-1 bg-white">
+    <!-- Main Content Card -->
+    <q-card flat class="custom-card shadow-1 bg-white">
       <q-card-section class="q-pa-xl">
         <div v-if="!loading" class="row q-col-gutter-lg">
-          <!-- Nama -->
+          <!-- Name -->
           <div class="col-12">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Nama Alat</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Equipment Name</div>
             <q-input
               v-model="equipment.name"
               outlined
@@ -28,8 +30,9 @@
             />
           </div>
 
+          <!-- Quantity -->
           <div class="col-12 col-md-4">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Jumlah Unit</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Quantity</div>
             <q-input
               v-model="equipment.jumlah"
               type="number"
@@ -38,13 +41,14 @@
               class="custom-input-detail"
             >
               <template v-slot:append>
-                <span class="text-caption text-grey-6 text-weight-bold">UNIT</span>
+                <span class="text-caption text-grey-7 text-weight-bold">UNITS</span>
               </template>
             </q-input>
           </div>
 
+          <!-- Condition -->
           <div class="col-12 col-md-4">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Kondisi Alat</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Condition Status</div>
             <q-select
               v-model="equipment.healthStatus"
               :options="healthStatusOptions"
@@ -62,25 +66,20 @@
             </q-select>
           </div>
 
+          <!-- Video URL -->
           <div class="col-12 col-md-4">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">
-              Video Tutorial (URL)
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">
+              Tutorial Video (URL)
             </div>
-            <q-input
-              readonly
-              v-model="equipment.videoURL"
-              outlined
-              dense
-              class="custom-input-detail"
-            >
+            <q-input v-model="equipment.videoURL" outlined dense class="custom-input-detail">
               <template v-slot:prepend>
-                <q-icon name="play_circle" :color="equipment.videoURL ? 'red-7' : 'grey-4'" />
+                <q-icon name="play_circle" :color="equipment.videoURL ? 'negative' : 'grey-4'" />
               </template>
               <template v-if="equipment.videoURL" v-slot:append>
                 <q-btn
                   flat
                   round
-                  color="blue-8"
+                  color="primary"
                   icon="open_in_new"
                   size="sm"
                   @click="openLink(equipment.videoURL)"
@@ -91,7 +90,7 @@
 
           <!-- Description -->
           <div class="col-12">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">Deskripsi</div>
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">Description</div>
             <q-input
               v-model="equipment.description"
               type="textarea"
@@ -104,26 +103,31 @@
 
           <!-- Upload Image -->
           <div class="col-12 col-md-6">
-            <div class="text-subtitle2 q-mb-xs text-weight-bold text-grey-9">
-              Foto Alat (Upload)
+            <div class="text-subtitle2 q-mb-xs text-weight-bold text-dark">
+              Equipment Photo (Upload)
             </div>
             <q-file
               v-model="equipment.imageFile"
               accept="image/*"
               outlined
               dense
-              label="Pilih Foto"
+              label="Choose Photo"
               class="custom-input-detail"
-            />
+              clearable
+            >
+              <template v-slot:prepend>
+                <q-icon name="image" />
+              </template>
+            </q-file>
             <q-img
               v-if="imagePreview"
               :src="imagePreview"
-              style="height: 220px"
-              class="q-mt-md rounded-borders"
+              style="height: 220px; border-radius: 4px; border: 1px solid #e5e7eb"
+              class="q-mt-md"
               fit="cover"
             />
             <div v-else class="text-caption text-grey-6 q-mt-sm">
-              * Jika tidak upload foto baru, foto lama akan tetap.
+              * If you don't upload a new photo, the old photo will be kept.
             </div>
           </div>
         </div>
@@ -140,51 +144,52 @@
 
         <q-separator class="q-my-xl" />
 
+        <!-- Action Buttons -->
         <div class="row justify-between items-center">
-          <q-btn flat label="Kembali" class="btn-batal" no-caps @click="goBack" />
+          <q-btn flat label="Back" class="btn-cancel" no-caps @click="goBack" />
 
           <div class="row q-gutter-md">
             <q-btn
               unelevated
-              label="Simpan Perubahan"
-              icon="save"
-              class="btn-edit"
-              no-caps
-              :disabled="loading"
-              @click="showConfirmUpdate = true"
-            />
-            <q-btn
-              unelevated
-              label="Hapus"
-              icon="delete"
-              class="btn-hapus"
+              label="Delete"
+              icon="delete_outline"
+              class="btn-delete"
               no-caps
               :disabled="loading"
               @click="showConfirmDelete = true"
+            />
+            <q-btn
+              unelevated
+              label="Save Changes"
+              icon="save"
+              class="btn-save"
+              no-caps
+              :disabled="loading"
+              @click="showConfirmUpdate = true"
             />
           </div>
         </div>
       </q-card-section>
     </q-card>
 
-    <!-- Confirm Update -->
+    <!-- Confirm Update Dialog -->
     <q-dialog v-model="showConfirmUpdate" persistent>
       <q-card class="dialog-card q-pa-md">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
         <q-card-section class="text-center q-pt-lg">
-          <q-icon name="info" size="80px" color="blue-7" class="q-mb-md" />
-          <div class="text-h6 text-weight-bolder">Simpan Perubahan?</div>
+          <q-icon name="info" size="80px" color="dark" class="q-mb-md" />
+          <div class="text-h6 text-weight-bolder text-dark">Save Changes?</div>
           <div class="text-body2 text-grey-7 q-mt-sm">
-            Apakah Anda yakin ingin memperbarui data <strong>{{ equipment.name }}</strong
+            Are you sure you want to update the data for <strong>{{ equipment.name }}</strong
             >?
           </div>
         </q-card-section>
         <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
-          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
+          <q-btn flat label="Cancel" v-close-popup class="btn-dialog-cancel" no-caps />
           <q-btn
             unelevated
-            label="Ya, Simpan"
-            class="btn-dialog-gradient-blue"
+            label="Yes, Save"
+            class="btn-dialog-save"
             no-caps
             :loading="updateLoading"
             @click="handleUpdate"
@@ -193,28 +198,24 @@
       </q-card>
     </q-dialog>
 
-    <!-- Confirm Delete -->
+    <!-- Confirm Delete Dialog -->
     <q-dialog v-model="showConfirmDelete" persistent>
       <q-card class="dialog-card q-pa-md">
         <q-btn icon="close" flat round dense v-close-popup class="close-btn text-grey-6" />
         <q-card-section class="text-center q-pt-lg">
-          <q-img
-            src="../../assets/popup/hapus.png"
-            style="width: 140px; height: auto"
-            class="q-mb-md"
-          />
-          <div class="text-h6 text-weight-bolder">Hapus Data Alat?</div>
+          <q-icon name="warning" size="80px" color="negative" class="q-mb-md" />
+          <div class="text-h6 text-weight-bolder text-dark">Delete Equipment?</div>
           <div class="text-body2 text-grey-7 q-mt-sm">
-            Apakah Anda yakin ingin menghapus <strong>{{ equipment.name }}</strong
+            Are you sure you want to permanently delete <strong>{{ equipment.name }}</strong
             >?
           </div>
         </q-card-section>
         <q-card-actions align="center" class="q-pb-lg q-gutter-x-md">
-          <q-btn flat label="Batal" v-close-popup class="btn-dialog-flat" no-caps />
+          <q-btn flat label="Cancel" v-close-popup class="btn-dialog-cancel" no-caps />
           <q-btn
             unelevated
-            label="Ya, Hapus"
-            class="btn-dialog-gradient"
+            label="Yes, Delete"
+            class="btn-dialog-delete"
             no-caps
             :loading="deleteLoading"
             @click="handleDelete"
@@ -244,10 +245,11 @@ const loading = ref(false)
 const deleteLoading = ref(false)
 const updateLoading = ref(false)
 
+// Tetap menggunakan value backend untuk database, tapi label bahasa Inggris
 const healthStatusOptions = [
-  { label: 'Baik', value: 'BAIK' },
-  { label: 'Butuh Perawatan', value: 'BUTUH_PERAWATAN' },
-  { label: 'Rusak', value: 'RUSAK' },
+  { label: 'Good', value: 'BAIK' },
+  { label: 'Needs Maintenance', value: 'BUTUH_PERAWATAN' },
+  { label: 'Damaged', value: 'RUSAK' },
 ]
 
 const equipment = reactive({
@@ -255,14 +257,9 @@ const equipment = reactive({
   name: '',
   jumlah: 0,
   videoURL: '',
-
   description: '',
   healthStatus: 'BAIK',
-
-  // Upload file
   imageFile: null,
-
-  // Preview foto lama dari BE (URL)
   imageUrl: '',
 })
 
@@ -280,7 +277,6 @@ const fetchDetail = async () => {
   try {
     const data = await equipmentStore.fetchEquipmentDetail(gymId, equipId)
 
-    // Mapping aman (karena response BE bisa beda nama field)
     equipment.id = data.id ?? data.equipId ?? equipId
     equipment.name = data.name ?? ''
     equipment.jumlah = Number(data.jumlah ?? data.qty ?? 0)
@@ -289,12 +285,11 @@ const fetchDetail = async () => {
     equipment.description = data.description ?? ''
     equipment.healthStatus = data.healthStatus ?? data.status ?? 'BAIK'
 
-    // url foto dari BE (sesuaikan jika field kamu beda)
     equipment.imageUrl = data.imageUrl ?? data.image ?? data.photoUrl ?? ''
     equipment.imageFile = null
   } catch (e) {
     console.error(e)
-    $q.notify({ type: 'negative', message: 'Gagal mengambil data' })
+    $q.notify({ type: 'negative', message: 'Failed to retrieve data', position: 'top' })
   } finally {
     loading.value = false
   }
@@ -305,7 +300,7 @@ const handleUpdate = async () => {
   const equipId = equipment.id ?? route.params.id
 
   if (!gymId || !equipId) {
-    $q.notify({ type: 'warning', message: 'Data ID tidak ditemukan' })
+    $q.notify({ type: 'warning', message: 'Data ID not found', position: 'top' })
     return
   }
 
@@ -313,17 +308,18 @@ const handleUpdate = async () => {
   try {
     const payload = {
       name: equipment.name,
-      qty: equipment.jumlah, // store updateEquipment akan kirim sebagai "jumlah"
+      qty: equipment.jumlah,
       description: equipment.description,
       healthStatus: equipment.healthStatus,
-      imageFile: equipment.imageFile, // File (optional)
+      imageFile: equipment.imageFile,
     }
 
     await equipmentStore.updateEquipment(gymId, equipId, payload)
 
     $q.notify({
       type: 'positive',
-      message: 'Berhasil memperbarui data alat',
+      icon: 'check_circle',
+      message: 'Equipment data successfully updated',
       position: 'top',
     })
 
@@ -334,7 +330,8 @@ const handleUpdate = async () => {
     console.error('Component Update Error:', error)
     $q.notify({
       type: 'negative',
-      message: 'Gagal memperbarui data. Periksa koneksi atau input Anda.',
+      icon: 'error',
+      message: 'Update failed. Please check your inputs or connection.',
       position: 'top',
     })
   } finally {
@@ -347,11 +344,21 @@ const handleDelete = async () => {
   deleteLoading.value = true
   try {
     await equipmentStore.deleteEquipment(gymId, equipment.id ?? route.params.id)
-    $q.notify({ type: 'positive', message: 'Alat berhasil dihapus' })
+    $q.notify({
+      type: 'positive',
+      icon: 'check_circle',
+      message: 'Equipment deleted successfully',
+      position: 'top',
+    })
     router.push('/info')
   } catch (e) {
     console.error(e)
-    $q.notify({ type: 'negative', message: 'Gagal menghapus alat' })
+    $q.notify({
+      type: 'negative',
+      icon: 'error',
+      message: 'Failed to delete equipment',
+      position: 'top',
+    })
   } finally {
     deleteLoading.value = false
     showConfirmDelete.value = false
@@ -371,81 +378,98 @@ onMounted(fetchDetail)
 .header-height {
   height: 68px;
 }
-.rounded-borders {
-  border-radius: 12px;
+
+.custom-card {
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
 }
 
 .custom-input-detail {
   :deep(.q-field__control) {
-    border-radius: 10px;
+    border-radius: 4px;
     background-color: #fafafa !important;
     &:before {
-      border: 1px solid #e0e0e0 !important;
+      border-color: #e5e7eb !important;
     }
   }
   :deep(.q-field__native) {
     font-weight: 500;
-    color: #222;
+    color: #111827;
   }
 }
 
-.btn-batal {
-  min-width: 120px;
-  background-color: #f0f2f5;
-  border-radius: 10px;
-  font-weight: 700;
-  color: #555;
-}
-.btn-edit {
-  min-width: 140px;
-  background: #2563eb;
-  color: white;
-  border-radius: 10px;
-  font-weight: 700;
-}
-.btn-hapus {
-  min-width: 140px;
-  background: #ef4444;
-  color: white;
-  border-radius: 10px;
-  font-weight: 700;
+/* Button Styling */
+.btn-cancel {
+  min-width: 100px;
+  color: #4b5563;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
+.btn-save {
+  min-width: 140px;
+  background-color: #111827 !important;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #1f2937 !important;
+  }
+}
+
+.btn-delete {
+  min-width: 120px;
+  background-color: #ef4444 !important;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #dc2626 !important;
+  }
+}
+
+/* Dialog Styling */
 .dialog-card {
   width: 100%;
   max-width: 440px;
-  border-radius: 24px;
+  border-radius: 8px; /* Konsisten dengan card lainnya */
   position: relative;
 }
-.btn-dialog-flat {
-  width: 130px;
-  background-color: #f0f2f5;
-  border-radius: 12px;
-  font-weight: bold;
+
+.btn-dialog-cancel {
+  width: 120px;
+  color: #4b5563;
+  border-radius: 4px;
+  font-weight: 500;
+  background-color: #f3f4f6;
 }
-.btn-dialog-gradient {
-  width: 130px;
-  background: black;
+
+.btn-dialog-save {
+  width: 120px;
+  background-color: #111827 !important;
   color: white;
-  border-radius: 12px;
-  font-weight: bold;
+  border-radius: 4px;
+  font-weight: 500;
 }
-.btn-dialog-gradient-blue {
-  width: 130px;
-  background: #2563eb;
+
+.btn-dialog-delete {
+  width: 120px;
+  background-color: #ef4444 !important;
   color: white;
-  border-radius: 12px;
-  font-weight: bold;
+  border-radius: 4px;
+  font-weight: 500;
 }
 
 .close-btn {
   position: absolute;
-  top: 12px;
-  right: 12px;
-  background-color: #f0f0f0;
+  top: 8px;
+  right: 8px;
   z-index: 10;
 }
+
 .shadow-1 {
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.05) !important;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.03) !important;
 }
 </style>

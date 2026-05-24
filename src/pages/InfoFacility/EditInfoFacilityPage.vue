@@ -13,18 +13,19 @@
           @click="goBack"
           class="q-mr-sm"
         />
-        <q-icon name="construction" size="22px" class="q-ml-sm q-mr-sm" />
-        <div class="text-h5 text-weight-bold">Edit Gym</div>
+        <q-icon name="construction" size="22px" class="q-ml-sm q-mr-sm" color="dark" />
+        <div class="text-h5 text-weight-bold text-dark">Edit Gym Info</div>
       </q-card-section>
     </q-card>
 
     <!-- FORM -->
-    <q-card flat class="rounded-borders shadow-1 q-pa-md">
+    <q-card flat class="rounded-borders shadow-1 q-pa-md custom-card">
       <q-card-section>
+        <!-- Save Action -->
         <div class="row items-center justify-end q-mb-lg">
           <q-btn
             unelevated
-            label="Simpan"
+            label="Save Changes"
             no-caps
             class="btn-save q-px-xl text-weight-bold"
             :loading="saving"
@@ -34,50 +35,51 @@
         </div>
 
         <div class="q-gutter-y-lg">
-          <!-- Nama -->
+          <!-- Gym Name -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Nama Gym</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Gym Name</div>
             <q-input
               outlined
               dense
               v-model="form.name"
-              placeholder="Masukkan nama gym"
+              placeholder="e.g., Elite Fitness Studio"
               class="bg-white custom-input"
             />
           </div>
 
-          <!-- Kapasitas -->
+          <!-- Capacity -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Kapasitas</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Capacity</div>
             <q-input
               outlined
               dense
               type="number"
               v-model="form.maxCp"
-              placeholder="Contoh: 40"
+              placeholder="e.g., 150"
               class="bg-white custom-input"
             />
           </div>
 
-          <!-- Alamat -->
+          <!-- Address -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Alamat</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Address</div>
             <q-input
               outlined
               dense
               v-model="form.address"
-              placeholder="Masukkan alamat"
+              placeholder="e.g., 123 Fitness Ave, West Java"
               class="bg-white custom-input"
             />
           </div>
 
-          <!-- Lokasi Saat Ini -->
+          <!-- Current Location (GPS) -->
           <div class="row items-center q-gutter-sm">
             <q-btn
               outline
               no-caps
               icon="my_location"
-              label="Lokasi Saat Ini"
+              label="Use Current Location"
+              color="dark"
               :loading="gettingLocation"
               :disable="gettingLocation"
               @click="useCurrentLocation"
@@ -87,54 +89,60 @@
               outline
               no-caps
               icon="close"
-              label="Reset Lokasi"
+              label="Reset Location"
               color="negative"
               @click="resetLocation"
             />
           </div>
 
-          <!-- Status lokasi (tanpa tampilkan lat/long) -->
+          <!-- Location Status -->
           <div v-if="hasCoords" class="row items-center q-gutter-sm">
-            <q-chip color="green-7" text-color="white" icon="check_circle" square>
-              Lokasi sudah terpasang
+            <q-chip
+              color="positive"
+              text-color="white"
+              icon="check_circle"
+              square
+              class="custom-chip-border"
+            >
+              Location set successfully
             </q-chip>
             <div v-if="accuracyMeters != null" class="text-caption text-grey-7">
-              Akurasi ±{{ Math.round(accuracyMeters) }} m
+              Accuracy ±{{ Math.round(accuracyMeters) }} m
             </div>
           </div>
 
           <div v-else class="text-caption text-grey-7">
-            Lokasi belum diambil. Klik <b>Lokasi Saat Ini</b> untuk mengisi koordinat otomatis.
+            Location not set. Click <b>Use Current Location</b> to automatically fill coordinates.
           </div>
 
-          <!-- Jam Operasional -->
+          <!-- Operating Hours -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Jam Operasional</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Operating Hours</div>
             <q-input
               outlined
               dense
               v-model="form.jamOperasional"
-              placeholder="Contoh: Senin-Jumat: 12:00-20:00"
+              placeholder="e.g., Mon-Fri: 06:00 AM - 10:00 PM"
               class="bg-white custom-input"
             />
           </div>
 
-          <!-- Deskripsi -->
+          <!-- Description -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Deskripsi</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Description</div>
             <q-input
               outlined
               type="textarea"
               v-model="form.description"
-              placeholder="Masukkan deskripsi lengkap gym..."
+              placeholder="Enter a detailed description of the gym..."
               class="bg-white custom-input"
               rows="5"
             />
           </div>
 
-          <!-- Fasilitas -->
+          <!-- Facilities -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Fasilitas</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Facilities</div>
 
             <div class="row q-gutter-sm q-mb-sm">
               <q-chip
@@ -145,7 +153,7 @@
                 square
                 color="blue-grey-8"
                 text-color="white"
-                class="q-px-md"
+                class="q-px-md custom-chip-border"
                 icon="check_circle"
               >
                 {{ f }}
@@ -153,13 +161,13 @@
             </div>
 
             <div class="row items-center q-gutter-x-md">
-              <div class="text-body1 text-weight-medium">Tambah fasilitas</div>
+              <div class="text-body1 text-weight-medium text-dark">Add Facility</div>
               <q-input
                 outlined
                 dense
                 v-model="newFacility"
-                placeholder="contoh: Sauna"
-                class="bg-white col-4"
+                placeholder="e.g., Sauna"
+                class="bg-white col-4 custom-input"
                 @keyup.enter="addFacility"
                 @blur="addFacility"
                 @update:model-value="onFacilityTyping"
@@ -169,7 +177,7 @@
 
           <!-- Tags -->
           <div class="input-group">
-            <div class="text-subtitle1 text-weight-bold q-mb-xs">Tag</div>
+            <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Tags / Categories</div>
             <div class="row q-gutter-sm q-mb-sm">
               <q-chip
                 v-for="(tag, index) in form.tags"
@@ -177,22 +185,22 @@
                 removable
                 @remove="removeTag(index)"
                 square
-                color="grey-8"
+                color="dark"
                 text-color="white"
-                class="q-px-md"
+                class="q-px-md custom-chip-border"
               >
                 {{ tag }}
               </q-chip>
             </div>
 
             <div class="row items-center q-gutter-x-md">
-              <div class="text-body1 text-weight-medium">Tambah tag</div>
+              <div class="text-body1 text-weight-medium text-dark">Add Tag</div>
               <q-input
                 outlined
                 dense
                 v-model="newTag"
-                placeholder="Tambah tag baru"
-                class="bg-white col-4"
+                placeholder="Add a new tag"
+                class="bg-white col-4 custom-input"
                 @keyup.enter="addTag"
                 @blur="addTag"
                 @update:model-value="onTagTyping"
@@ -223,7 +231,6 @@ const newFacility = ref('')
 
 const accuracyMeters = ref(null)
 
-// kalau route kamu ada param id, pakai itu. kalau enggak, pakai selectedGymId
 const gymId = computed(() => route.params.id || gymStore.selectedGymId)
 
 const normalizeList = (arr) => {
@@ -245,8 +252,8 @@ const form = reactive({
   address: '',
   jamOperasional: '',
   description: '',
-  lat: '', // tetap disimpan tapi tidak ditampilkan
-  long: '', // tetap disimpan tapi tidak ditampilkan
+  lat: '',
+  long: '',
   fac: [],
   tags: [],
 })
@@ -274,7 +281,6 @@ const hydrateForm = (g) => {
         .map((s) => s.trim())
         .filter(Boolean)
     : []
-
 }
 
 const loadForEdit = async () => {
@@ -286,7 +292,7 @@ const loadForEdit = async () => {
       await gymStore.fetchGymDetail(id)
     } catch (e) {
       console.error(e)
-      $q.notify({ type: 'negative', message: 'Gagal ambil detail gym' })
+      $q.notify({ type: 'negative', message: 'Failed to fetch gym details' })
       return
     }
   }
@@ -302,9 +308,7 @@ const resetLocation = () => {
   accuracyMeters.value = null
 }
 
-// Ambil lokasi saat ini (GPS) - versi lebih tahan timeout
 const useCurrentLocation = async () => {
-  // Secure context check (biar jelas penyebabnya)
   if (
     !window.isSecureContext &&
     !location.hostname.includes('localhost') &&
@@ -312,13 +316,13 @@ const useCurrentLocation = async () => {
   ) {
     $q.notify({
       type: 'negative',
-      message: 'Geolocation butuh HTTPS (atau localhost). Jalankan di https / localhost.',
+      message: 'Geolocation requires HTTPS (or localhost). Please run on a secure origin.',
     })
     return
   }
 
   if (!('geolocation' in navigator)) {
-    $q.notify({ type: 'negative', message: 'Browser tidak mendukung GPS' })
+    $q.notify({ type: 'negative', message: 'Browser does not support GPS' })
     return
   }
 
@@ -326,7 +330,7 @@ const useCurrentLocation = async () => {
 
   const options = {
     enableHighAccuracy: true,
-    timeout: 20000, // naikkan timeout
+    timeout: 20000,
     maximumAge: 0,
   }
 
@@ -336,7 +340,7 @@ const useCurrentLocation = async () => {
     form.long = String(longitude)
     accuracyMeters.value = accuracy ?? null
 
-    $q.notify({ type: 'positive', message: 'Lokasi berhasil diambil' })
+    $q.notify({ type: 'positive', icon: 'my_location', message: 'Location retrieved successfully' })
     gettingLocation.value = false
   }
 
@@ -344,14 +348,14 @@ const useCurrentLocation = async () => {
     console.error(err)
     const msg =
       err.code === 1
-        ? 'Izin lokasi ditolak. Silakan Allow lokasi di browser.'
+        ? 'Location access denied. Please allow location access in your browser settings.'
         : err.code === 2
-          ? 'Lokasi tidak tersedia. Pastikan GPS/Location Services aktif.'
-          : 'Timeout / gagal mengambil lokasi. Coba lagi atau pindah ke area sinyal lebih baik.'
+          ? 'Location unavailable. Ensure GPS/Location Services are enabled.'
+          : 'Timeout or failed to get location. Try again or move to an area with better signal.'
 
     $q.notify({ type: 'negative', message: msg })
 
-    // fallback: coba watchPosition sebentar (kadang lebih berhasil)
+    // fallback
     let watchId = null
     try {
       watchId = navigator.geolocation.watchPosition(
@@ -367,7 +371,6 @@ const useCurrentLocation = async () => {
         { ...options, timeout: 30000 },
       )
 
-      // stop fallback setelah 8 detik kalau belum dapat
       setTimeout(() => {
         if (watchId) navigator.geolocation.clearWatch(watchId)
         gettingLocation.value = false
@@ -409,7 +412,6 @@ const addTag = () => {
   const t = newTag.value.trim()
   if (!t) return
 
-  // boleh support input "a, b, c"
   const parts = t
     .split(',')
     .map((s) => s.trim())
@@ -421,7 +423,7 @@ const addTag = () => {
 
 const removeTag = (i) => {
   form.tags.splice(i, 1)
-  form.tags = normalizeList(form.tags) // rapihin setelah remove
+  form.tags = normalizeList(form.tags)
 }
 
 const saveChanges = async () => {
@@ -429,7 +431,7 @@ const saveChanges = async () => {
   if (!id) return
 
   if (!form.lat || !form.long) {
-    $q.notify({ type: 'warning', message: 'Silakan ambil lokasi (Lokasi Saat Ini) dulu.' })
+    $q.notify({ type: 'warning', message: 'Please get current location before saving.' })
     return
   }
 
@@ -449,12 +451,12 @@ const saveChanges = async () => {
       tag: normalizeList(form.tags).join(', '),
     })
 
-    $q.notify({ type: 'positive', message: 'Data berhasil disimpan!' })
+    $q.notify({ type: 'positive', icon: 'check_circle', message: 'Data saved successfully!' })
     await gymStore.fetchGymDetail(id)
     goBack()
   } catch (e) {
     console.error(e)
-    $q.notify({ type: 'negative', message: 'Gagal menyimpan data' })
+    $q.notify({ type: 'negative', icon: 'error', message: 'Failed to save data' })
   } finally {
     saving.value = false
   }
@@ -466,10 +468,22 @@ const saveChanges = async () => {
   min-height: 64px;
 }
 
+.custom-card {
+  border-radius: 8px;
+  border: 1px solid #f3f4f6;
+}
+
 .custom-input {
   :deep(.q-field__control) {
-    border-radius: 8px;
+    border-radius: 4px;
   }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
+  }
+}
+
+.custom-chip-border {
+  border-radius: 4px;
 }
 
 .input-group {
@@ -482,12 +496,18 @@ const saveChanges = async () => {
   line-height: 1.6;
 }
 
+/* Button style selaras dengan halaman lainnya */
 .btn-save {
-  background: #0a0f1f;
-  color: #fff;
-  border-radius: 8px;
-  height: 40px;
-  font-weight: 700;
+  background-color: #111827 !important;
+  color: white;
+  border-radius: 4px;
+  height: 44px;
+  font-weight: 500;
   text-transform: none;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: #1f2937 !important;
+  }
 }
 </style>
