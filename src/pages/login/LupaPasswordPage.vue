@@ -2,82 +2,110 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
+        <!-- ================= BAGIAN KIRI (FORM) ================= -->
+        <div class="col-12 col-md-6 bg-white flex column justify-center q-pa-xl">
+          <div class="form-container" style="max-width: 460px; margin: 0 auto; width: 100%">
+            <!-- Tombol Kembali ke Login -->
+            <router-link
+              to="/login"
+              class="row items-center text-dark no-decoration q-mb-xl text-weight-medium transition-color hover-underline"
+            >
+              <q-icon name="arrow_back" class="q-mr-sm" size="20px" />
+              Back to login
+            </router-link>
+
+            <!-- Judul & Deskripsi -->
+            <h1 class="text-h4 text-weight-bold q-mt-none q-mb-sm text-dark">Forgot Password</h1>
+            <p class="text-body1 text-grey-7 q-mb-xl" style="line-height: 1.5">
+              Select which contact details should we use to reset your password.
+            </p>
+
+            <!-- Pilihan Metode Pemulihan -->
+            <div class="q-gutter-y-md q-mb-lg">
+              <!-- Opsi 1: Email -->
+              <div
+                class="method-card row items-center q-pa-md cursor-pointer transition-all"
+                :class="selectedMethod === 'email' ? 'method-active' : 'method-inactive'"
+                @click="selectedMethod = 'email'"
+              >
+                <div class="icon-wrapper q-mr-md flex flex-center bg-grey-1">
+                  <q-icon
+                    name="mail_outline"
+                    size="24px"
+                    :color="selectedMethod === 'email' ? 'dark' : 'grey-7'"
+                  />
+                </div>
+                <div>
+                  <div class="text-caption text-grey-7">via Email</div>
+                  <div class="text-body1 text-weight-bold text-dark">a***@chainfit.com</div>
+                </div>
+              </div>
+
+              <!-- Opsi 2: SMS / WhatsApp -->
+              <div
+                class="method-card row items-center q-pa-md cursor-pointer transition-all"
+                :class="selectedMethod === 'sms' ? 'method-active' : 'method-inactive'"
+                @click="selectedMethod = 'sms'"
+              >
+                <div class="icon-wrapper q-mr-md flex flex-center bg-grey-1">
+                  <q-icon
+                    name="chat_bubble_outline"
+                    size="24px"
+                    :color="selectedMethod === 'sms' ? 'dark' : 'grey-7'"
+                  />
+                </div>
+                <div>
+                  <div class="text-caption text-grey-7">via SMS / WhatsApp</div>
+                  <div class="text-body1 text-weight-bold text-dark">+1 *** *** 7890</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Tombol Continue -->
+            <q-btn
+              label="Continue"
+              icon-right="arrow_forward"
+              class="full-width btn-continue q-mt-md"
+              unelevated
+              @click="handleContinue"
+            />
+          </div>
+        </div>
+
+        <!-- ================= BAGIAN KANAN (GAMBAR) ================= -->
         <div class="col-12 col-md-6 gt-sm relative-position">
+          <!-- Sesuaikan path gambar aslimu di sini -->
           <q-img src="../../assets/LoginPage-asset1.jpg" class="full-height-img" fit="cover">
-            <div class="absolute-full column justify-between q-pa-xl bg-transparent-overlay">
-              <!-- Logo Chain Fit -->
-              <div class="logo-wrapper q-pt-md">
+            <!-- Box Overlay Hitam di Bawah -->
+            <div class="absolute-bottom q-pa-xl" style="background: transparent">
+              <div
+                class="text-box q-pa-xl"
+                style="
+                  border-radius: 12px;
+                  background-color: rgba(17, 24, 39, 0.75);
+                  backdrop-filter: blur(8px);
+                  border: 1px solid rgba(255, 255, 255, 0.05);
+                "
+              >
+                <!-- Logo -->
                 <q-img
                   src="../../assets/ChainFitLogo.png"
                   spinner-color="white"
-                  style="height: auto; max-width: 150px"
+                  style="height: auto; max-width: 140px"
+                  class="q-mb-lg"
                 />
-              </div>
 
-              <div
-                class="text-box q-pa-lg"
-                style="
-                  border-radius: 8px;
-                  background-color: rgba(25, 28, 36, 0.8);
-                  border: 1px solid rgba(255, 255, 255, 0.1);
-                "
-              >
+                <!-- Quote -->
                 <p
                   class="text-body1 text-white text-weight-regular q-ma-none"
                   style="line-height: 1.6"
                 >
-                  "Hambatan adalah jalan. Teruslah bergerak maju, fokus pada proses, dan kendalikan
-                  pemulihanmu."
+                  "Discipline is the bridge between goals and accomplishment. Recover your access
+                  and get back to the grind."
                 </p>
               </div>
             </div>
           </q-img>
-        </div>
-
-        <!-- ================= BAGIAN KANAN (FORM) ================= -->
-        <div class="col-12 col-md-6 flex flex-center bg-white">
-          <div class="form-container q-pa-lg text-center">
-            <!-- Judul & Subjudul -->
-            <div class="q-mb-xl">
-              <h1 class="text-h4 text-weight-bold q-mb-md text-dark q-mt-none">Lupa Password?</h1>
-              <p class="text-body1 text-grey-7" style="line-height: 1.5">
-                Masukkan email atau nomor telepon Anda untuk menerima instruksi pemulihan.
-              </p>
-            </div>
-
-            <!-- Form -->
-            <q-form @submit="handleKirimInstruksi" class="q-gutter-y-lg text-left">
-              <q-input
-                color="black"
-                outlined
-                v-model="contact"
-                placeholder="Email atau Nomor Telepon"
-                bg-color="white"
-                class="custom-input"
-                required
-              />
-
-              <q-btn
-                type="submit"
-                label="Kirim Instruksi"
-                class="full-width btn-continue q-mt-md"
-                unelevated
-                :loading="loading"
-              />
-            </q-form>
-
-            <!-- Garis Pemisah -->
-            <q-separator class="q-my-xl bg-grey-3" />
-
-            <!-- Tombol Kembali ke Login -->
-            <router-link
-              to="/login"
-              class="text-body2 text-grey-8 no-decoration row items-center justify-center transition-color"
-            >
-              <q-icon name="arrow_back" size="16px" class="q-mr-sm" />
-              Kembali ke Login
-            </router-link>
-          </div>
         </div>
       </q-page>
     </q-page-container>
@@ -86,38 +114,17 @@
 
 <script setup>
 import { ref } from 'vue'
-import { useQuasar } from 'quasar'
+import { useRouter } from 'vue-router'
 
-const $q = useQuasar()
+const router = useRouter()
 
-const contact = ref('')
-const loading = ref(false)
+// State untuk menyimpan pilihan pengguna (default ke 'email')
+const selectedMethod = ref('email')
 
-const handleKirimInstruksi = async () => {
-  loading.value = true
-  try {
-    // Simulasi loading API
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    $q.notify({
-      message: 'Instruksi pemulihan telah dikirim!',
-      color: 'positive',
-      icon: 'check_circle',
-      position: 'top',
-    })
-
-    contact.value = ''
-  } catch (error) {
-    console.error('Gagal mengirim instruksi:', error)
-    $q.notify({
-      message: 'Terjadi kesalahan, silakan coba lagi.',
-      color: 'negative',
-      icon: 'warning',
-      position: 'top',
-    })
-  } finally {
-    loading.value = false
-  }
+const handleContinue = () => {
+  console.log('Metode pemulihan yang dipilih:', selectedMethod.value)
+  // Navigasi ke halaman verifikasi PIN
+  router.push('/verifikasi-pin')
 }
 </script>
 
@@ -127,40 +134,49 @@ const handleKirimInstruksi = async () => {
   width: 100%;
 }
 
-.bg-transparent-overlay {
-  background: linear-gradient(
-    to bottom,
-    rgba(0, 0, 0, 0.4) 0%,
-    rgba(0, 0, 0, 0.1) 40%,
-    rgba(0, 0, 0, 0.5) 100%
-  );
+/* Styling untuk Kartu Pilihan Metode */
+.method-card {
+  border-radius: 8px;
+  border: 2px solid transparent;
 }
 
-.form-container {
-  width: 100%;
-  max-width: 480px;
+.method-active {
+  border-color: #111827; /* Border hitam tebal jika dipilih */
+  background-color: #ffffff;
 }
 
-.custom-input {
-  :deep(.q-field__control) {
-    border-radius: 4px;
-  }
-  :deep(.q-field__control:before) {
-    border-color: #e0e0e0;
-  }
+.method-inactive {
+  border-color: #e5e7eb; /* Border abu-abu tipis jika tidak dipilih */
+  background-color: #ffffff;
 }
 
+.method-inactive:hover {
+  border-color: #d1d5db;
+}
+
+.icon-wrapper {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+}
+
+/* Tombol Continue */
 .btn-continue {
   background-color: #111827 !important;
   color: white;
   text-transform: none;
-  border-radius: 4px;
-  height: 52px;
+  border-radius: 8px;
+  height: 56px;
   font-size: 16px;
   font-weight: 500;
 
   &:hover {
     background-color: #1f2937 !important;
+  }
+
+  /* Menjauhkan sedikit jarak ikon panah dengan teks */
+  :deep(.q-icon) {
+    margin-left: 8px;
   }
 }
 
@@ -168,10 +184,11 @@ const handleKirimInstruksi = async () => {
   text-decoration: none;
 }
 
-.transition-color {
-  transition: color 0.3s ease;
-  &:hover {
-    color: #111827 !important;
-  }
+.hover-underline:hover {
+  text-decoration: underline;
+}
+
+.transition-all {
+  transition: all 0.2s ease-in-out;
 }
 </style>
