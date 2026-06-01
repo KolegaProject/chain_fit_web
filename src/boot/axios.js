@@ -4,13 +4,25 @@ import axios from 'axios'
 const api = axios.create({ baseURL: 'https://gym-be.xianly.cloud/' })
 
 export default defineBoot(({ app }) => {
-  // AMBIL TOKEN DARI STORAGE SAAT REFRESH
-  const token = localStorage.getItem('access_token')
+  // Gunakan interceptor agar token selalu dicek SETIAP KALI ada request API
+  api.interceptors.request.use(
+    (config) => {
+      // Ambil token dari storage
+      const token = localStorage.getItem('access_token')
 
-  if (token) {
-    // Tempelkan kembali ke header agar request selanjutnya tidak 401
-    api.defaults.headers.common['Authorization'] = `Bearer ${token}`
-  }
+      if (token) {
+        config.headers.Authorization = `Bearer ${token}`
+      }
+
+      // Beritahu backend bahwa kita mengharapkan balasan JSON
+      config.headers['Accept'] = 'application/json'
+
+      return config
+    },
+    (error) => {
+      return Promise.reject(error)
+    },
+  )
 
   app.config.globalProperties.$axios = axios
   app.config.globalProperties.$api = api

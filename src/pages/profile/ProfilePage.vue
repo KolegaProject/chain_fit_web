@@ -1,197 +1,101 @@
 <template>
-  <q-page class="q-pa-lg bg-grey-1">
+  <q-page class="q-pa-lg bg-grey-2">
     <!-- Header Section -->
     <div class="q-mb-xl">
-      <h1 class="text-h5 text-weight-bold q-ma-none q-mb-xs">Profil Pengguna</h1>
-      <div class="text-grey-7 text-body2">Kelola informasi pribadi dan keamanan akun Anda.</div>
+      <h1 class="text-h5 text-weight-bold q-ma-none q-mb-xs text-dark">User Profile</h1>
+      <div class="text-grey-7 text-body2">Manage your personal information.</div>
     </div>
 
     <div class="row q-col-gutter-lg">
-      <!-- Left Column: Informasi Profil -->
-      <div class="col-12 col-md-7 col-lg-8">
-        <q-card flat bordered class="profile-card q-pa-lg">
+      <!-- Main Column: Profile Information -->
+      <div class="col-12 col-md-8 col-lg-7">
+        <q-card flat class="custom-card shadow-1 q-pa-lg bg-white">
           <!-- Avatar & Info -->
           <div class="row items-center q-mb-lg">
             <div class="relative-position q-mr-lg">
-              <q-avatar size="80px">
-                <!-- Ganti src dengan URL foto profil asli -->
-                <img src="https://cdn.quasar.dev/img/avatar4.jpg" alt="Foto Profil" />
+              <q-avatar size="80px" class="shadow-1">
+                <img
+                  :src="profile.profileImage || 'https://cdn.quasar.dev/img/avatar4.jpg'"
+                  alt="Profile Photo"
+                  style="object-fit: cover"
+                />
               </q-avatar>
-              <!-- Tombol Edit Avatar -->
+              <!-- Edit Avatar Button -->
               <q-btn
                 round
                 dense
-                color="blue-7"
-                icon="edit"
+                color="primary"
+                icon="photo_camera"
                 size="sm"
                 class="absolute-bottom-right"
                 style="margin-bottom: -2px; margin-right: -2px"
+                @click="triggerFileInput"
+              />
+              <input
+                type="file"
+                ref="fileInput"
+                accept="image/*"
+                @change="onFileChange"
+                style="display: none"
               />
             </div>
             <div>
-              <div class="text-subtitle1 text-weight-bold">Foto Profil</div>
+              <div class="text-subtitle1 text-weight-bold text-dark">Profile Picture</div>
               <div class="text-body2 text-grey-7 q-mt-xs" style="max-width: 300px">
-                Disarankan menggunakan gambar beresolusi tinggi dengan rasio 1:1.
+                Recommended to use a high-resolution image with a 1:1 ratio. Max size 2MB.
               </div>
             </div>
           </div>
 
           <q-separator class="q-my-lg" />
 
-          <!-- Form Biodata -->
+          <!-- Biodata Form -->
           <div class="row q-col-gutter-md">
             <div class="col-12 col-md-6">
-              <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                >Nama Lengkap</label
-              >
+              <label class="text-caption text-weight-bold text-dark q-mb-xs block">Full Name</label>
               <q-input
                 outlined
                 dense
-                v-model="profile.namaLengkap"
-                placeholder="Masukkan nama lengkap"
-                class="bg-white"
+                v-model="profile.name"
+                placeholder="Enter full name"
+                class="custom-input"
+                autocomplete="off"
               />
             </div>
             <div class="col-12 col-md-6">
-              <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                >Username</label
-              >
+              <label class="text-caption text-weight-bold text-dark q-mb-xs block">Username</label>
               <q-input
                 outlined
                 dense
                 v-model="profile.username"
-                placeholder="Masukkan username"
-                class="bg-white"
+                placeholder="Enter username"
+                class="custom-input"
+                autocomplete="off"
               />
             </div>
-            <div class="col-12 col-md-6">
-              <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">Email</label>
+            <div class="col-12">
+              <label class="text-caption text-weight-bold text-dark q-mb-xs block">Email</label>
               <q-input
                 outlined
                 dense
+                disable
                 v-model="profile.email"
                 type="email"
-                placeholder="Masukkan email"
-                class="bg-white"
-              />
-            </div>
-            <div class="col-12 col-md-6">
-              <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                >Nomor Telepon</label
-              >
-              <q-input
-                outlined
-                dense
-                v-model="profile.nomorTelepon"
-                placeholder="Masukkan nomor telepon"
-                class="bg-white"
+                class="custom-input bg-grey-1"
+                hint="Email cannot be changed"
               />
             </div>
           </div>
 
-          <!-- Tombol Simpan -->
+          <!-- Save Button -->
           <div class="row justify-end q-mt-xl">
             <q-btn
               unelevated
-              color="dark"
-              label="Simpan Perubahan"
+              label="Save Changes"
               no-caps
-              class="q-px-md radius-8"
+              class="btn-save"
               :loading="isSavingProfile"
               @click="simpanProfil"
-            />
-          </div>
-        </q-card>
-      </div>
-
-      <!-- Right Column: Ganti Kata Sandi -->
-      <div class="col-12 col-md-5 col-lg-4">
-        <q-card flat bordered class="profile-card q-pa-lg">
-          <!-- Header Card -->
-          <div class="row items-center q-mb-md">
-            <q-icon name="lock_outline" color="blue-7" size="sm" class="q-mr-sm" />
-            <div class="text-subtitle1 text-weight-bold">Ganti Kata Sandi</div>
-          </div>
-
-          <q-separator class="q-my-lg" />
-
-          <!-- Form Kata Sandi -->
-          <div class="q-mb-md">
-            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-              >Kata Sandi Saat Ini</label
-            >
-            <q-input
-              outlined
-              dense
-              v-model="password.current"
-              :type="showCurrentPwd ? 'text' : 'password'"
-              placeholder="••••••••"
-              class="bg-white"
-            >
-              <template v-slot:append>
-                <q-icon
-                  :name="showCurrentPwd ? 'visibility' : 'visibility_off'"
-                  class="cursor-pointer"
-                  @click="showCurrentPwd = !showCurrentPwd"
-                />
-              </template>
-            </q-input>
-          </div>
-
-          <div class="q-mb-md">
-            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-              >Kata Sandi Baru</label
-            >
-            <q-input
-              outlined
-              dense
-              v-model="password.new"
-              :type="showNewPwd ? 'text' : 'password'"
-              placeholder="Minimal 8 karakter"
-              class="bg-white"
-            >
-              <template v-slot:append>
-                <q-icon
-                  :name="showNewPwd ? 'visibility' : 'visibility_off'"
-                  class="cursor-pointer"
-                  @click="showNewPwd = !showNewPwd"
-                />
-              </template>
-            </q-input>
-          </div>
-
-          <div class="q-mb-lg">
-            <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-              >Konfirmasi Kata Sandi Baru</label
-            >
-            <q-input
-              outlined
-              dense
-              v-model="password.confirm"
-              :type="showConfirmPwd ? 'text' : 'password'"
-              placeholder="Ketik ulang kata sandi baru"
-              class="bg-white"
-            >
-              <template v-slot:append>
-                <q-icon
-                  :name="showConfirmPwd ? 'visibility' : 'visibility_off'"
-                  class="cursor-pointer"
-                  @click="showConfirmPwd = !showConfirmPwd"
-                />
-              </template>
-            </q-input>
-          </div>
-
-          <!-- Tombol Perbarui -->
-          <div class="q-mt-xl">
-            <q-btn
-              unelevated
-              color="dark"
-              class="full-width radius-8"
-              label="Perbarui Kata Sandi"
-              no-caps
-              :loading="isSavingPassword"
-              @click="perbaruiPassword"
             />
           </div>
         </q-card>
@@ -201,117 +105,112 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, onMounted } from 'vue'
 import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
+import { useAuthStore } from 'src/stores/Auth'
 
-// Inisialisasi Quasar untuk memanggil fungsi Notifikasi
 const $q = useQuasar()
+const authStore = useAuthStore()
 
-// State untuk Data Profil
+// State Data Profil
 const profile = reactive({
-  namaLengkap: 'Budi Santoso',
-  username: 'budisantoso_admin',
-  email: 'budi.admin@chainfit.com',
-  nomorTelepon: '+62 812 3456 7890',
+  name: '',
+  username: '',
+  email: '',
+  profileImage: '',
 })
 
-// State untuk Form Password
-const password = reactive({
-  current: 'password123',
-  new: '',
-  confirm: '',
-})
-
-// State UI (Loading & Visibility)
-const showCurrentPwd = ref(false)
-const showNewPwd = ref(false)
-const showConfirmPwd = ref(false)
-
+// UI State
 const isSavingProfile = ref(false)
-const isSavingPassword = ref(false)
+const fileInput = ref(null)
+const selectedFile = ref(null)
 
-// Fungsi Action: Simpan Profil
+onMounted(async () => {
+  try {
+    await authStore.fetchUser()
+    const userData = authStore.user
+
+    if (userData) {
+      profile.name = userData.name || userData.nama || userData.username || ''
+      profile.username = userData.username || userData.name || ''
+      profile.email = userData.email || ''
+      profile.profileImage = userData.profileImage || userData.avatar || ''
+    }
+  } catch (error) {
+    console.error('Error saat fetch profil:', error)
+    $q.notify({ type: 'negative', message: 'Gagal memuat data profil.' })
+  }
+})
+
+// Fungsi Upload File
+const triggerFileInput = () => fileInput.value.click()
+const onFileChange = (event) => {
+  const file = event.target.files[0]
+  if (file) {
+    selectedFile.value = file
+    profile.profileImage = URL.createObjectURL(file)
+  }
+}
+
+// Fungsi Simpan Profil
 const simpanProfil = async () => {
   isSavingProfile.value = true
-
   try {
-    // 1. Simulasi request ke backend (Ganti ini dengan request Axios ke Laravel nanti)
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    const formData = new FormData()
+    formData.append('name', profile.name)
+    formData.append('username', profile.username)
+    if (selectedFile.value) {
+      formData.append('image', selectedFile.value)
+    }
 
-    // 2. Jika sukses, tampilkan notifikasi hijau (positive)
-    $q.notify({
-      type: 'positive',
-      message: 'Profil berhasil diperbarui.',
-      position: 'top',
-      icon: 'check_circle',
+    // Method spoofing untuk update profil di Laravel
+    formData.append('_method', 'PUT')
+
+    await api.post('/api/v1/auth/me/update', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
     })
-  } catch (error) {
-    // Menambahkan log ke console agar variabel 'error' digunakan dan membantu saat debugging API
-    console.error('Gagal menyimpan data profil:', error)
 
-    // 3. Jika gagal, tampilkan notifikasi merah (negative)
+    await authStore.fetchUser()
+    $q.notify({ type: 'positive', message: 'Profile updated successfully.', icon: 'check_circle' })
+  } catch (error) {
+    console.error('Update profile error:', error)
     $q.notify({
       type: 'negative',
-      message: 'Gagal menyimpan profil. Silakan coba lagi.',
-      position: 'top',
-      icon: 'report_problem',
+      message: error.response?.data?.message || 'Failed to update profile.',
     })
   } finally {
     isSavingProfile.value = false
   }
 }
-
-// Fungsi Action: Perbarui Password
-const perbaruiPassword = async () => {
-  // Validasi sederhana sebelum kirim ke API
-  if (password.new !== password.confirm) {
-    $q.notify({
-      type: 'warning',
-      message: 'Kata sandi baru dan konfirmasi tidak cocok!',
-      position: 'top',
-    })
-    return
-  }
-
-  isSavingPassword.value = true
-
-  try {
-    // Simulasi request API
-    await new Promise((resolve) => setTimeout(resolve, 1500))
-
-    $q.notify({
-      type: 'positive',
-      message: 'Kata sandi berhasil diperbarui.',
-      position: 'top',
-      icon: 'check_circle',
-    })
-
-    // Kosongkan form setelah sukses
-    password.new = ''
-    password.confirm = ''
-  } catch (error) {
-    // Menambahkan log ke console agar variabel 'error' digunakan
-    console.error('Gagal menyimpan password baru:', error)
-
-    $q.notify({
-      type: 'negative',
-      message: 'Gagal memperbarui kata sandi.',
-      position: 'top',
-    })
-  } finally {
-    isSavingPassword.value = false
-  }
-}
 </script>
 
-<style scoped>
-.profile-card {
+<style scoped lang="scss">
+.custom-card {
   border-radius: 8px;
-  border-color: #e0e0e0;
+  border: 1px solid #f3f4f6;
 }
 
-.radius-8 {
-  border-radius: 8px;
+.custom-input {
+  :deep(.q-field__control) {
+    border-radius: 4px;
+  }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
+  }
+}
+
+.btn-save {
+  background-color: #111827 !important;
+  color: white;
+  border-radius: 4px;
+  font-weight: 500;
+  padding: 0 24px;
+  height: 40px;
+  transition: all 0.3s ease;
+  &:hover {
+    background-color: #1f2937 !important;
+  }
 }
 
 .block {

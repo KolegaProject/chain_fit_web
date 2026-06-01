@@ -39,24 +39,23 @@
 
         <div class="col-12 col-md-6 flex flex-center bg-white">
           <div class="form-container q-pa-lg text-center">
-            <!-- Title & Subtitle -->
             <div class="q-mb-xl">
               <h1 class="text-h4 text-weight-bold q-mb-md text-dark q-mt-none">Reset Password</h1>
               <p class="text-body1 text-grey-7">Create a new, strong password for your account.</p>
             </div>
 
-            <q-form @submit="handleSimpanPassword" class="q-gutter-y-md text-left">
+            <q-form @submit.prevent="handleSimpanPassword" class="q-gutter-y-md text-left">
               <div>
-                <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
-                  New Password
-                </label>
+                <label class="text-caption text-weight-bold text-dark q-mb-xs block"
+                  >New Password</label
+                >
                 <q-input
                   color="black"
                   outlined
+                  dense
                   v-model="password.new"
                   :type="showNewPwd ? 'text' : 'password'"
                   placeholder="Enter new password"
-                  bg-color="white"
                   class="custom-input"
                   required
                 >
@@ -64,26 +63,26 @@
                     <q-icon
                       :name="showNewPwd ? 'visibility_off' : 'visibility'"
                       class="cursor-pointer text-grey-7"
-                      @click="showNewPwd = !showNewPwd"
+                      @click.stop.prevent="showNewPwd = !showNewPwd"
                     />
                   </template>
                 </q-input>
                 <div class="text-caption text-grey-6 q-mt-xs" style="font-size: 11px">
-                  Minimum 8 characters, a combination of letters and numbers.
+                  Minimum 8 characters.
                 </div>
               </div>
 
               <div class="q-mt-md">
-                <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
-                  Confirm New Password
-                </label>
+                <label class="text-caption text-weight-bold text-dark q-mb-xs block"
+                  >Confirm New Password</label
+                >
                 <q-input
                   color="black"
                   outlined
+                  dense
                   v-model="password.confirm"
                   :type="showConfirmPwd ? 'text' : 'password'"
                   placeholder="Repeat new password"
-                  bg-color="white"
                   class="custom-input"
                   required
                 >
@@ -91,13 +90,12 @@
                     <q-icon
                       :name="showConfirmPwd ? 'visibility_off' : 'visibility'"
                       class="cursor-pointer text-grey-7"
-                      @click="showConfirmPwd = !showConfirmPwd"
+                      @click.stop.prevent="showConfirmPwd = !showConfirmPwd"
                     />
                   </template>
                 </q-input>
               </div>
 
-              <!-- Save Button -->
               <q-btn
                 type="submit"
                 label="Save Password"
@@ -125,10 +123,12 @@
 
 <script setup>
 import { ref, reactive } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
 
 const router = useRouter()
+const route = useRoute()
 const $q = useQuasar()
 
 const loading = ref(false)
@@ -161,7 +161,15 @@ const handleSimpanPassword = async () => {
 
   loading.value = true
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    // Mengambil ID dari URL, jika kosong kita set default 1 untuk testing
+    const userId = route.query.id || 1
+
+    // Memanggil API sesuai dengan format Postman
+    await api.post('/api/v1/auth/reset-password', {
+      id: Number(userId),
+      new_password: password.new,
+      confirm_password: password.confirm,
+    })
 
     $q.notify({
       message: 'Password successfully reset! Please log in.',
@@ -170,11 +178,12 @@ const handleSimpanPassword = async () => {
       position: 'top',
     })
 
+    // Arahkan ke halaman login setelah berhasil
     router.push('/login')
   } catch (error) {
     console.error('Failed to reset password:', error)
     $q.notify({
-      message: 'An error occurred, please try again.',
+      message: error.response?.data?.message || 'An error occurred, please try again.',
       color: 'negative',
       icon: 'warning',
       position: 'top',
@@ -190,7 +199,6 @@ const handleSimpanPassword = async () => {
   height: 100vh;
   width: 100%;
 }
-
 .bg-transparent-overlay {
   background: linear-gradient(
     to bottom,
@@ -199,50 +207,43 @@ const handleSimpanPassword = async () => {
     rgba(0, 0, 0, 0.6) 100%
   );
 }
-
 .form-container {
   width: 100%;
   max-width: 460px;
 }
-
 .block {
   display: block;
 }
-
 .custom-input {
   :deep(.q-field__control) {
     border-radius: 4px;
+    height: 48px;
   }
   :deep(.q-field__control:before) {
-    border-color: #e0e0e0;
+    border-color: #e5e7eb;
   }
 }
-
 .btn-continue {
   background-color: #111827 !important;
   color: white;
   text-transform: none;
   border-radius: 4px;
-  height: 52px;
+  height: 48px;
   font-size: 16px;
   font-weight: 400;
-
   &:hover {
     background-color: #1f2937 !important;
   }
 }
-
 .no-decoration {
   text-decoration: none;
 }
-
 .transition-color {
   transition: color 0.3s ease;
   &:hover {
     color: #111827 !important;
   }
 }
-
 .hover-underline:hover {
   text-decoration: underline;
 }

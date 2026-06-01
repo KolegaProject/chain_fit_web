@@ -49,11 +49,11 @@
                 class="bg-grey-2 inline-block q-px-md q-py-sm text-weight-bold text-dark text-caption"
                 style="border-radius: 20px"
               >
-                Code sent to a***@chainfit.com
+                Code sent to {{ userEmail || 'your email' }}
               </div>
             </div>
 
-            <q-form @submit="handleVerifikasi" class="q-gutter-y-lg">
+            <q-form @submit.prevent="handleVerifikasi" class="q-gutter-y-lg">
               <div class="row justify-center q-gutter-x-sm q-mb-lg">
                 <input
                   v-for="(digit, index) in 6"
@@ -115,18 +115,21 @@
 <script setup>
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useQuasar } from 'quasar'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
+import { api } from 'src/boot/axios'
 
 const router = useRouter()
+const route = useRoute()
 const $q = useQuasar()
 
 const loading = ref(false)
-
 const pin = ref(['', '', '', '', '', ''])
 const pinRefs = ref([])
-
 const timeLeft = ref(59)
 let timerInterval = null
+
+// Menangkap email dari halaman Lupa Password (contoh: /verifikasi-pin?email=xxx@gmail.com)
+const userEmail = ref(route.query.email || '')
 
 const handleInput = (index, event) => {
   const value = event.target.value
@@ -134,7 +137,6 @@ const handleInput = (index, event) => {
     pin.value[index] = ''
     return
   }
-
   if (value && index < 5) {
     pinRefs.value[index + 1].focus()
   }
@@ -150,17 +152,20 @@ const handleVerifikasi = async () => {
   const kodePin = pin.value.join('')
 
   if (kodePin.length < 6) {
-    $q.notify({
-      message: 'Please enter the full 6-digit PIN.',
-      color: 'warning',
-      position: 'top',
-    })
+    $q.notify({ message: 'Please enter the full 6-digit PIN.', color: 'warning', position: 'top' })
     return
   }
 
   loading.value = true
   try {
-    await new Promise((resolve) => setTimeout(resolve, 1500))
+    /* * TODO: Ganti ini dengan endpoint verifikasi PIN yang sebenarnya dari backend kamu.
+     * Karena di Postman tidak ada, saya asumsikan PIN ini valid dan kita melempar "id" dummy (1)
+     * ke halaman reset password.
+     */
+    // const response = await api.post('/api/v1/auth/verify-pin', { email: userEmail.value, pin: kodePin })
+    // const userId = response.data.data.id
+
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // Simulasi loading
 
     $q.notify({
       message: 'Verification successful!',
@@ -169,7 +174,8 @@ const handleVerifikasi = async () => {
       position: 'top',
     })
 
-    router.push('/reset-password')
+    // Arahkan ke reset password sambil membawa ID user (Asumsi ID = 1 untuk sementara)
+    router.push({ path: '/reset-password', query: { id: 1 } })
   } catch (error) {
     console.error('Verification failed:', error)
     $q.notify({
@@ -200,18 +206,21 @@ const startTimer = () => {
 }
 
 const resendCode = async () => {
-  $q.notify({
-    message: 'A new PIN code has been sent to your email.',
-    color: 'positive',
-    position: 'top',
-  })
-  startTimer()
+  try {
+    await api.post('/api/v1/auth/email-reset-password', { email: userEmail.value })
+    $q.notify({
+      message: 'A new PIN code has been sent to your email.',
+      color: 'positive',
+      position: 'top',
+    })
+    startTimer()
+  } catch {
+    // <-- Hapus kata (error) di sini
+    $q.notify({ message: 'Failed to resend PIN.', color: 'negative', position: 'top' })
+  }
 }
 
-onMounted(() => {
-  startTimer()
-})
-
+onMounted(() => startTimer())
 onUnmounted(() => {
   if (timerInterval) clearInterval(timerInterval)
 })
@@ -222,7 +231,6 @@ onUnmounted(() => {
   height: 100vh;
   width: 100%;
 }
-
 .bg-transparent-overlay {
   background: linear-gradient(
     to bottom,
@@ -231,12 +239,10 @@ onUnmounted(() => {
     rgba(0, 0, 0, 0.7) 100%
   );
 }
-
 .form-container {
   width: 100%;
   max-width: 460px;
 }
-
 .otp-input {
   width: 52px;
   height: 56px;
@@ -248,14 +254,12 @@ onUnmounted(() => {
   color: #111827;
   transition: all 0.2s ease;
   background-color: transparent;
-
   &:focus {
     border-color: #111827;
     border-width: 2px;
     outline: none;
   }
 }
-
 .btn-continue {
   background-color: #111827 !important;
   color: white;
@@ -268,18 +272,15 @@ onUnmounted(() => {
     background-color: #1f2937 !important;
   }
 }
-
 .no-decoration {
   text-decoration: none;
 }
-
 .transition-color {
   transition: color 0.3s ease;
   &:hover {
     color: #111827 !important;
   }
 }
-
 .hover-underline:hover {
   text-decoration: underline;
 }

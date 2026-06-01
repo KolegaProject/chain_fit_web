@@ -1,114 +1,94 @@
 <template>
   <q-layout>
     <q-page-container>
-      <q-page class="row">
-        <!-- ================= LEFT SIDE (FORM) ================= -->
-        <div class="col-12 col-md-6 bg-white flex column justify-center q-pa-xl">
-          <div class="form-container" style="max-width: 460px; margin: 0 auto; width: 100%">
-            <!-- Back to Login Link -->
-            <router-link
+      <q-page class="row window-height bg-white">
+        <!-- Left Side: Form Section -->
+        <div class="col-12 col-md-6 flex flex-center q-pa-xl">
+          <div style="width: 100%; max-width: 420px">
+            <q-btn
+              flat
+              dense
+              no-caps
+              icon="arrow_back"
+              label="Back to login"
+              class="text-weight-bold q-mb-xl text-dark"
               to="/login"
-              class="row items-center text-dark no-decoration q-mb-xl text-weight-medium transition-color hover-underline"
-            >
-              <q-icon name="arrow_back" class="q-mr-sm" size="20px" />
-              Back to login
-            </router-link>
+            />
 
-            <!-- Title & Description -->
-            <h1 class="text-h4 text-weight-bold q-mt-none q-mb-sm text-dark">Forgot Password</h1>
-            <p class="text-body1 text-grey-7 q-mb-xl" style="line-height: 1.5">
-              Select which contact details should we use to reset your password.
+            <h1 class="text-h4 text-weight-bolder q-ma-none q-mb-sm text-dark">Forgot Password</h1>
+            <p class="text-grey-7 text-body1 q-mb-xl">
+              Enter the email address associated with your account and we'll send you a link to
+              reset your password.
             </p>
 
-            <!-- Recovery Method Options -->
-            <div class="q-gutter-y-md q-mb-lg">
-              <!-- Option 1: Email -->
-              <div
-                class="method-card row items-center q-pa-md cursor-pointer transition-all"
-                :class="selectedMethod === 'email' ? 'method-active' : 'method-inactive'"
-                @click="selectedMethod = 'email'"
-              >
-                <div class="icon-wrapper q-mr-md flex flex-center bg-grey-1">
-                  <q-icon
-                    name="mail_outline"
-                    size="24px"
-                    :color="selectedMethod === 'email' ? 'dark' : 'grey-7'"
-                  />
-                </div>
-                <div>
-                  <div class="text-caption text-grey-7">via Email</div>
-                  <div class="text-body1 text-weight-bold text-dark">a***@chainfit.com</div>
-                </div>
+            <q-form @submit.prevent="submitForgot">
+              <div class="q-mb-lg">
+                <label class="text-caption text-weight-bold text-dark q-mb-xs block">
+                  Email Address
+                </label>
+                <q-input
+                  outlined
+                  dense
+                  v-model="email"
+                  type="email"
+                  placeholder="e.g., yourname@email.com"
+                  class="custom-input"
+                  lazy-rules
+                  :rules="[
+                    (val) => !!val || 'Email is required',
+                    (val) => /.+@.+\..+/.test(val) || 'Enter a valid email format',
+                  ]"
+                >
+                  <template v-slot:prepend>
+                    <q-icon name="mail_outline" color="grey-6" />
+                  </template>
+                </q-input>
               </div>
 
-              <!-- Option 2: SMS / WhatsApp -->
-              <div
-                class="method-card row items-center q-pa-md cursor-pointer transition-all"
-                :class="selectedMethod === 'sms' ? 'method-active' : 'method-inactive'"
-                @click="selectedMethod = 'sms'"
+              <q-btn
+                unelevated
+                type="submit"
+                label="Send Reset Link"
+                no-caps
+                class="full-width btn-dark q-mt-sm"
+                :loading="isLoading"
               >
-                <div class="icon-wrapper q-mr-md flex flex-center bg-grey-1">
-                  <q-icon
-                    name="chat_bubble_outline"
-                    size="24px"
-                    :color="selectedMethod === 'sms' ? 'dark' : 'grey-7'"
-                  />
-                </div>
-                <div>
-                  <div class="text-caption text-grey-7">via SMS / WhatsApp</div>
-                  <div class="text-body1 text-weight-bold text-dark">+1 *** *** 7890</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Continue Button -->
-            <q-btn
-              label="Continue"
-              icon-right="arrow_forward"
-              class="full-width btn-continue q-mt-md"
-              unelevated
-              @click="handleContinue"
-            />
+                <template v-slot:loading>
+                  <q-spinner-dots class="on-left" />
+                  Sending...
+                </template>
+              </q-btn>
+            </q-form>
           </div>
         </div>
 
-        <!-- ================= RIGHT SIDE (IMAGE) ================= -->
-        <div class="col-12 col-md-6 gt-sm relative-position">
+        <!-- Right Side: Image Section -->
+        <div class="col-12 col-md-6 relative-position window-height hide-on-mobile">
           <q-img
-            src="../../assets/login-register/LupaPasswordPage.jpeg"
-            class="full-height-img"
-            fit="cover"
-          >
-            <!-- Bottom Black Overlay Box -->
-            <div class="absolute-bottom q-pa-xl" style="background: transparent">
-              <div
-                class="text-box q-pa-xl"
-                style="
-                  border-radius: 12px;
-                  background-color: rgba(17, 24, 39, 0.75);
-                  backdrop-filter: blur(8px);
-                  border: 1px solid rgba(255, 255, 255, 0.05);
-                "
-              >
-                <!-- Logo -->
-                <q-img
-                  src="../../assets/ChainFitLogo.png"
-                  spinner-color="white"
-                  style="height: auto; max-width: 140px"
-                  class="q-mb-lg"
-                />
-
-                <!-- Quote -->
-                <p
-                  class="text-body1 text-white text-weight-regular q-ma-none"
-                  style="line-height: 1.6"
-                >
-                  "Discipline is the bridge between goals and accomplishment. Recover your access
-                  and get back to the grind."
-                </p>
+            src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop"
+            class="fit"
+            style="filter: brightness(0.8)"
+          />
+          <div class="absolute-bottom q-pa-xl">
+            <q-card
+              flat
+              class="bg-dark text-white q-pa-lg"
+              style="
+                background: rgba(17, 24, 39, 0.85);
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+              "
+            >
+              <div class="row items-center q-mb-md">
+                <q-icon name="fitness_center" size="md" class="q-mr-sm" />
+                <div class="text-h6 text-weight-bold">CHAIN FIT</div>
               </div>
-            </div>
-          </q-img>
+              <div class="text-body1" style="line-height: 1.6">
+                "Discipline is the bridge between goals and accomplishment. Recover your access and
+                get back to the grind."
+              </div>
+            </q-card>
+          </div>
         </div>
       </q-page>
     </q-page-container>
@@ -118,80 +98,84 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
 
 const router = useRouter()
+const $q = useQuasar()
 
-// State to store user selection (default to 'email')
-const selectedMethod = ref('email')
+const email = ref('')
+const isLoading = ref(false)
 
-const handleContinue = () => {
-  console.log('Selected recovery method:', selectedMethod.value)
-  // Navigate to PIN verification page
-  router.push('/verifikasi-pin')
+const submitForgot = async () => {
+  isLoading.value = true
+
+  try {
+    // Alamat URL API sudah disesuaikan dengan Postman
+    await api.post('/api/v1/auth/email-reset-password', {
+      email: email.value,
+    })
+
+    $q.notify({
+      type: 'positive',
+      icon: 'mark_email_read',
+      message: 'PIN sent! Please check your email.',
+      position: 'top',
+    })
+
+    // Beri jeda 2 detik, lalu arahkan ke halaman verifikasi PIN dengan membawa email
+    setTimeout(() => {
+      router.push({
+        path: '/verifikasi-pin',
+        query: { email: email.value },
+      })
+    }, 2000)
+  } catch (error) {
+    console.error('Forgot password error:', error)
+    $q.notify({
+      type: 'negative',
+      icon: 'error_outline',
+      message: error.response?.data?.message || 'Failed to send PIN. Is your email correct?',
+      position: 'top',
+    })
+  } finally {
+    isLoading.value = false
+  }
 }
 </script>
 
-<style lang="scss" scoped>
-.full-height-img {
-  height: 100vh;
-  width: 100%;
+<style scoped lang="scss">
+.custom-input {
+  :deep(.q-field__control) {
+    border-radius: 4px;
+    height: 48px;
+  }
+  :deep(.q-field__control:before) {
+    border-color: #e5e7eb;
+  }
 }
 
-/* Styling for Method Selection Cards */
-.method-card {
-  border-radius: 4px; /* Matched with input border-radius */
-  border: 2px solid transparent;
-}
-
-.method-active {
-  border-color: #111827; /* Thick black border if selected */
-  background-color: #ffffff;
-}
-
-.method-inactive {
-  border-color: #e5e7eb; /* Thin gray border if not selected */
-  background-color: #ffffff;
-}
-
-.method-inactive:hover {
-  border-color: #d1d5db;
-}
-
-.icon-wrapper {
-  width: 48px;
-  height: 48px;
-  border-radius: 4px; /* Matched with input border-radius */
-}
-
-/* Continue Button */
-.btn-continue {
+.btn-dark {
   background-color: #111827 !important;
   color: white;
-  text-transform: none;
-  border-radius: 4px; /* Matched with Login/Register */
-  height: 52px; /* Matched with Login/Register */
+  border-radius: 4px;
+  font-weight: 600;
+  height: 48px;
   font-size: 16px;
-  font-weight: 400; /* Matched with Login/Register */
+  transition: all 0.3s ease;
 
   &:hover {
     background-color: #1f2937 !important;
   }
+}
 
-  /* Add slight spacing between icon and text */
-  :deep(.q-icon) {
-    margin-left: 8px;
+.block {
+  display: block;
+}
+
+@media (max-width: 1023px) {
+  .hide-on-mobile {
+    display: none;
   }
-}
-
-.no-decoration {
-  text-decoration: none;
-}
-
-.hover-underline:hover {
-  text-decoration: underline;
-}
-
-.transition-all {
-  transition: all 0.2s ease-in-out;
 }
 </style>
