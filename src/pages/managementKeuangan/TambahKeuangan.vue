@@ -1,6 +1,5 @@
 <template>
   <q-page class="q-pa-lg bg-grey-2">
-    <!-- Header -->
     <div class="row items-center justify-between q-mb-xl">
       <div class="row items-center">
         <q-icon name="account_balance_wallet" size="28px" class="q-mr-sm" />
@@ -18,7 +17,6 @@
       />
     </div>
 
-    <!-- Form Area -->
     <div class="row justify-center">
       <div class="col-12 col-md-8 col-lg-7">
         <q-card flat bordered class="custom-card q-pa-xl">
@@ -26,7 +24,6 @@
 
           <q-separator class="q-mb-lg" />
 
-          <!-- Income / Expense Toggle -->
           <div class="row bg-grey-2 q-pa-xs border-radius-4 q-mb-lg">
             <q-btn
               class="col border-radius-4 text-weight-bold"
@@ -50,7 +47,6 @@
             />
           </div>
 
-          <!-- Form Inputs -->
           <div class="q-mb-md">
             <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block">
               Transaction Name
@@ -93,20 +89,7 @@
             />
           </div>
 
-          <!-- Add to List Button -->
-          <q-btn
-            unelevated
-            color="grey-8"
-            class="full-width border-radius-4 q-mb-xl q-py-sm"
-            icon="add"
-            label="Add to List"
-            no-caps
-          />
-
-          <q-separator class="q-mb-lg" />
-
-          <!-- Action Buttons -->
-          <div class="row justify-end q-gutter-sm">
+          <div class="row justify-end q-gutter-sm q-mt-lg">
             <q-btn
               flat
               color="dark"
@@ -121,6 +104,7 @@
               label="Save Transaction"
               class="border-radius-4 q-px-md"
               no-caps
+              :loading="isSaving"
               @click="simpanTransaksi"
             />
           </div>
@@ -131,14 +115,16 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
+import { api } from 'src/boot/axios'
 
 const router = useRouter()
 const $q = useQuasar()
 
-// State Form
+// State Loading & Form
+const isSaving = ref(false)
 const form = reactive({
   jenis: 'income',
   nama: '',
@@ -146,26 +132,66 @@ const form = reactive({
   metode: null,
 })
 
-// Options
 const metodeOptions = ['BNI', 'Mandiri', 'BCA', 'Gopay', 'OVO', 'Dana', 'Cash']
 
-// Navigation
 const kembali = () => {
   router.push('/finance')
 }
 
-// Save Action
-const simpanTransaksi = () => {
-  console.log('Saving transaction:', form)
+const simpanTransaksi = async () => {
+  // 1. Validasi Input
+  if (!form.nama || !form.jumlah || !form.metode) {
+    $q.notify({
+      message: 'Mohon lengkapi semua data transaksi!',
+      color: 'warning',
+      position: 'top',
+    })
+    return
+  }
 
-  $q.notify({
-    type: 'positive',
-    icon: 'check_circle',
-    message: 'Transaction saved successfully',
-    position: 'top',
-  })
+  isSaving.value = true
 
-  router.push('/finance')
+  try {
+    // 2. Dapatkan ID Gym.
+    // TODO: Ganti ini jika kamu menyimpan gymId di Pinia (misal: gymStore.selectedGym.id)
+    // Untuk saat ini saya ambil dari localStorage atau default ke 12 (seperti di Postman)
+    const gymId = localStorage.getItem('gymId') || 12
+
+    // 3. Format tanggal hari ini (YYYY-MM-DD) karena backend membutuhkannya
+    const today = new Date().toISOString().split('T')[0]
+
+    // 4. Mapping data sesuai JSON Backend
+    const payload = {
+      name: form.nama,
+      amount: Number(form.jumlah),
+      transactionType: form.jenis === 'income' ? 'PENDAPATAN' : 'PENGELUARAN',
+      cashflowType: form.metode === 'Cash' ? 'CASH' : 'CASHLESS',
+      date: today,
+      note: `Transaksi: ${form.nama}`, // Menggunakan nama sebagai fallback note
+    }
+
+    // 5. Tembak API POST
+    await api.post(`/api/v1/gym/${gymId}/cashflow`, payload)
+
+    $q.notify({
+      type: 'positive',
+      icon: 'check_circle',
+      message: 'Transaction saved successfully',
+      position: 'top',
+    })
+
+    router.push('/finance')
+  } catch (error) {
+    console.error('Save transaction error:', error)
+    $q.notify({
+      type: 'negative',
+      icon: 'error_outline',
+      message: error.response?.data?.message || 'Failed to save transaction',
+      position: 'top',
+    })
+  } finally {
+    isSaving.value = false
+  }
 }
 </script>
 
