@@ -2,11 +2,9 @@
   <q-layout>
     <q-page-container>
       <q-page class="row">
-        <!-- ================= LEFT SIDE (IMAGE) ================= -->
         <div class="col-12 col-md-6 gt-sm relative-position">
           <q-img src="../../assets/login-register/RegisterPage.jpg" class="full-height-img" fit="cover">
             <div class="absolute-full column justify-between q-pa-xl bg-transparent-overlay">
-              <!-- Logo -->
               <div class="logo-wrapper q-pt-md">
                 <q-img
                   src="../../assets/ChainFitLogo.png"
@@ -15,7 +13,6 @@
                 />
               </div>
 
-              <!-- Bottom Overlay Text -->
               <div
                 class="text-box q-pa-lg"
                 style="
@@ -36,10 +33,8 @@
           </q-img>
         </div>
 
-        <!-- ================= RIGHT SIDE (FORM) ================= -->
         <div class="col-12 col-md-6 flex flex-center bg-white">
           <div class="form-container q-pa-lg">
-            <!-- Header -->
             <div class="text-center q-mb-xl">
               <h2 class="text-h6 text-weight-bold q-mb-sm text-dark q-mt-none">
                 Create Your Account
@@ -47,7 +42,6 @@
               <p class="text-body2 text-grey-8">Start your journey with us</p>
             </div>
 
-            <!-- Form -->
             <q-form @submit="handleRegister" class="q-gutter-y-lg">
               <q-input
                 color="black"
@@ -128,7 +122,6 @@
                 </template>
               </q-input>
 
-              <!-- Register Button -->
               <q-btn
                 type="submit"
                 label="Sign Up"
@@ -138,14 +131,12 @@
               />
             </q-form>
 
-            <!-- Divider -->
             <div class="row items-center q-my-xl">
               <q-separator class="col bg-grey-3" />
               <span class="q-px-md text-body2 text-grey-7">Or sign up with</span>
               <q-separator class="col bg-grey-3" />
             </div>
 
-            <!-- Social Media Buttons -->
             <div class="row justify-center q-gutter-x-lg q-mb-xl">
               <q-btn outline round color="grey-4" class="q-pa-sm" @click="handleGoogleLogin">
                 <q-avatar size="24px">
@@ -159,7 +150,6 @@
               </q-btn>
             </div>
 
-            <!-- Footer -->
             <div class="text-center text-body2 text-grey-8">
               Already have an account?
               <router-link to="/login" class="text-weight-medium text-dark no-decoration q-ml-xs">
@@ -205,7 +195,6 @@ const showPassword = ref(false)
 const showConfirmPassword = ref(false)
 
 const handleRegister = async () => {
-  // Reset errors
   Object.keys(errors).forEach((key) => (errors[key] = ''))
   loading.value = true
 
@@ -359,8 +348,6 @@ const handleFacebookLogin = () => {
             loading.value = false
           }
         })
-      } else {
-        console.log('User cancelled login or did not fully authorize.')
       }
     },
     { scope: 'public_profile,email' },
@@ -385,10 +372,9 @@ const handleFacebookLogin = () => {
 
 .form-container {
   width: 100%;
-  max-width: 460px; /* Lebar yang sama dengan halaman login */
+  max-width: 460px;
 }
 
-/* Modifikasi input agar persis dengan login page */
 .custom-input {
   :deep(.q-field__control) {
     border-radius: 4px;
@@ -399,16 +385,15 @@ const handleFacebookLogin = () => {
 }
 
 :deep(.q-field--with-bottom) {
-  padding-bottom: 8px; /* Mengurangi jarak error message yang terlalu jauh */
+  padding-bottom: 8px;
 }
 
-/* Tombol Sign Up */
 .btn-continue {
-  background-color: #111827 !important; /* Warna dark/navy yang sama */
+  background-color: #111827 !important;
   color: white;
   text-transform: none;
   border-radius: 4px;
-  height: 52px; /* Tinggi yang sama dengan login page */
+  height: 52px;
   font-size: 16px;
   font-weight: 400;
 

@@ -22,21 +22,18 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
 
-    // Membuat equipment baru
     async createEquipment(gymId, data) {
       try {
         this.loading = true
 
         const fd = new FormData()
         fd.append('name', data.name)
-        fd.append('videoURL', data.videoUrl || '') // sesuai key backend: videoURL
-        fd.append('jum', String(Number(data.qty || 0))) // sesuai key backend: jum
-        fd.append('description', data.description || '') // sesuai key backend: description
+        fd.append('videoURL', data.videoUrl || '')
+        fd.append('jum', String(Number(data.qty || 0)))
+        fd.append('description', data.description || '')
 
-        // image OPTIONAL
-        // kalau q-file kamu mengembalikan array, ambil index 0
         const file = Array.isArray(data.image) ? data.image[0] : data.image
-        if (file) fd.append('image', file) // sesuai key backend: image
+        if (file) fd.append('image', file)
 
         const response = await api.post(`/api/v1/gym/${gymId}/equipment`, fd, {
           headers: { 'Content-Type': 'multipart/form-data' },
@@ -51,32 +48,29 @@ export const useEquipmentStore = defineStore('equipment', {
       }
     },
 
-    // Mengambil detail equipment berdasarkan ID
     async fetchEquipmentDetail(gymId, equipId) {
       try {
         this.loading = true
         const response = await api.get(`/api/v1/gym/${gymId}/equipment/${equipId}`)
         return response.data.data
-      } catch {
-        console.log('Failed to fetch equipment details')
+      } catch (error) {
+        void error
       } finally {
         this.loading = false
       }
     },
 
-    // Menghapus equipment berdasarkan ID
     async deleteEquipment(gymId, equipId) {
       try {
         this.loading = true
         await api.delete(`/api/v1/gym/${gymId}/equipment/${equipId}`)
       } catch (error) {
-        console.log('Failed to delete equipment:', error)
+        void error
       } finally {
         this.loading = false
       }
     },
 
-    // Memperbarui data equipment
     async updateEquipment(gymId, equipId, payload) {
       try {
         this.loading = true
@@ -88,13 +82,11 @@ export const useEquipmentStore = defineStore('equipment', {
         if (payload.description) fd.append('description', payload.description)
         if (payload.healthStatus) fd.append('healthStatus', payload.healthStatus)
 
-        // penting: "image" harus File (bukan URL string)
         if (payload.imageFile instanceof File) {
           fd.append('image', payload.imageFile)
         }
 
         const response = await api.put(`/api/v1/gym/${gymId}/equipment/${equipId}`, fd, {
-          // axios biasanya auto set boundary, ini optional tapi oke
           headers: { 'Content-Type': 'multipart/form-data' },
         })
 

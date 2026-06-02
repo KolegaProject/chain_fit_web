@@ -34,7 +34,6 @@
 
               <q-separator color="grey-2" />
 
-              <!-- Body: Empty State -->
               <div class="column flex-center q-py-xl q-px-md text-center">
                 <q-avatar size="80px" color="grey-1" class="q-mb-md">
                   <q-icon name="notifications_none" color="grey-4" size="40px" />
@@ -47,7 +46,6 @@
 
               <q-separator color="grey-2" />
 
-              <!-- Footer Action -->
               <div class="q-pa-sm text-center">
                 <q-btn
                   flat
@@ -205,15 +203,12 @@ const gymOptions = ref([])
 onMounted(async () => {
   try {
     await authStore.fetchUser()
-    console.log('Data user berhasil dimuat:', authStore.user)
 
     gymOptions.value = authStore.gyms.map((gym) => ({
       label: gym.name,
       value: gym.id,
     }))
 
-    console.log('Opsi gym(id):', gymStore.selectedGymId)
-    // Jika store kosong (pertama kali login), set ke gym pertama
     if (gymOptions.value.length > 0 && !gymStore.selectedGymId) {
       gymStore.setSelectedGymId(gymOptions.value[0].value)
     }
