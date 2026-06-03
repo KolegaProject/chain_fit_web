@@ -122,7 +122,7 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
@@ -135,9 +135,27 @@ const loading = ref(false)
 const showNewPwd = ref(false)
 const showConfirmPwd = ref(false)
 
+const userId = ref(null)
+
 const password = reactive({
   new: '',
   confirm: '',
+})
+
+// Lifecycle hook untuk menangkap parameter dari URL saat halaman pertama kali dimuat
+onMounted(() => {
+  // Misalnya link dari email: https://chain-fit-web.vercel.app/#/reset-password?id=123
+  if (route.query.id) {
+    userId.value = route.query.id
+  } else {
+    // Jika tidak ada ID di URL, tampilkan pesan error dan kembalikan ke halaman sebelumnya
+    $q.notify({
+      message: 'Invalid or missing reset link parameter.',
+      color: 'negative',
+      position: 'top',
+    })
+    router.push('/forgot-password')
+  }
 })
 
 const handleSimpanPassword = async () => {
@@ -159,20 +177,27 @@ const handleSimpanPassword = async () => {
     return
   }
 
+  // Pengaman ganda jika userId entah bagaimana kosong
+  if (!userId.value) {
+    $q.notify({
+      message: 'User ID is missing.',
+      color: 'negative',
+      position: 'top',
+    })
+    return
+  }
+
   loading.value = true
   try {
-    // Mengambil ID dari URL, jika kosong kita set default 1 untuk testing
-    const userId = route.query.id || 1
-
-    // Memanggil API sesuai dengan format Postman
+    // Memanggil API dengan ID yang ditangkap dari URL
     await api.post('/api/v1/auth/reset-password', {
-      id: Number(userId),
+      id: Number(userId.value),
       new_password: password.new,
       confirm_password: password.confirm,
     })
 
     $q.notify({
-      message: 'Password successfully reset! Please log in.',
+      message: 'Password successfully reset! Please log in with your new password.',
       color: 'positive',
       icon: 'check_circle',
       position: 'top',

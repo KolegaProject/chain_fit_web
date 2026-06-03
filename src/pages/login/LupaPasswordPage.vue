@@ -2,7 +2,6 @@
   <q-layout>
     <q-page-container>
       <q-page class="row window-height bg-white">
-        <!-- Left Side: Form Section -->
         <div class="col-12 col-md-6 flex flex-center q-pa-xl">
           <div style="width: 100%; max-width: 420px">
             <q-btn
@@ -62,7 +61,6 @@
           </div>
         </div>
 
-        <!-- Right Side: Image Section -->
         <div class="col-12 col-md-6 relative-position window-height hide-on-mobile">
           <q-img
             src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=2070&auto=format&fit=crop"
@@ -116,26 +114,26 @@ const submitForgot = async () => {
       email: email.value,
     })
 
+    // Tampilkan notifikasi bahwa link telah dikirim ke email
     $q.notify({
       type: 'positive',
       icon: 'mark_email_read',
-      message: 'PIN sent! Please check your email.',
+      message: 'Reset link sent! Please check your email inbox or spam folder.',
       position: 'top',
+      timeout: 5000, // Beri waktu user untuk membaca pesan
     })
 
-    // Beri jeda 2 detik, lalu arahkan ke halaman verifikasi PIN dengan membawa email
+    // Beri jeda 3 detik, lalu arahkan user KEMBALI KE LOGIN (bukan ke halaman PIN lagi)
     setTimeout(() => {
-      router.push({
-        path: '/verifikasi-pin',
-        query: { email: email.value },
-      })
-    }, 2000)
+      router.push('/login')
+    }, 3000)
   } catch (error) {
     console.error('Forgot password error:', error)
     $q.notify({
       type: 'negative',
       icon: 'error_outline',
-      message: error.response?.data?.message || 'Failed to send PIN. Is your email correct?',
+      message:
+        error.response?.data?.message || 'Failed to send reset link. Is your email registered?',
       position: 'top',
     })
   } finally {

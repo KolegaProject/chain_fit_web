@@ -99,12 +99,9 @@ const routes = [
     component: () => import('pages/login/LupaPasswordPage.vue'),
   },
   {
-    path: '/verifikasi-pin',
-    component: () => import('pages/login/VerifikasiPinPage.vue'),
-  },
-  {
     path: '/reset-password',
     component: () => import('pages/login/ResetPasswordPage.vue'),
+    meta: { allowAnonymous: true },
   },
   {
     path: '/:catchAll(.*)*',
