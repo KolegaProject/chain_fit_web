@@ -109,21 +109,18 @@ const submitForgot = async () => {
   isLoading.value = true
 
   try {
-    // Alamat URL API sudah disesuaikan dengan Postman
     await api.post('/api/v1/auth/email-reset-password', {
       email: email.value,
     })
 
-    // Tampilkan notifikasi bahwa link telah dikirim ke email
     $q.notify({
       type: 'positive',
       icon: 'mark_email_read',
       message: 'Reset link sent! Please check your email inbox or spam folder.',
       position: 'top',
-      timeout: 5000, // Beri waktu user untuk membaca pesan
+      timeout: 5000,
     })
 
-    // Beri jeda 3 detik, lalu arahkan user KEMBALI KE LOGIN (bukan ke halaman PIN lagi)
     setTimeout(() => {
       router.push('/login')
     }, 3000)

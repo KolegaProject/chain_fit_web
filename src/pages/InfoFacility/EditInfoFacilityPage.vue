@@ -18,10 +18,8 @@
       </q-card-section>
     </q-card>
 
-    <!-- FORM -->
     <q-card flat class="rounded-borders shadow-1 q-pa-md custom-card">
       <q-card-section>
-        <!-- Save Action -->
         <div class="row items-center justify-end q-mb-lg">
           <q-btn
             unelevated
@@ -47,7 +45,6 @@
             />
           </div>
 
-          <!-- Capacity -->
           <div class="input-group">
             <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Capacity</div>
             <q-input
@@ -60,7 +57,6 @@
             />
           </div>
 
-          <!-- Address -->
           <div class="input-group">
             <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Address</div>
             <q-input
@@ -72,7 +68,6 @@
             />
           </div>
 
-          <!-- Current Location (GPS) -->
           <div class="row items-center q-gutter-sm">
             <q-btn
               outline
@@ -95,7 +90,6 @@
             />
           </div>
 
-          <!-- Location Status -->
           <div v-if="hasCoords" class="row items-center q-gutter-sm">
             <q-chip
               color="positive"
@@ -115,7 +109,6 @@
             Location not set. Click <b>Use Current Location</b> to automatically fill coordinates.
           </div>
 
-          <!-- Operating Hours -->
           <div class="input-group">
             <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Operating Hours</div>
             <q-input
@@ -127,7 +120,6 @@
             />
           </div>
 
-          <!-- Description -->
           <div class="input-group">
             <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Description</div>
             <q-input
@@ -140,7 +132,6 @@
             />
           </div>
 
-          <!-- Facilities -->
           <div class="input-group">
             <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Facilities</div>
 
@@ -175,7 +166,6 @@
             </div>
           </div>
 
-          <!-- Tags -->
           <div class="input-group">
             <div class="text-subtitle1 text-weight-bold text-dark q-mb-xs">Tags / Categories</div>
             <div class="row q-gutter-sm q-mb-sm">
@@ -355,7 +345,6 @@ const useCurrentLocation = async () => {
 
     $q.notify({ type: 'negative', message: msg })
 
-    // fallback
     let watchId = null
     try {
       watchId = navigator.geolocation.watchPosition(
@@ -496,7 +485,6 @@ const saveChanges = async () => {
   line-height: 1.6;
 }
 
-/* Button style selaras dengan halaman lainnya */
 .btn-save {
   background-color: #111827 !important;
   color: white;

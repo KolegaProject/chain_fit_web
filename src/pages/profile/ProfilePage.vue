@@ -113,7 +113,6 @@ import { useAuthStore } from 'src/stores/Auth'
 const $q = useQuasar()
 const authStore = useAuthStore()
 
-// State Data Profil
 const profile = reactive({
   name: '',
   username: '',
@@ -121,7 +120,6 @@ const profile = reactive({
   profileImage: '',
 })
 
-// UI State
 const isSavingProfile = ref(false)
 const fileInput = ref(null)
 const selectedFile = ref(null)
@@ -143,7 +141,6 @@ onMounted(async () => {
   }
 })
 
-// Fungsi Upload File
 const triggerFileInput = () => fileInput.value.click()
 const onFileChange = (event) => {
   const file = event.target.files[0]
@@ -153,7 +150,6 @@ const onFileChange = (event) => {
   }
 }
 
-// Fungsi Simpan Profil
 const simpanProfil = async () => {
   isSavingProfile.value = true
   try {
@@ -164,7 +160,6 @@ const simpanProfil = async () => {
       formData.append('image', selectedFile.value)
     }
 
-    // Method spoofing untuk update profil di Laravel
     formData.append('_method', 'PUT')
 
     await api.post('/api/v1/auth/me/update', formData, {

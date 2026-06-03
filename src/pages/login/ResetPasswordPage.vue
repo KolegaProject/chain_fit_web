@@ -142,13 +142,10 @@ const password = reactive({
   confirm: '',
 })
 
-// Lifecycle hook untuk menangkap parameter dari URL saat halaman pertama kali dimuat
 onMounted(() => {
-  // Misalnya link dari email: https://chain-fit-web.vercel.app/#/reset-password?id=123
   if (route.query.id) {
     userId.value = route.query.id
   } else {
-    // Jika tidak ada ID di URL, tampilkan pesan error dan kembalikan ke halaman sebelumnya
     $q.notify({
       message: 'Invalid or missing reset link parameter.',
       color: 'negative',
@@ -177,7 +174,6 @@ const handleSimpanPassword = async () => {
     return
   }
 
-  // Pengaman ganda jika userId entah bagaimana kosong
   if (!userId.value) {
     $q.notify({
       message: 'User ID is missing.',
@@ -189,7 +185,6 @@ const handleSimpanPassword = async () => {
 
   loading.value = true
   try {
-    // Memanggil API dengan ID yang ditangkap dari URL
     await api.post('/api/v1/auth/reset-password', {
       id: Number(userId.value),
       new_password: password.new,
@@ -203,7 +198,6 @@ const handleSimpanPassword = async () => {
       position: 'top',
     })
 
-    // Arahkan ke halaman login setelah berhasil
     router.push('/login')
   } catch (error) {
     console.error('Failed to reset password:', error)

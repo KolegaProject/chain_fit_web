@@ -148,7 +148,6 @@ const equipment = reactive({
   videos: []
 })
 
-// Translated status options
 const statusOptions = ['Good', 'Needs Maintenance', 'Damaged']
 
 onMounted(() => {
@@ -163,7 +162,6 @@ onMounted(() => {
           equipment.id = found.id
           equipment.name = found.name ?? equipment.name
           equipment.qty = Number(found.qty) || equipment.qty
-          // Map old Indonesian status to English if needed
           if (found.status === 'Baik') equipment.status = 'Good'
           else if (found.status === 'Butuh Perawatan') equipment.status = 'Needs Maintenance'
           else if (found.status === 'Rusak') equipment.status = 'Damaged'

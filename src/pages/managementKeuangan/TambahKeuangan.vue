@@ -123,7 +123,6 @@ import { api } from 'src/boot/axios'
 const router = useRouter()
 const $q = useQuasar()
 
-// State Loading & Form
 const isSaving = ref(false)
 const form = reactive({
   jenis: 'income',
@@ -139,7 +138,6 @@ const kembali = () => {
 }
 
 const simpanTransaksi = async () => {
-  // 1. Validasi Input
   if (!form.nama || !form.jumlah || !form.metode) {
     $q.notify({
       message: 'Mohon lengkapi semua data transaksi!',
@@ -152,25 +150,19 @@ const simpanTransaksi = async () => {
   isSaving.value = true
 
   try {
-    // 2. Dapatkan ID Gym.
-    // TODO: Ganti ini jika kamu menyimpan gymId di Pinia (misal: gymStore.selectedGym.id)
-    // Untuk saat ini saya ambil dari localStorage atau default ke 12 (seperti di Postman)
     const gymId = localStorage.getItem('gymId') || 12
 
-    // 3. Format tanggal hari ini (YYYY-MM-DD) karena backend membutuhkannya
     const today = new Date().toISOString().split('T')[0]
 
-    // 4. Mapping data sesuai JSON Backend
     const payload = {
       name: form.nama,
       amount: Number(form.jumlah),
       transactionType: form.jenis === 'income' ? 'PENDAPATAN' : 'PENGELUARAN',
       cashflowType: form.metode === 'Cash' ? 'CASH' : 'CASHLESS',
       date: today,
-      note: `Transaksi: ${form.nama}`, // Menggunakan nama sebagai fallback note
+      note: `Transaksi: ${form.nama}`,
     }
 
-    // 5. Tembak API POST
     await api.post(`/api/v1/gym/${gymId}/cashflow`, payload)
 
     $q.notify({

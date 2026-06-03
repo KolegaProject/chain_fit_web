@@ -280,42 +280,38 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue' // Tambahkan computed dan watch
+import { ref, onMounted, computed, watch } from 'vue'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import VueApexCharts from 'vue3-apexcharts'
-import { useGymStore } from 'src/stores/Gym' // Import GymStore
+import { useGymStore } from 'src/stores/Gym'
 
 const $q = useQuasar()
 const apexchart = VueApexCharts
 const isLoading = ref(true)
 
-// --- Integrasi GymStore ---
 const gymStore = useGymStore()
-const gymId = computed(() => gymStore.selectedGymId) // Reaktif memantau id gym aktif
+const gymId = computed(() => gymStore.selectedGymId)
 
-// --- State Search & Pagination ---
 const searchIncome = ref('')
 const searchExpense = ref('')
 const paginationIncome = ref({ page: 1, rowsPerPage: 5 })
 const paginationExpense = ref({ page: 1, rowsPerPage: 5 })
 
-// --- State Tables ---
 const rowsPemasukan = ref([])
 const rowsPengeluaran = ref([])
 
-// --- State Edit Modal ---
 const isEditModalOpen = ref(false)
 const isSavingEdit = ref(false)
 const editForm = ref({ id: null, name: '', amount: '', transactionType: '', cashflowType: '', date: '', note: '' })
 
-// --- State Charts ---
 const incomeSeries = ref([{ name: 'Income', data: [] }])
 const incomeChartOptions = ref({
   chart: { toolbar: { show: false }, fontFamily: 'inherit' },
   colors: ['#21BA45'], stroke: { curve: 'smooth', width: 3 },
   xaxis: { categories: [] }, dataLabels: { enabled: false },
 })
+
 const expenseSeries = ref([{ name: 'Expense', data: [] }])
 const expenseChartOptions = ref({
   chart: { toolbar: { show: false }, fontFamily: 'inherit' },
@@ -334,7 +330,6 @@ const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(angka))
 }
 
-// Tambahkan parameter idGym agar bisa di-fetch ulang saat ganti gym
 const fetchFinanceData = async (idGym) => {
   if (!idGym) return
 
@@ -366,7 +361,7 @@ const fetchFinanceData = async (idGym) => {
         id: item.id,
         description: item.name,
         amount: formatRupiah(item.amount),
-        raw: item // Simpan data mentah untuk modal Edit
+        raw: item
       }
 
       if (item.transactionType === 'PENDAPATAN') tempPemasukan.push(row)
@@ -383,7 +378,6 @@ const fetchFinanceData = async (idGym) => {
   }
 }
 
-// ================= AKSI EDIT =================
 const bukaEditModal = (row) => {
   const dataAsli = row.raw
   editForm.value = {
@@ -401,7 +395,7 @@ const bukaEditModal = (row) => {
 const simpanEditTransaksi = async () => {
   isSavingEdit.value = true
   try {
-    const idGym = gymId.value // Gunakan idGym reaktif
+    const idGym = gymId.value
     if (!idGym) return
 
     const payload = {
@@ -417,7 +411,7 @@ const simpanEditTransaksi = async () => {
 
     $q.notify({ type: 'positive', message: 'Transaction updated successfully!', position: 'top' })
     isEditModalOpen.value = false
-    fetchFinanceData(idGym) // Refresh tabel untuk gym yang aktif
+    fetchFinanceData(idGym)
   } catch (error) {
     console.error('Error:', error);
     $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
@@ -426,7 +420,7 @@ const simpanEditTransaksi = async () => {
   }
 }
 
-// ================= AKSI HAPUS =================
+
 const hapusTransaksi = (id) => {
   $q.dialog({
     title: 'Delete Transaction',
@@ -436,12 +430,12 @@ const hapusTransaksi = (id) => {
     cancel: { color: 'dark', flat: true, noCaps: true }
   }).onOk(async () => {
     try {
-      const idGym = gymId.value // Gunakan idGym reaktif
+      const idGym = gymId.value
       if (!idGym) return
 
       await api.delete(`/api/v1/gym/${idGym}/cashflow/${id}`)
       $q.notify({ type: 'positive', message: 'Transaction deleted.', position: 'top' })
-      fetchFinanceData(idGym) // Refresh tabel
+      fetchFinanceData(idGym)
     } catch (error) {
       console.error('Error:', error);
       $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
@@ -449,14 +443,12 @@ const hapusTransaksi = (id) => {
   })
 }
 
-// ================= LIFECYCLE & WATCHERS =================
 onMounted(() => {
   if (gymId.value) {
     fetchFinanceData(gymId.value)
   }
 })
 
-// Pantau perubahan pada dropdown Gym
 watch(gymId, (newId) => {
   if (newId) {
     fetchFinanceData(newId)

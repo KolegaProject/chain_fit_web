@@ -238,23 +238,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from 'vue' // Tambahkan watch
+import { ref, reactive, onMounted, computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { api } from 'src/boot/axios'
 import { useAnggotaStore } from 'src/stores/Anggota.js'
-import { useGymStore } from 'src/stores/Gym' // Import GymStore
+import { useGymStore } from 'src/stores/Gym'
 import apexchart from 'vue3-apexcharts'
 
 const isLoading = ref(true)
 
-// Inisialisasi Stores
 const anggotaStore = useAnggotaStore()
 const { rows: anggotaRows } = storeToRefs(anggotaStore)
 
 const gymStore = useGymStore()
-const gymId = computed(() => gymStore.selectedGymId) // Ambil ID Gym reaktif
+const gymId = computed(() => gymStore.selectedGymId)
 
-// State Data Dashboard
 const statsData = reactive({
   staff: 0,
   equipment: 0,
@@ -264,7 +262,6 @@ const statsData = reactive({
 const recentTransactions = ref([])
 const equipmentSummary = ref([])
 
-// Hitung total member
 const totalMembersCount = computed(() => {
   return anggotaRows.value ? anggotaRows.value.length : 0
 })
@@ -326,14 +323,13 @@ const formatRupiah = (angka) => {
   }).format(Number(angka))
 }
 
-// Tambahkan parameter idGym ke dalam fungsi fetch
 const fetchDashboardData = async (idGym) => {
-  if (!idGym) return // Validasi jika idGym kosong
+  if (!idGym) return
 
   isLoading.value = true
   try {
     const [, staffRes, equipmentRes, overviewRes, cashflowRes] = await Promise.allSettled([
-      anggotaStore.fetchAnggota(idGym), // Gunakan idGym dari parameter
+      anggotaStore.fetchAnggota(idGym),
       api.get(`/api/v1/gym/${idGym}/gym-staff`),
       api.get(`/api/v1/gym/${idGym}/equipment`),
       api.get(`/api/v1/gym/${idGym}/cashflow/overview`),
@@ -405,14 +401,12 @@ const fetchDashboardData = async (idGym) => {
   }
 }
 
-// 1. Eksekusi pertama kali saat komponen dimuat
 onMounted(() => {
   if (gymId.value) {
     fetchDashboardData(gymId.value)
   }
 })
 
-// 2. Pantau perubahan pada dropdown Gym
 watch(gymId, (newId) => {
   if (newId) {
     fetchDashboardData(newId)

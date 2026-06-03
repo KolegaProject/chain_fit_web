@@ -154,7 +154,6 @@ const showPassword = ref(false)
 const handleLogin = async () => {
   loading.value = true
   try {
-    // Menghapus 'const res =' karena kita hanya perlu menunggu prosesnya selesai
     await authStore.login({
       username: username.value,
       password: password.value,
@@ -192,7 +191,6 @@ const handleGoogleLogin = async () => {
     const userGoogleInfo = await userInfoResponse.json()
     const googleUsername = userGoogleInfo.email.split('@')[0]
 
-    // Menghapus 'const res ='
     await authStore.loginSocialAccount({
       username: googleUsername,
       provider: 'google',
@@ -246,7 +244,6 @@ const socialRedirect = () => {
   max-width: 460px;
 }
 
-/* Identical input styling to RegisterPage */
 .custom-input {
   :deep(.q-field__control) {
     border-radius: 4px;
@@ -256,7 +253,6 @@ const socialRedirect = () => {
   }
 }
 
-/* Identical button styling */
 .btn-continue {
   background-color: #111827 !important;
   color: white;

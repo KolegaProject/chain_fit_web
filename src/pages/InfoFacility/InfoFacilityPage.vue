@@ -405,7 +405,6 @@ const equipmentColumns = [
   { name: 'actions', label: 'Options', field: 'actions', align: 'right' },
 ]
 
-// --- Helper untuk Warna & Text Status ---
 const getStatusColor = (status) => {
   const s = String(status || '').toUpperCase()
   if (s === 'BAIK' || s === 'GOOD') return { bg: 'green-1', text: 'positive' }
@@ -421,7 +420,6 @@ const formatStatus = (status) => {
   if (s === 'RUSAK' || s === 'DAMAGED') return 'Damaged'
   return status || '-'
 }
-// ---------------------------------------
 
 const showAddDialog = ref(false)
 const editingPlanId = ref(null)

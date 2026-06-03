@@ -293,7 +293,6 @@ const form = reactive({
   image: null,
 })
 
-// Jam Operasional sekarang default menggunakan format AM/PM
 const operationalDays = ref([
   { name: 'Monday', active: true, open: '06:00 AM', close: '10:00 PM' },
   { name: 'Tuesday', active: true, open: '06:00 AM', close: '10:00 PM' },

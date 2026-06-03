@@ -245,7 +245,6 @@ const loading = ref(false)
 const deleteLoading = ref(false)
 const updateLoading = ref(false)
 
-// Tetap menggunakan value backend untuk database, tapi label bahasa Inggris
 const healthStatusOptions = [
   { label: 'Good', value: 'BAIK' },
   { label: 'Needs Maintenance', value: 'BUTUH_PERAWATAN' },

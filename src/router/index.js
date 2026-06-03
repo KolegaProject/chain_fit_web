@@ -21,11 +21,9 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     history: createHistory(process.env.VUE_ROUTER_BASE),
   })
 
-  // --- MIDDLEWARE AUTH ---
   Router.beforeEach((to, from, next) => {
     const authStore = useAuthStore()
 
-    // Cek token dari localStorage (disesuaikan dengan auth.js Anda: 'access_token')
     const token = localStorage.getItem('access_token')
     const isAuthenticated = !!token || !!authStore.token
 
@@ -39,10 +37,8 @@ export default defineRouter(function (/* { store, ssrContext } */) {
     const isPublicPage = publicPages.includes(to.path)
 
     if (!isAuthenticated && !isPublicPage) {
-      // Jika tidak ada token dan bukan halaman publik, paksa ke login
       next('/login')
     } else if (isAuthenticated && isPublicPage) {
-      // Jika sudah login tapi mau ke login/register, lempar ke dashboard
       next('/dashboard')
     } else {
       next()
