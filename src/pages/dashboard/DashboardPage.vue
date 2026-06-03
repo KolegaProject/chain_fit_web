@@ -238,17 +238,21 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, watch } from 'vue' // Tambahkan watch
 import { storeToRefs } from 'pinia'
 import { api } from 'src/boot/axios'
 import { useAnggotaStore } from 'src/stores/Anggota.js'
+import { useGymStore } from 'src/stores/Gym' // Import GymStore
 import apexchart from 'vue3-apexcharts'
 
 const isLoading = ref(true)
 
-// Inisialisasi Store Anggota
+// Inisialisasi Stores
 const anggotaStore = useAnggotaStore()
 const { rows: anggotaRows } = storeToRefs(anggotaStore)
+
+const gymStore = useGymStore()
+const gymId = computed(() => gymStore.selectedGymId) // Ambil ID Gym reaktif
 
 // State Data Dashboard
 const statsData = reactive({
@@ -260,12 +264,11 @@ const statsData = reactive({
 const recentTransactions = ref([])
 const equipmentSummary = ref([])
 
-// Hitung total member secara reaktif dari data Pinia Store
+// Hitung total member
 const totalMembersCount = computed(() => {
   return anggotaRows.value ? anggotaRows.value.length : 0
 })
 
-// Bind ke UI Summary Cards
 const summaryStats = computed(() => [
   { label: 'Total Members', value: totalMembersCount.value, icon: 'groups', color: 'blue-7' },
   { label: 'Active Staff', value: statsData.staff, icon: 'badge', color: 'orange-8' },
@@ -283,7 +286,6 @@ const summaryStats = computed(() => [
   },
 ])
 
-// State Charts
 const incomeSeries = ref([{ name: 'Income', data: [] }])
 const expenseSeries = ref([{ name: 'Expense', data: [] }])
 
@@ -324,26 +326,24 @@ const formatRupiah = (angka) => {
   }).format(Number(angka))
 }
 
-const fetchDashboardData = async () => {
+// Tambahkan parameter idGym ke dalam fungsi fetch
+const fetchDashboardData = async (idGym) => {
+  if (!idGym) return // Validasi jika idGym kosong
+
   isLoading.value = true
   try {
-    const gymId = localStorage.getItem('gymId') || 12
-
-    // Membiarkan koma pertama kosong [ , ... ] untuk mengabaikan penampungan memberRes
     const [, staffRes, equipmentRes, overviewRes, cashflowRes] = await Promise.allSettled([
-      anggotaStore.fetchAnggota(gymId),
-      api.get(`/api/v1/gym/${gymId}/gym-staff`),
-      api.get(`/api/v1/gym/${gymId}/equipment`),
-      api.get(`/api/v1/gym/${gymId}/cashflow/overview`),
-      api.get(`/api/v1/gym/${gymId}/cashflow`),
+      anggotaStore.fetchAnggota(idGym), // Gunakan idGym dari parameter
+      api.get(`/api/v1/gym/${idGym}/gym-staff`),
+      api.get(`/api/v1/gym/${idGym}/equipment`),
+      api.get(`/api/v1/gym/${idGym}/cashflow/overview`),
+      api.get(`/api/v1/gym/${idGym}/cashflow`),
     ])
 
-    // Staff
     if (staffRes.status === 'fulfilled') {
       statsData.staff = staffRes.value.data.recordsTotal || 0
     }
 
-    // Equipment & Kondisi Fasilitas
     if (equipmentRes.status === 'fulfilled') {
       const eqData = equipmentRes.value.data
       statsData.equipment = eqData.recordsTotal || 0
@@ -367,7 +367,6 @@ const fetchDashboardData = async () => {
       })
     }
 
-    // Cashflow Overview
     if (overviewRes.status === 'fulfilled') {
       const overviewData = overviewRes.value.data.data
       statsData.revenue = overviewData.summary?.totalIncome || 0
@@ -392,7 +391,6 @@ const fetchDashboardData = async () => {
       }
     }
 
-    // Recent Transactions
     if (cashflowRes.status === 'fulfilled') {
       recentTransactions.value = (cashflowRes.value.data.data || []).slice(0, 5).map((item) => ({
         description: item.name,
@@ -407,8 +405,18 @@ const fetchDashboardData = async () => {
   }
 }
 
+// 1. Eksekusi pertama kali saat komponen dimuat
 onMounted(() => {
-  fetchDashboardData()
+  if (gymId.value) {
+    fetchDashboardData(gymId.value)
+  }
+})
+
+// 2. Pantau perubahan pada dropdown Gym
+watch(gymId, (newId) => {
+  if (newId) {
+    fetchDashboardData(newId)
+  }
 })
 </script>
 

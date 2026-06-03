@@ -98,13 +98,13 @@
               >
                 <template v-slot:body-cell-no="props">
                   <q-td :props="props">{{
-                    (paginationIncome.page - 1) * paginationIncome.rowsPerPage + props.rowIndex + 1
-                  }}</q-td>
+                      (paginationIncome.page - 1) * paginationIncome.rowsPerPage + props.rowIndex + 1
+                    }}</q-td>
                 </template>
                 <template v-slot:body-cell-amount="props">
                   <q-td :props="props" class="text-weight-bold text-positive">{{
-                    props.value
-                  }}</q-td>
+                      props.value
+                    }}</q-td>
                 </template>
                 <template v-slot:body-cell-actions="props">
                   <q-td :props="props" class="q-gutter-x-sm">
@@ -160,15 +160,15 @@
               >
                 <template v-slot:body-cell-no="props">
                   <q-td :props="props">{{
-                    (paginationExpense.page - 1) * paginationExpense.rowsPerPage +
-                    props.rowIndex +
-                    1
-                  }}</q-td>
+                      (paginationExpense.page - 1) * paginationExpense.rowsPerPage +
+                      props.rowIndex +
+                      1
+                    }}</q-td>
                 </template>
                 <template v-slot:body-cell-amount="props">
                   <q-td :props="props" class="text-weight-bold text-negative">{{
-                    props.value
-                  }}</q-td>
+                      props.value
+                    }}</q-td>
                 </template>
                 <template v-slot:body-cell-actions="props">
                   <q-td :props="props" class="q-gutter-x-sm">
@@ -211,7 +211,7 @@
           <q-form @submit.prevent="simpanEditTransaksi">
             <div class="q-mb-md">
               <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                >Transaction Name</label
+              >Transaction Name</label
               >
               <q-input
                 outlined
@@ -224,7 +224,7 @@
 
             <div class="q-mb-md">
               <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                >Amount (Rp)</label
+              >Amount (Rp)</label
               >
               <q-input
                 outlined
@@ -249,7 +249,7 @@
 
             <div class="q-mb-lg">
               <label class="text-caption text-weight-bold text-grey-9 q-mb-xs block"
-                >Payment Method</label
+              >Payment Method</label
               >
               <q-select
                 outlined
@@ -280,14 +280,19 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue' // Tambahkan computed dan watch
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
 import VueApexCharts from 'vue3-apexcharts'
+import { useGymStore } from 'src/stores/Gym' // Import GymStore
 
 const $q = useQuasar()
 const apexchart = VueApexCharts
 const isLoading = ref(true)
+
+// --- Integrasi GymStore ---
+const gymStore = useGymStore()
+const gymId = computed(() => gymStore.selectedGymId) // Reaktif memantau id gym aktif
 
 // --- State Search & Pagination ---
 const searchIncome = ref('')
@@ -329,13 +334,15 @@ const formatRupiah = (angka) => {
   return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(Number(angka))
 }
 
-const fetchFinanceData = async () => {
+// Tambahkan parameter idGym agar bisa di-fetch ulang saat ganti gym
+const fetchFinanceData = async (idGym) => {
+  if (!idGym) return
+
   isLoading.value = true
   try {
-    const gymId = localStorage.getItem('gymId') || 12
     const [overviewRes, cashflowRes] = await Promise.all([
-      api.get(`/api/v1/gym/${gymId}/cashflow/overview`),
-      api.get(`/api/v1/gym/${gymId}/cashflow`)
+      api.get(`/api/v1/gym/${idGym}/cashflow/overview`),
+      api.get(`/api/v1/gym/${idGym}/cashflow`)
     ])
 
     const overviewData = overviewRes.data.data
@@ -366,12 +373,11 @@ const fetchFinanceData = async () => {
       else if (item.transactionType === 'PENGELUARAN') tempPengeluaran.push(row)
     })
 
-    // Masukkan ke state tanpa di potong (.slice) agar pagination bekerja
     rowsPemasukan.value = tempPemasukan
     rowsPengeluaran.value = tempPengeluaran
   } catch (error) {
-  console.error('Error:', error); // Variabel error sekarang digunakan
-  $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
+    console.error('Error:', error);
+    $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
   } finally {
     isLoading.value = false
   }
@@ -395,7 +401,9 @@ const bukaEditModal = (row) => {
 const simpanEditTransaksi = async () => {
   isSavingEdit.value = true
   try {
-    const gymId = localStorage.getItem('gymId') || 12
+    const idGym = gymId.value // Gunakan idGym reaktif
+    if (!idGym) return
+
     const payload = {
       name: editForm.value.name,
       amount: Number(editForm.value.amount),
@@ -405,15 +413,15 @@ const simpanEditTransaksi = async () => {
       note: editForm.value.note
     }
 
-    await api.put(`/api/v1/gym/${gymId}/cashflow/${editForm.value.id}`, payload)
+    await api.put(`/api/v1/gym/${idGym}/cashflow/${editForm.value.id}`, payload)
 
     $q.notify({ type: 'positive', message: 'Transaction updated successfully!', position: 'top' })
     isEditModalOpen.value = false
-    fetchFinanceData() // Refresh tabel
+    fetchFinanceData(idGym) // Refresh tabel untuk gym yang aktif
   } catch (error) {
-  console.error('Error:', error); // Variabel error sekarang digunakan
-  $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
-} finally {
+    console.error('Error:', error);
+    $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
+  } finally {
     isSavingEdit.value = false
   }
 }
@@ -425,21 +433,35 @@ const hapusTransaksi = (id) => {
     message: 'Are you sure you want to delete this transaction?',
     persistent: true,
     ok: { color: 'negative', label: 'Delete', unelevated: true, noCaps: true },
-    cancel: { color: 'dark', flat: true, noCaps: true } // Error ESLint diperbaiki di sini
+    cancel: { color: 'dark', flat: true, noCaps: true }
   }).onOk(async () => {
     try {
-      const gymId = localStorage.getItem('gymId') || 12
-      await api.delete(`/api/v1/gym/${gymId}/cashflow/${id}`)
+      const idGym = gymId.value // Gunakan idGym reaktif
+      if (!idGym) return
+
+      await api.delete(`/api/v1/gym/${idGym}/cashflow/${id}`)
       $q.notify({ type: 'positive', message: 'Transaction deleted.', position: 'top' })
-      fetchFinanceData()
+      fetchFinanceData(idGym) // Refresh tabel
     } catch (error) {
-    console.error('Error:', error); // Variabel error sekarang digunakan
-    $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
-  }
+      console.error('Error:', error);
+      $q.notify({ type: 'negative', message: 'Terjadi kesalahan.', position: 'top' });
+    }
   })
 }
 
-onMounted(() => fetchFinanceData())
+// ================= LIFECYCLE & WATCHERS =================
+onMounted(() => {
+  if (gymId.value) {
+    fetchFinanceData(gymId.value)
+  }
+})
+
+// Pantau perubahan pada dropdown Gym
+watch(gymId, (newId) => {
+  if (newId) {
+    fetchFinanceData(newId)
+  }
+})
 </script>
 
 <style lang="scss" scoped>
