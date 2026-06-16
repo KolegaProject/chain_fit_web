@@ -160,9 +160,7 @@ const simpanProfil = async () => {
       formData.append('image', selectedFile.value)
     }
 
-    formData.append('_method', 'PUT')
-
-    await api.post('/api/v1/auth/me/update', formData, {
+    await api.put('/api/v1/auth/me/update', formData, {
       headers: { 'Content-Type': 'multipart/form-data' },
     })
 
