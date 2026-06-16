@@ -262,7 +262,6 @@
             />
             <q-btn
               label="Register Now"
-              type="submit"
               @click="onSubmit"
               :loading="loading"
               unelevated
