@@ -55,23 +55,29 @@
                   outlined
                   color="black"
                   v-model="form.address"
-                  type="textarea"
                   rows="2"
                   placeholder="e.g., 123 Sudirman Avenue, South Jakarta, 12190"
                   class="custom-input"
                 />
+                <div class="q-mt-sm">
+                  <q-btn
+                    unelevated
+                    color="dark"
+                    label="Detect Coordinates from Address"
+                    no-caps
+                    class="full-width"
+                    :loading="detectingCoordinates"
+                    @click="detectCoordinatesFromAddress"
+                  />
+                </div>
               </div>
 
-              <!-- Map iframe -->
+              <!-- Interactive Map -->
               <div class="col-12 q-mb-sm">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3960.301708428178!2d107.62912447430588!3d-6.973646368285519!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e9ad06914565%3A0x6734181f0b094191!2sTelkom%20University!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
-                  width="100%"
-                  height="180"
-                  style="border-radius: 4px; border: 1px solid #e0e0e0"
-                  allowfullscreen
-                  loading="lazy"
-                ></iframe>
+                <div ref="mapContainer" class="gym-map"></div>
+                <div class="text-caption text-grey-6 q-mt-xs">
+                  Klik peta atau drag marker untuk memperbarui latitude dan longitude.
+                </div>
               </div>
 
               <div class="col-6">
@@ -271,7 +277,9 @@
 </template>
 
 <script setup>
-import { ref, reactive } from 'vue'
+import { onMounted, onBeforeUnmount, reactive, ref } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import { useGymStore } from '../../stores/Gym'
@@ -279,7 +287,11 @@ import { useGymStore } from '../../stores/Gym'
 const $q = useQuasar()
 const router = useRouter()
 const loading = ref(false)
+const detectingCoordinates = ref(false)
+const mapContainer = ref(null)
 const gymStore = useGymStore()
+let mapInstance = null
+let markerInstance = null
 
 const form = reactive({
   namaGym: '',
@@ -302,6 +314,127 @@ const operationalDays = ref([
   { name: 'Saturday', active: true, open: '08:00 AM', close: '08:00 PM' },
   { name: 'Sunday', active: false, open: '12:00 AM', close: '12:00 AM' },
 ])
+
+const mapCenter = () => {
+  const lat = Number.parseFloat(form.lat)
+  const long = Number.parseFloat(form.long)
+
+  if (Number.isFinite(lat) && Number.isFinite(long)) {
+    return [lat, long]
+  }
+
+  return [-6.973646, 107.629124]
+}
+
+const setCoordinates = (lat, long) => {
+  form.lat = Number(lat).toFixed(6)
+  form.long = Number(long).toFixed(6)
+
+  if (markerInstance) {
+    markerInstance.setLatLng([lat, long])
+  }
+
+  if (mapInstance) {
+    mapInstance.setView([lat, long], mapInstance.getZoom(), { animate: true })
+  }
+}
+
+const initMap = () => {
+  if (!mapContainer.value || mapInstance) {
+    return
+  }
+
+  const [lat, long] = mapCenter()
+
+  mapInstance = L.map(mapContainer.value).setView([lat, long], 15)
+
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; OpenStreetMap contributors',
+  }).addTo(mapInstance)
+
+  const markerIcon = L.icon({
+    iconUrl: new URL('leaflet/dist/images/marker-icon.png', import.meta.url).href,
+    iconRetinaUrl: new URL('leaflet/dist/images/marker-icon-2x.png', import.meta.url).href,
+    shadowUrl: new URL('leaflet/dist/images/marker-shadow.png', import.meta.url).href,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41],
+    popupAnchor: [1, -34],
+    shadowSize: [41, 41],
+  })
+
+  markerInstance = L.marker([lat, long], { draggable: true, icon: markerIcon })
+    .addTo(mapInstance)
+    .bindPopup('Drag marker ini atau klik peta untuk memilih lokasi gym.')
+
+  mapInstance.on('click', (event) => {
+    setCoordinates(event.latlng.lat, event.latlng.lng)
+  })
+
+  markerInstance.on('dragend', (event) => {
+    const position = event.target.getLatLng()
+    setCoordinates(position.lat, position.lng)
+  })
+}
+
+const detectCoordinatesFromAddress = async () => {
+  if (!form.address.trim()) {
+    $q.notify({
+      type: 'warning',
+      message: 'Please fill in the address first.',
+      position: 'top',
+    })
+    return
+  }
+
+  detectingCoordinates.value = true
+
+  try {
+    const query = encodeURIComponent(form.address.trim())
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=jsonv2&limit=1&q=${query}`,
+    )
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch coordinates')
+    }
+
+    const results = await response.json()
+
+    if (!results.length) {
+      throw new Error('Location not found')
+    }
+
+    setCoordinates(results[0].lat, results[0].lon)
+
+    $q.notify({
+      type: 'positive',
+      message: 'Coordinates updated from address.',
+      position: 'top',
+    })
+  } catch (error) {
+    console.error('Coordinate detection error:', error)
+    $q.notify({
+      type: 'negative',
+      message: 'Could not detect coordinates from the address.',
+      caption: 'Please check the address or enter a more specific location.',
+      position: 'top',
+    })
+  } finally {
+    detectingCoordinates.value = false
+  }
+}
+
+onMounted(() => {
+  initMap()
+})
+
+onBeforeUnmount(() => {
+  if (mapInstance) {
+    mapInstance.remove()
+    mapInstance = null
+    markerInstance = null
+  }
+})
 
 const onSubmit = async () => {
   loading.value = true
@@ -379,6 +512,14 @@ const onSubmit = async () => {
   :deep(.q-field__control:before) {
     border-color: #e5e7eb;
   }
+}
+
+.gym-map {
+  width: 100%;
+  height: 220px;
+  border-radius: 4px;
+  border: 1px solid #e0e0e0;
+  overflow: hidden;
 }
 
 .day-row {
