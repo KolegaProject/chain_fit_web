@@ -115,13 +115,15 @@
 </template>
 
 <script setup>
-import { reactive, ref } from 'vue'
+import { reactive, ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useQuasar } from 'quasar'
 import { api } from 'src/boot/axios'
+import { useGymStore } from 'src/stores/Gym'
 
 const router = useRouter()
 const $q = useQuasar()
+const gymStore = useGymStore()
 
 const isSaving = ref(false)
 const form = reactive({
@@ -150,7 +152,11 @@ const simpanTransaksi = async () => {
   isSaving.value = true
 
   try {
-    const gymId = localStorage.getItem('gymId') || 12
+    const gymId = gymStore.selectedGymId
+
+    if (!gymId) {
+      throw new Error('Gym belum dipilih. Silakan pilih gym terlebih dahulu.')
+    }
 
     const today = new Date().toISOString().split('T')[0]
 
